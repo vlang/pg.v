@@ -7,7 +7,7 @@ pub type PGcancel_fe_misc = Pg_cancel
 
 @[markused]
 pub fn libpq_fe_misc_is_unixsock_path(path &i8) bool {
-	return (int(path[false]) == i8(`/`)) || int(path[false]) == i8(`@`)
+	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
 }
 
 @[markused]
@@ -32,14 +32,14 @@ pub fn libpq_fe_misc_surrogate_pair_to_codepoint(first Pg_wchar, second Pg_wchar
 
 @[markused]
 pub fn libpq_fe_misc_utf8_to_unicode(c &u8) Pg_wchar {
-	if (int((unsafe { *c })) & 128) == 0 {
+	if (i32((unsafe { *c })) & 128) == 0 {
 		return Pg_wchar(c[0])
-	} else if (int((unsafe { *c })) & 224) == 192 {
-		return Pg_wchar((((int(c[0]) & 31) << 6) | (int(c[1]) & 63)))
-	} else if (int((unsafe { *c })) & 240) == 224 {
-		return Pg_wchar((((int(c[0]) & 15) << 12) | ((int(c[1]) & 63) << 6) | (int(c[2]) & 63)))
-	} else if (int((unsafe { *c })) & 248) == 240 {
-		return Pg_wchar((((int(c[0]) & 7) << 18) | ((int(c[1]) & 63) << 12) | ((int(c[2]) & 63) << 6) | (int(c[3]) & 63)))
+	} else if (i32((unsafe { *c })) & 224) == 192 {
+		return Pg_wchar((((i32(c[0]) & 31) << 6) | (i32(c[1]) & 63)))
+	} else if (i32((unsafe { *c })) & 240) == 224 {
+		return Pg_wchar((((i32(c[0]) & 15) << 12) | ((i32(c[1]) & 63) << 6) | (i32(c[2]) & 63)))
+	} else if (i32((unsafe { *c })) & 248) == 240 {
+		return Pg_wchar((((i32(c[0]) & 7) << 18) | ((i32(c[1]) & 63) << 12) | ((i32(c[2]) & 63) << 6) | (i32(c[3]) & 63)))
 	} else {
 		return u32(4294967295)
 	}
@@ -66,7 +66,7 @@ pub fn libpq_fe_misc_unicode_to_utf8(c Pg_wchar, utf8string &u8) &u8 {
 }
 
 @[markused]
-pub fn libpq_fe_misc_unicode_utf8len(c Pg_wchar) int {
+pub fn libpq_fe_misc_unicode_utf8len(c Pg_wchar) i32 {
 	if c <= Pg_wchar(127) {
 		return 1
 	} else if c <= Pg_wchar(2047) {
@@ -80,13 +80,13 @@ pub fn libpq_fe_misc_unicode_utf8len(c Pg_wchar) int {
 
 @[export: 'PQlibVersion']
 @[markused]
-pub fn pq_lib_version() int {
+pub fn pq_lib_version() i32 {
 	return 180006
 }
 
 @[export: 'pqGetc']
 @[markused]
-pub fn pq_getc(result &i8, conn &PGconn) int {
+pub fn pq_getc(result &i8, conn &PGconn) i32 {
 	if conn.inCursor >= conn.inEnd {
 		return -1
 	}
@@ -96,7 +96,7 @@ pub fn pq_getc(result &i8, conn &PGconn) int {
 
 @[export: 'pqPutc']
 @[markused]
-pub fn pq_putc(c i8, conn &PGconn) int {
+pub fn pq_putc(c i8, conn &PGconn) i32 {
 	if pq_put_msg_bytes(voidptr(&c), usize(1), conn) {
 		return -1
 	}
@@ -104,12 +104,12 @@ pub fn pq_putc(c i8, conn &PGconn) int {
 }
 
 @[markused]
-pub fn pq_gets_internal(buf PQExpBuffer, conn &PGconn, resetbuffer bool) int {
+pub fn pq_gets_internal(buf PQExpBuffer, conn &PGconn, resetbuffer bool) i32 {
 	in_buffer := conn.inBuffer
 	in_cursor := conn.inCursor
 	in_end := conn.inEnd
-	slen := 0
-	for in_cursor < in_end && int(in_buffer[in_cursor]) {
+	slen := i32(0)
+	for in_cursor < in_end && i32(in_buffer[in_cursor]) {
 		in_cursor++
 	}
 	if in_cursor >= in_end {
@@ -120,25 +120,25 @@ pub fn pq_gets_internal(buf PQExpBuffer, conn &PGconn, resetbuffer bool) int {
 		reset_pq_exp_buffer(buf)
 	}
 	append_binary_pq_exp_buffer(buf, in_buffer + conn.inCursor, usize(slen))
-	conn.inCursor = c2v_prefix_add(unsafe { &in_cursor }, 1)
+	conn.inCursor = c2v_prefix_add(unsafe { &in_cursor }, i32(1))
 	return 0
 }
 
 @[export: 'pqGets']
 @[markused]
-pub fn pq_gets(buf PQExpBuffer, conn &PGconn) int {
+pub fn pq_gets(buf PQExpBuffer, conn &PGconn) i32 {
 	return pq_gets_internal(buf, conn, (1 != 0))
 }
 
 @[export: 'pqGets_append']
 @[markused]
-pub fn pq_gets_append(buf PQExpBuffer, conn &PGconn) int {
+pub fn pq_gets_append(buf PQExpBuffer, conn &PGconn) i32 {
 	return pq_gets_internal(buf, conn, (0 != 0))
 }
 
 @[export: 'pqPuts']
 @[markused]
-pub fn pq_puts(s &i8, conn &PGconn) int {
+pub fn pq_puts(s &i8, conn &PGconn) i32 {
 	if pq_put_msg_bytes(voidptr(s), C.c2v_strlen(s) + u64(1), conn) {
 		return -1
 	}
@@ -147,7 +147,7 @@ pub fn pq_puts(s &i8, conn &PGconn) int {
 
 @[export: 'pqGetnchar']
 @[markused]
-pub fn pq_getnchar(s voidptr, len usize, conn &PGconn) int {
+pub fn pq_getnchar(s voidptr, len usize, conn &PGconn) i32 {
 	if len > usize((conn.inEnd - conn.inCursor)) {
 		return -1
 	}
@@ -158,7 +158,7 @@ pub fn pq_getnchar(s voidptr, len usize, conn &PGconn) int {
 
 @[export: 'pqSkipnchar']
 @[markused]
-pub fn pq_skipnchar(len usize, conn &PGconn) int {
+pub fn pq_skipnchar(len usize, conn &PGconn) i32 {
 	if len > usize((conn.inEnd - conn.inCursor)) {
 		return -1
 	}
@@ -168,7 +168,7 @@ pub fn pq_skipnchar(len usize, conn &PGconn) int {
 
 @[export: 'pqPutnchar']
 @[markused]
-pub fn pq_putnchar(s voidptr, len usize, conn &PGconn) int {
+pub fn pq_putnchar(s voidptr, len usize, conn &PGconn) i32 {
 	if pq_put_msg_bytes(voidptr(s), len, conn) {
 		return -1
 	}
@@ -177,7 +177,7 @@ pub fn pq_putnchar(s voidptr, len usize, conn &PGconn) int {
 
 @[export: 'pqGetInt']
 @[markused]
-pub fn pq_get_int(result &int, bytes usize, conn &PGconn) int {
+pub fn pq_get_int(result &i32, bytes usize, conn &PGconn) i32 {
 	tmp2 := Uint16(0)
 	tmp4 := Uint32(0)
 	match bytes {
@@ -187,7 +187,7 @@ pub fn pq_get_int(result &int, bytes usize, conn &PGconn) int {
 			}
 			C.c2v_memcpy(voidptr(&tmp2), voidptr(conn.inBuffer + conn.inCursor), u64(2))
 			conn.inCursor += 2
-			unsafe { *result = int(c2v_builtin_bswap16(tmp2)) }
+			unsafe { *result = i32(c2v_builtin_bswap16(tmp2)) }
 		}
 		usize(4) {
 			if conn.inCursor + 4 > conn.inEnd {
@@ -195,7 +195,7 @@ pub fn pq_get_int(result &int, bytes usize, conn &PGconn) int {
 			}
 			C.c2v_memcpy(voidptr(&tmp4), voidptr(conn.inBuffer + conn.inCursor), u64(4))
 			conn.inCursor += 4
-			unsafe { *result = int(c2v_builtin_bswap32(tmp4)) }
+			unsafe { *result = i32(c2v_builtin_bswap32(tmp4)) }
 		}
 		else {
 			pq_internal_notice(&conn.noticeHooks, c'integer of size %lu not supported by pqGetInt', u64(bytes))
@@ -208,7 +208,7 @@ pub fn pq_get_int(result &int, bytes usize, conn &PGconn) int {
 
 @[export: 'pqPutInt']
 @[markused]
-pub fn pq_put_int(value int, bytes usize, conn &PGconn) int {
+pub fn pq_put_int(value i32, bytes usize, conn &PGconn) i32 {
 	tmp2 := Uint16(0)
 	tmp4 := Uint32(0)
 	match bytes {
@@ -235,7 +235,7 @@ pub fn pq_put_int(value int, bytes usize, conn &PGconn) int {
 
 @[export: 'pqCheckOutBufferSpace']
 @[markused]
-pub fn pq_check_out_buffer_space(bytes_needed usize, conn &PGconn) int {
+pub fn pq_check_out_buffer_space(bytes_needed usize, conn &PGconn) i32 {
 	newsize := conn.outBufSize
 	newbuf := &i8(0)
 	if bytes_needed <= usize(newsize) {
@@ -276,7 +276,7 @@ pub fn pq_check_out_buffer_space(bytes_needed usize, conn &PGconn) int {
 
 @[export: 'pqCheckInBufferSpace']
 @[markused]
-pub fn pq_check_in_buffer_space(bytes_needed usize, conn &PGconn) int {
+pub fn pq_check_in_buffer_space(bytes_needed usize, conn &PGconn) i32 {
 	newsize := conn.inBufSize
 	newbuf := &i8(0)
 	if bytes_needed <= usize(newsize) {
@@ -333,7 +333,7 @@ pub fn pq_check_in_buffer_space(bytes_needed usize, conn &PGconn) int {
 
 @[export: 'pqParseDone']
 @[markused]
-pub fn pq_parse_done(conn &PGconn, new_in_start int) {
+pub fn pq_parse_done(conn &PGconn, new_in_start i32) {
 	if conn.pfdebug {
 		pq_trace_output_message(conn, conn.inBuffer + conn.inStart, (0 != 0))
 	}
@@ -342,9 +342,9 @@ pub fn pq_parse_done(conn &PGconn, new_in_start int) {
 
 @[export: 'pqPutMsgStart']
 @[markused]
-pub fn pq_put_msg_start(msg_type i8, conn &PGconn) int {
-	len_pos := 0
-	end_pos := 0
+pub fn pq_put_msg_start(msg_type i8, conn &PGconn) i32 {
+	len_pos := i32(0)
+	end_pos := i32(0)
 	if msg_type {
 		end_pos = conn.outCount + 1
 	} else {
@@ -364,7 +364,7 @@ pub fn pq_put_msg_start(msg_type i8, conn &PGconn) int {
 }
 
 @[markused]
-pub fn pq_put_msg_bytes(buf voidptr, len usize, conn &PGconn) int {
+pub fn pq_put_msg_bytes(buf voidptr, len usize, conn &PGconn) i32 {
 	if pq_check_out_buffer_space(usize(conn.outMsgEnd) + len, conn) {
 		return -1
 	}
@@ -375,7 +375,7 @@ pub fn pq_put_msg_bytes(buf voidptr, len usize, conn &PGconn) int {
 
 @[export: 'pqPutMsgEnd']
 @[markused]
-pub fn pq_put_msg_end(conn &PGconn) int {
+pub fn pq_put_msg_end(conn &PGconn) i32 {
 	if conn.outMsgStart >= 0 {
 		msg_len := Uint32(conn.outMsgEnd - conn.outMsgStart)
 		msg_len = c2v_builtin_bswap32(msg_len)
@@ -391,7 +391,7 @@ pub fn pq_put_msg_end(conn &PGconn) int {
 	conn.outCount = conn.outMsgEnd
 	if conn.outCount >= 8192 {
 		to_send := conn.outCount
-		if int(conn.raddr.addr.ss_family) == 1 {
+		if i32(conn.raddr.addr.ss_family) == 1 {
 			to_send -= to_send % 8192
 		}
 		if pq_send_some(conn, to_send) < 0 {
@@ -403,8 +403,8 @@ pub fn pq_put_msg_end(conn &PGconn) int {
 
 @[export: 'pqReadData']
 @[markused]
-pub fn pq_read_data(conn &PGconn) int {
-	available := 0
+pub fn pq_read_data(conn &PGconn) i32 {
+	available := i32(0)
 	if conn.sock == (-1) {
 		libpq_append_conn_error(conn, c'connection not open')
 		return -1
@@ -422,9 +422,9 @@ pub fn pq_read_data(conn &PGconn) int {
 }
 
 @[markused]
-pub fn pq_read_data_internal(conn &PGconn) int {
-	someread := 0
-	nread := 0
+pub fn pq_read_data_internal(conn &PGconn) i32 {
+	someread := i32(0)
+	nread := i32(0)
 	if conn.inStart < conn.inEnd {
 		if conn.inStart > 0 {
 			C.c2v_memmove(voidptr(conn.inBuffer), voidptr(conn.inBuffer + conn.inStart), u64(conn.inEnd - conn.inStart))
@@ -445,7 +445,7 @@ pub fn pq_read_data_internal(conn &PGconn) int {
 		}
 	}
 	retry3:
-	nread = int(pqsecure_read(conn, voidptr(conn.inBuffer + conn.inEnd), usize(conn.inBufSize - conn.inEnd)))
+	nread = i32(pqsecure_read(conn, voidptr(conn.inBuffer + conn.inEnd), usize(conn.inBufSize - conn.inEnd)))
 	if nread < 0 {
 		match (unsafe { *C.c2v___error() }) {
 			4 {
@@ -493,7 +493,7 @@ pub fn pq_read_data_internal(conn &PGconn) int {
 	}
 
 	retry4:
-	nread = int(pqsecure_read(conn, voidptr(conn.inBuffer + conn.inEnd), usize(conn.inBufSize - conn.inEnd)))
+	nread = i32(pqsecure_read(conn, voidptr(conn.inBuffer + conn.inEnd), usize(conn.inBufSize - conn.inEnd)))
 	if nread < 0 {
 		match (unsafe { *C.c2v___error() }) {
 			4 {
@@ -527,12 +527,12 @@ pub fn pq_read_data_internal(conn &PGconn) int {
 }
 
 @[markused]
-pub fn pq_drain_pending(conn &PGconn) int {
+pub fn pq_drain_pending(conn &PGconn) i32 {
 	bytes_pending := isize(0)
 	nread := isize(0)
 	bytes_pending = pqsecure_bytes_pending(conn)
 	if bytes_pending <= isize(0) {
-		return int(bytes_pending)
+		return i32(bytes_pending)
 	}
 	if pq_check_in_buffer_space(usize(conn.inEnd) + usize(bytes_pending), conn) {
 		return -1
@@ -550,10 +550,10 @@ pub fn pq_drain_pending(conn &PGconn) int {
 }
 
 @[markused]
-pub fn pq_send_some(conn &PGconn, len int) int {
+pub fn pq_send_some(conn &PGconn, len i32) i32 {
 	ptr := conn.outBuffer
 	remaining := conn.outCount
-	result := 0
+	result := i32(0)
 	if conn.write_failed {
 		conn.outCount = 0
 		if conn.sock != (-1) {
@@ -570,8 +570,8 @@ pub fn pq_send_some(conn &PGconn, len int) int {
 		return 0
 	}
 	for len > 0 {
-		sent := 0
-		sent = int(pqsecure_write(conn, voidptr(ptr), usize(len)))
+		sent := i32(0)
+		sent = i32(pqsecure_write(conn, voidptr(ptr), usize(len)))
 		if sent < 0 {
 			match (unsafe { *C.c2v___error() }) {
 				35 {
@@ -622,7 +622,7 @@ pub fn pq_send_some(conn &PGconn, len int) int {
 
 @[export: 'pqFlush']
 @[markused]
-pub fn pq_flush_vdup1(conn &PGconn) int {
+pub fn pq_flush_vdup1(conn &PGconn) i32 {
 	if conn.outCount > 0 {
 		if conn.pfdebug {
 			C.c2v_fflush(conn.pfdebug)
@@ -634,14 +634,14 @@ pub fn pq_flush_vdup1(conn &PGconn) int {
 
 @[export: 'pqWait']
 @[markused]
-pub fn pq_wait(for_read int, for_write int, conn &PGconn) int {
+pub fn pq_wait(for_read i32, for_write i32, conn &PGconn) i32 {
 	return pq_wait_timed(for_read, for_write, conn, Pg_usec_time_t(-1))
 }
 
 @[export: 'pqWaitTimed']
 @[markused]
-pub fn pq_wait_timed(for_read int, for_write int, conn &PGconn, end_time Pg_usec_time_t) int {
-	result := 0
+pub fn pq_wait_timed(for_read i32, for_write i32, conn &PGconn, end_time Pg_usec_time_t) i32 {
+	result := i32(0)
 	result = pq_socket_check(conn, for_read, for_write, end_time)
 	if result < 0 {
 		return -1
@@ -655,19 +655,19 @@ pub fn pq_wait_timed(for_read int, for_write int, conn &PGconn, end_time Pg_usec
 
 @[export: 'pqReadReady']
 @[markused]
-pub fn pq_read_ready(conn &PGconn) int {
+pub fn pq_read_ready(conn &PGconn) i32 {
 	return pq_socket_check(conn, 1, 0, Pg_usec_time_t(0))
 }
 
 @[export: 'pqWriteReady']
 @[markused]
-pub fn pq_write_ready(conn &PGconn) int {
+pub fn pq_write_ready(conn &PGconn) i32 {
 	return pq_socket_check(conn, 0, 1, Pg_usec_time_t(0))
 }
 
 @[markused]
-pub fn pq_socket_check(conn &PGconn, for_read int, for_write int, end_time Pg_usec_time_t) int {
-	result := 0
+pub fn pq_socket_check(conn &PGconn, for_read i32, for_write i32, end_time Pg_usec_time_t) i32 {
+	result := i32(0)
 	sock := Pgsocket(0)
 	if isnil(conn) {
 		return -1
@@ -699,9 +699,9 @@ pub fn pq_socket_check(conn &PGconn, for_read int, for_write int, end_time Pg_us
 
 @[export: 'PQsocketPoll']
 @[markused]
-pub fn pq_socket_poll(sock int, for_read int, for_write int, end_time Pg_usec_time_t) int {
+pub fn pq_socket_poll(sock i32, for_read i32, for_write i32, end_time Pg_usec_time_t) i32 {
 	input_fd := C.pollfd{}
-	timeout_ms := 0
+	timeout_ms := i32(0)
 	if !for_read && !for_write {
 		return 0
 	}
@@ -721,7 +721,7 @@ pub fn pq_socket_poll(sock int, for_read int, for_write int, end_time Pg_usec_ti
 	} else {
 		now := pq_get_current_time_us_ec()
 		if end_time > now {
-			timeout_ms = int((end_time - now) / Pg_usec_time_t(1000))
+			timeout_ms = i32((end_time - now) / Pg_usec_time_t(1000))
 		} else {
 			timeout_ms = 0
 		}
@@ -739,29 +739,29 @@ pub fn pq_get_current_time_us_ec() Pg_usec_time_t {
 
 @[export: 'PQmblen']
 @[markused]
-pub fn pq_mblen(s &i8, encoding int) int {
+pub fn pq_mblen(s &i8, encoding i32) i32 {
 	return pg_encoding_mblen(encoding, s)
 }
 
 @[export: 'PQmblenBounded']
 @[markused]
-pub fn pq_mblen_bounded(s &i8, encoding int) int {
-	return int(C.c2v_strnlen(s, usize(pg_encoding_mblen(encoding, s))))
+pub fn pq_mblen_bounded(s &i8, encoding i32) i32 {
+	return i32(C.c2v_strnlen(s, usize(pg_encoding_mblen(encoding, s))))
 }
 
 @[export: 'PQdsplen']
 @[markused]
-pub fn pq_dsplen(s &i8, encoding int) int {
+pub fn pq_dsplen(s &i8, encoding i32) i32 {
 	return pg_encoding_dsplen(encoding, s)
 }
 
 @[export: 'PQenv2encoding']
 @[markused]
-pub fn pq_env2encoding() int {
+pub fn pq_env2encoding() i32 {
 	str := &i8(0)
-	encoding := int(Pg_enc.pg_sql_ascii)
+	encoding := i32(Pg_enc.pg_sql_ascii)
 	str = C.c2v_getenv(c'PGCLIENTENCODING')
-	if !isnil(str) && int((unsafe { *str })) != i8(`\0`) {
+	if !isnil(str) && i32((unsafe { *str })) != i8(`\0`) {
 		encoding = pg_char_to_encoding(str)
 		if encoding < 0 {
 			encoding = Pg_enc.pg_sql_ascii

@@ -19,14 +19,14 @@ pub type PGcancel_fe_lobj = Pg_cancel
 
 @[markused]
 pub fn libpq_fe_lobj_is_unixsock_path(path &i8) bool {
-	return (int(path[false]) == i8(`/`)) || int(path[false]) == i8(`@`)
+	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
 }
 
 @[export: 'lo_open']
 @[markused]
-pub fn lo_open(conn &PGconn, lobj_id Oid, mode int) int {
-	fd := 0
-	result_len := 0
+pub fn lo_open(conn &PGconn, lobj_id Oid, mode i32) i32 {
+	fd := i32(0)
+	result_len := i32(0)
 	argv := [2]PQArgBlock{}
 	res := &PGresult(0)
 	if lo_initialize(conn) < 0 {
@@ -34,11 +34,11 @@ pub fn lo_open(conn &PGconn, lobj_id Oid, mode int) int {
 	}
 	argv[0].isint = 1
 	argv[0].len = 4
-	argv[0].u.integer = int(lobj_id)
+	argv[0].u.integer = i32(lobj_id)
 	argv[1].isint = 1
 	argv[1].len = 4
 	argv[1].u.integer = mode
-	res = pq_fn(conn, int(conn.lobjfuncs.fn_lo_open), &fd, &result_len, 1, unsafe { &argv[0] }, 2)
+	res = pq_fn(conn, i32(conn.lobjfuncs.fn_lo_open), &fd, &result_len, 1, unsafe { &argv[0] }, 2)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) {
 		pq_clear(res)
 		return fd
@@ -50,18 +50,18 @@ pub fn lo_open(conn &PGconn, lobj_id Oid, mode int) int {
 
 @[export: 'lo_close']
 @[markused]
-pub fn lo_close(conn &PGconn, fd int) int {
+pub fn lo_close(conn &PGconn, fd i32) i32 {
 	argv := [1]PQArgBlock{}
 	res := &PGresult(0)
-	retval := 0
-	result_len := 0
+	retval := i32(0)
+	result_len := i32(0)
 	if lo_initialize(conn) < 0 {
 		return -1
 	}
 	argv[0].isint = 1
 	argv[0].len = 4
 	argv[0].u.integer = fd
-	res = pq_fn(conn, int(conn.lobjfuncs.fn_lo_close), &retval, &result_len, 1, unsafe { &argv[0] }, 1)
+	res = pq_fn(conn, i32(conn.lobjfuncs.fn_lo_close), &retval, &result_len, 1, unsafe { &argv[0] }, 1)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) {
 		pq_clear(res)
 		return retval
@@ -73,11 +73,11 @@ pub fn lo_close(conn &PGconn, fd int) int {
 
 @[export: 'lo_truncate']
 @[markused]
-pub fn lo_truncate(conn &PGconn, fd int, len usize) int {
+pub fn lo_truncate(conn &PGconn, fd i32, len usize) i32 {
 	argv := [2]PQArgBlock{}
 	res := &PGresult(0)
-	retval := 0
-	result_len := 0
+	retval := i32(0)
+	result_len := i32(0)
 	if lo_initialize(conn) < 0 {
 		return -1
 	}
@@ -94,8 +94,8 @@ pub fn lo_truncate(conn &PGconn, fd int, len usize) int {
 	argv[0].u.integer = fd
 	argv[1].isint = 1
 	argv[1].len = 4
-	argv[1].u.integer = int(len)
-	res = pq_fn(conn, int(conn.lobjfuncs.fn_lo_truncate), &retval, &result_len, 1, unsafe { &argv[0] }, 2)
+	argv[1].u.integer = i32(len)
+	res = pq_fn(conn, i32(conn.lobjfuncs.fn_lo_truncate), &retval, &result_len, 1, unsafe { &argv[0] }, 2)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) {
 		pq_clear(res)
 		return retval
@@ -107,11 +107,11 @@ pub fn lo_truncate(conn &PGconn, fd int, len usize) int {
 
 @[export: 'lo_truncate64']
 @[markused]
-pub fn lo_truncate64(conn &PGconn, fd int, len i64) int {
+pub fn lo_truncate64(conn &PGconn, fd i32, len i64) i32 {
 	argv := [2]PQArgBlock{}
 	res := &PGresult(0)
-	retval := 0
-	result_len := 0
+	retval := i32(0)
+	result_len := i32(0)
 	if lo_initialize(conn) < 0 {
 		return -1
 	}
@@ -125,8 +125,8 @@ pub fn lo_truncate64(conn &PGconn, fd int, len i64) int {
 	len = lo_hton64(len)
 	argv[1].isint = 0
 	argv[1].len = 8
-	argv[1].u.ptr = &int(c2v_address_of(&len))
-	res = pq_fn(conn, int(conn.lobjfuncs.fn_lo_truncate64), &retval, &result_len, 1, unsafe { &argv[0] }, 2)
+	argv[1].u.ptr = &i32(c2v_address_of(&len))
+	res = pq_fn(conn, i32(conn.lobjfuncs.fn_lo_truncate64), &retval, &result_len, 1, unsafe { &argv[0] }, 2)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) {
 		pq_clear(res)
 		return retval
@@ -138,10 +138,10 @@ pub fn lo_truncate64(conn &PGconn, fd int, len i64) int {
 
 @[export: 'lo_read']
 @[markused]
-pub fn lo_read(conn &PGconn, fd int, buf &i8, len usize) int {
+pub fn lo_read(conn &PGconn, fd i32, buf &i8, len usize) i32 {
 	argv := [2]PQArgBlock{}
 	res := &PGresult(0)
-	result_len := 0
+	result_len := i32(0)
 	if lo_initialize(conn) < 0 {
 		return -1
 	}
@@ -154,8 +154,8 @@ pub fn lo_read(conn &PGconn, fd int, buf &i8, len usize) int {
 	argv[0].u.integer = fd
 	argv[1].isint = 1
 	argv[1].len = 4
-	argv[1].u.integer = int(len)
-	res = pq_nfn(conn, int(conn.lobjfuncs.fn_lo_read), voidptr(buf), int(len), &result_len, 0, unsafe { &argv[0] }, 2)
+	argv[1].u.integer = i32(len)
+	res = pq_nfn(conn, i32(conn.lobjfuncs.fn_lo_read), voidptr(buf), i32(len), &result_len, 0, unsafe { &argv[0] }, 2)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) {
 		pq_clear(res)
 		return result_len
@@ -167,11 +167,11 @@ pub fn lo_read(conn &PGconn, fd int, buf &i8, len usize) int {
 
 @[export: 'lo_write']
 @[markused]
-pub fn lo_write(conn &PGconn, fd int, buf &i8, len usize) int {
+pub fn lo_write(conn &PGconn, fd i32, buf &i8, len usize) i32 {
 	argv := [2]PQArgBlock{}
 	res := &PGresult(0)
-	result_len := 0
-	retval := 0
+	result_len := i32(0)
+	retval := i32(0)
 	if lo_initialize(conn) < 0 {
 		return -1
 	}
@@ -183,13 +183,13 @@ pub fn lo_write(conn &PGconn, fd int, buf &i8, len usize) int {
 	argv[0].len = 4
 	argv[0].u.integer = fd
 	argv[1].isint = 0
-	argv[1].len = int(len)
-	argv[1].u.ptr = &int(voidptr((if true {
+	argv[1].len = i32(len)
+	argv[1].u.ptr = &i32(voidptr((if true {
 		&i8(buf)
 	} else {
 		unsafe { nil }
 	})))
-	res = pq_fn(conn, int(conn.lobjfuncs.fn_lo_write), &retval, &result_len, 1, unsafe { &argv[0] }, 2)
+	res = pq_fn(conn, i32(conn.lobjfuncs.fn_lo_write), &retval, &result_len, 1, unsafe { &argv[0] }, 2)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) {
 		pq_clear(res)
 		return retval
@@ -201,11 +201,11 @@ pub fn lo_write(conn &PGconn, fd int, buf &i8, len usize) int {
 
 @[export: 'lo_lseek']
 @[markused]
-pub fn lo_lseek(conn &PGconn, fd int, offset int, whence int) int {
+pub fn lo_lseek(conn &PGconn, fd i32, offset i32, whence i32) i32 {
 	argv := [3]PQArgBlock{}
 	res := &PGresult(0)
-	retval := 0
-	result_len := 0
+	retval := i32(0)
+	result_len := i32(0)
 	if lo_initialize(conn) < 0 {
 		return -1
 	}
@@ -218,7 +218,7 @@ pub fn lo_lseek(conn &PGconn, fd int, offset int, whence int) int {
 	argv[2].isint = 1
 	argv[2].len = 4
 	argv[2].u.integer = whence
-	res = pq_fn(conn, int(conn.lobjfuncs.fn_lo_lseek), &retval, &result_len, 1, unsafe { &argv[0] }, 3)
+	res = pq_fn(conn, i32(conn.lobjfuncs.fn_lo_lseek), &retval, &result_len, 1, unsafe { &argv[0] }, 3)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) {
 		pq_clear(res)
 		return retval
@@ -230,11 +230,11 @@ pub fn lo_lseek(conn &PGconn, fd int, offset int, whence int) int {
 
 @[export: 'lo_lseek64']
 @[markused]
-pub fn lo_lseek64(conn &PGconn, fd int, offset i64, whence int) i64 {
+pub fn lo_lseek64(conn &PGconn, fd i32, offset i64, whence i32) i64 {
 	argv := [3]PQArgBlock{}
 	res := &PGresult(0)
 	retval := Int64(0)
-	result_len := 0
+	result_len := i32(0)
 	if lo_initialize(conn) < 0 {
 		return i64(-1)
 	}
@@ -248,11 +248,11 @@ pub fn lo_lseek64(conn &PGconn, fd int, offset i64, whence int) i64 {
 	offset = lo_hton64(offset)
 	argv[1].isint = 0
 	argv[1].len = 8
-	argv[1].u.ptr = &int(c2v_address_of(&offset))
+	argv[1].u.ptr = &i32(c2v_address_of(&offset))
 	argv[2].isint = 1
 	argv[2].len = 4
 	argv[2].u.integer = whence
-	res = pq_nfn(conn, int(conn.lobjfuncs.fn_lo_lseek64), voidptr(c2v_address_of(&retval)), int(sizeof(retval)), &result_len, 0, unsafe { &argv[0] }, 3)
+	res = pq_nfn(conn, i32(conn.lobjfuncs.fn_lo_lseek64), voidptr(c2v_address_of(&retval)), i32(sizeof(retval)), &result_len, 0, unsafe { &argv[0] }, 3)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) && result_len == 8 {
 		pq_clear(res)
 		return lo_ntoh64(retval)
@@ -264,18 +264,18 @@ pub fn lo_lseek64(conn &PGconn, fd int, offset i64, whence int) i64 {
 
 @[export: 'lo_creat']
 @[markused]
-pub fn lo_creat(conn &PGconn, mode int) Oid {
+pub fn lo_creat(conn &PGconn, mode i32) Oid {
 	argv := [1]PQArgBlock{}
 	res := &PGresult(0)
-	retval := 0
-	result_len := 0
+	retval := i32(0)
+	result_len := i32(0)
 	if lo_initialize(conn) < 0 {
 		return Oid(0)
 	}
 	argv[0].isint = 1
 	argv[0].len = 4
 	argv[0].u.integer = mode
-	res = pq_fn(conn, int(conn.lobjfuncs.fn_lo_creat), &retval, &result_len, 1, unsafe { &argv[0] }, 1)
+	res = pq_fn(conn, i32(conn.lobjfuncs.fn_lo_creat), &retval, &result_len, 1, unsafe { &argv[0] }, 1)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) {
 		pq_clear(res)
 		return Oid(retval)
@@ -290,8 +290,8 @@ pub fn lo_creat(conn &PGconn, mode int) Oid {
 pub fn lo_create(conn &PGconn, lobj_id Oid) Oid {
 	argv := [1]PQArgBlock{}
 	res := &PGresult(0)
-	retval := 0
-	result_len := 0
+	retval := i32(0)
+	result_len := i32(0)
 	if lo_initialize(conn) < 0 {
 		return Oid(0)
 	}
@@ -301,8 +301,8 @@ pub fn lo_create(conn &PGconn, lobj_id Oid) Oid {
 	}
 	argv[0].isint = 1
 	argv[0].len = 4
-	argv[0].u.integer = int(lobj_id)
-	res = pq_fn(conn, int(conn.lobjfuncs.fn_lo_create), &retval, &result_len, 1, unsafe { &argv[0] }, 1)
+	argv[0].u.integer = i32(lobj_id)
+	res = pq_fn(conn, i32(conn.lobjfuncs.fn_lo_create), &retval, &result_len, 1, unsafe { &argv[0] }, 1)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) {
 		pq_clear(res)
 		return Oid(retval)
@@ -314,18 +314,18 @@ pub fn lo_create(conn &PGconn, lobj_id Oid) Oid {
 
 @[export: 'lo_tell']
 @[markused]
-pub fn lo_tell(conn &PGconn, fd int) int {
-	retval := 0
+pub fn lo_tell(conn &PGconn, fd i32) i32 {
+	retval := i32(0)
 	argv := [1]PQArgBlock{}
 	res := &PGresult(0)
-	result_len := 0
+	result_len := i32(0)
 	if lo_initialize(conn) < 0 {
 		return -1
 	}
 	argv[0].isint = 1
 	argv[0].len = 4
 	argv[0].u.integer = fd
-	res = pq_fn(conn, int(conn.lobjfuncs.fn_lo_tell), &retval, &result_len, 1, unsafe { &argv[0] }, 1)
+	res = pq_fn(conn, i32(conn.lobjfuncs.fn_lo_tell), &retval, &result_len, 1, unsafe { &argv[0] }, 1)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) {
 		pq_clear(res)
 		return retval
@@ -337,11 +337,11 @@ pub fn lo_tell(conn &PGconn, fd int) int {
 
 @[export: 'lo_tell64']
 @[markused]
-pub fn lo_tell64(conn &PGconn, fd int) i64 {
+pub fn lo_tell64(conn &PGconn, fd i32) i64 {
 	retval := Int64(0)
 	argv := [1]PQArgBlock{}
 	res := &PGresult(0)
-	result_len := 0
+	result_len := i32(0)
 	if lo_initialize(conn) < 0 {
 		return i64(-1)
 	}
@@ -352,7 +352,7 @@ pub fn lo_tell64(conn &PGconn, fd int) i64 {
 	argv[0].isint = 1
 	argv[0].len = 4
 	argv[0].u.integer = fd
-	res = pq_nfn(conn, int(conn.lobjfuncs.fn_lo_tell64), voidptr(c2v_address_of(&retval)), int(sizeof(retval)), &result_len, 0, unsafe { &argv[0] }, 1)
+	res = pq_nfn(conn, i32(conn.lobjfuncs.fn_lo_tell64), voidptr(c2v_address_of(&retval)), i32(sizeof(retval)), &result_len, 0, unsafe { &argv[0] }, 1)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) && result_len == 8 {
 		pq_clear(res)
 		return lo_ntoh64(retval)
@@ -364,18 +364,18 @@ pub fn lo_tell64(conn &PGconn, fd int) i64 {
 
 @[export: 'lo_unlink']
 @[markused]
-pub fn lo_unlink(conn &PGconn, lobj_id Oid) int {
+pub fn lo_unlink(conn &PGconn, lobj_id Oid) i32 {
 	argv := [1]PQArgBlock{}
 	res := &PGresult(0)
-	result_len := 0
-	retval := 0
+	result_len := i32(0)
+	retval := i32(0)
 	if lo_initialize(conn) < 0 {
 		return -1
 	}
 	argv[0].isint = 1
 	argv[0].len = 4
-	argv[0].u.integer = int(lobj_id)
-	res = pq_fn(conn, int(conn.lobjfuncs.fn_lo_unlink), &retval, &result_len, 1, unsafe { &argv[0] }, 1)
+	argv[0].u.integer = i32(lobj_id)
+	res = pq_fn(conn, i32(conn.lobjfuncs.fn_lo_unlink), &retval, &result_len, 1, unsafe { &argv[0] }, 1)
 	if u32(pq_result_status(res)) == u32(ExecStatusType.pgres_command_ok) {
 		pq_clear(res)
 		return retval
@@ -399,13 +399,13 @@ pub fn lo_import_with_oid(conn &PGconn, filename &i8, lobj_id Oid) Oid {
 
 @[markused]
 pub fn lo_import_internal(conn &PGconn, filename &i8, oid Oid) Oid {
-	fd := 0
-	nbytes := 0
-	tmp := 0
+	fd := i32(0)
+	nbytes := i32(0)
+	tmp := i32(0)
 
 	buf := [8192]i8{}
 	lobj_oid := Oid(0)
-	lobj := 0
+	lobj := i32(0)
 	sebuf := [256]i8{}
 	if usize(conn) == usize((voidptr(0))) {
 		return Oid(0)
@@ -432,7 +432,7 @@ pub fn lo_import_internal(conn &PGconn, filename &i8, oid Oid) Oid {
 		return Oid(0)
 	}
 	for {
-		nbytes = int(C.c2v_read(fd, voidptr(unsafe { &buf[0] }), usize(8192)))
+		nbytes = i32(C.c2v_read(fd, voidptr(unsafe { &buf[0] }), usize(8192)))
 		if !(nbytes > 0) {
 			break
 		}
@@ -460,14 +460,14 @@ pub fn lo_import_internal(conn &PGconn, filename &i8, oid Oid) Oid {
 
 @[export: 'lo_export']
 @[markused]
-pub fn lo_export(conn &PGconn, lobj_id Oid, filename &i8) int {
-	result := 1
-	fd := 0
-	nbytes := 0
-	tmp := 0
+pub fn lo_export(conn &PGconn, lobj_id Oid, filename &i8) i32 {
+	result := i32(1)
+	fd := i32(0)
+	nbytes := i32(0)
+	tmp := i32(0)
 
 	buf := [8192]i8{}
-	lobj := 0
+	lobj := i32(0)
 	sebuf := [256]i8{}
 	lobj = lo_open(conn, lobj_id, 262144)
 	if lobj == -1 {
@@ -487,7 +487,7 @@ pub fn lo_export(conn &PGconn, lobj_id Oid, filename &i8) int {
 		if !(nbytes > 0) {
 			break
 		}
-		tmp = int(C.c2v_write(fd, voidptr(unsafe { &buf[0] }), usize(nbytes)))
+		tmp = i32(C.c2v_write(fd, voidptr(unsafe { &buf[0] }), usize(nbytes)))
 		if tmp != nbytes {
 			save_errno := (unsafe { *C.c2v___error() })
 			lo_close(conn, lobj)
@@ -509,10 +509,10 @@ pub fn lo_export(conn &PGconn, lobj_id Oid, filename &i8) int {
 }
 
 @[markused]
-pub fn lo_initialize(conn &PGconn) int {
+pub fn lo_initialize(conn &PGconn) i32 {
 	res := &PGresult(0)
 	lobjfuncs := &PGlobjfuncs(0)
-	n := 0
+	n := i32(0)
 	query := &i8(0)
 	fname := &i8(0)
 	foid := Oid(0)
@@ -531,7 +531,7 @@ pub fn lo_initialize(conn &PGconn) int {
 	}
 	for {
 		vstart := voidptr(lobjfuncs)
-		val := 0
+		val := i32(0)
 		len := (sizeof(PGlobjfuncs))
 		if ((usize(vstart)) & (sizeof(i64) - u64(1))) == u64(0) && (len & (sizeof(i64) - u64(1))) == u64(0) && val == 0 && len <= Size(1024) && 1024 != 0 {
 			start := &i64(vstart)

@@ -37,11 +37,11 @@ pub fn pg_mul_s16_overflow(a Int16, b Int16, result &Int16) bool {
 
 @[markused]
 pub fn pg_neg_s16_overflow(a Int16, result &Int16) bool {
-	if (i64((int(a) == -32768) != 0)) {
+	if (i64((i32(a) == -32768) != 0)) {
 		unsafe { *result = Int16(24301) }
 		return true != 0
 	}
-	unsafe { *result = Int16(-int(a)) }
+	unsafe { *result = Int16(-i32(a)) }
 	return false != 0
 }
 
@@ -151,8 +151,8 @@ pub fn pg_abs_s64(a Int64) Uint64 {
 
 @[markused]
 pub fn pg_add_u16_overflow(a Uint16, b Uint16, result &Uint16) bool {
-	res := Uint16(int(a) + int(b))
-	if int(res) < int(a) {
+	res := Uint16(i32(a) + i32(b))
+	if i32(res) < i32(a) {
 		unsafe { *result = Uint16(24301) }
 		return true != 0
 	}
@@ -162,11 +162,11 @@ pub fn pg_add_u16_overflow(a Uint16, b Uint16, result &Uint16) bool {
 
 @[markused]
 pub fn pg_sub_u16_overflow(a Uint16, b Uint16, result &Uint16) bool {
-	if int(b) > int(a) {
+	if i32(b) > i32(a) {
 		unsafe { *result = Uint16(24301) }
 		return true != 0
 	}
-	unsafe { *result = Uint16(int(a) - int(b)) }
+	unsafe { *result = Uint16(i32(a) - i32(b)) }
 	return false != 0
 }
 
@@ -311,38 +311,38 @@ pub fn pg_mul_size_overflow(a usize, b usize, result &usize) bool {
 }
 
 @[markused]
-pub fn pg_cmp_s16(a Int16, b Int16) int {
+pub fn pg_cmp_s16(a Int16, b Int16) i32 {
 	return Int32(a) - Int32(b)
 }
 
 @[markused]
-pub fn pg_cmp_u16(a Uint16, b Uint16) int {
+pub fn pg_cmp_u16(a Uint16, b Uint16) i32 {
 	return Int32(a) - Int32(b)
 }
 
 @[markused]
-pub fn pg_cmp_s32(a Int32, b Int32) int {
-	return int((a > b)) - int((a < b))
+pub fn pg_cmp_s32(a Int32, b Int32) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 @[markused]
-pub fn pg_cmp_u32(a Uint32, b Uint32) int {
-	return int((a > b)) - int((a < b))
+pub fn pg_cmp_u32(a Uint32, b Uint32) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 @[markused]
-pub fn pg_cmp_s64(a Int64, b Int64) int {
-	return int((a > b)) - int((a < b))
+pub fn pg_cmp_s64(a Int64, b Int64) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 @[markused]
-pub fn pg_cmp_u64(a Uint64, b Uint64) int {
-	return int((a > b)) - int((a < b))
+pub fn pg_cmp_u64(a Uint64, b Uint64) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 @[markused]
-pub fn pg_cmp_size(a usize, b usize) int {
-	return int((a > b)) - int((a < b))
+pub fn pg_cmp_size(a usize, b usize) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 pub type PGcancelConn_fe_exec = Pg_cancel_conn
@@ -351,7 +351,7 @@ pub type PGcancel_fe_exec = Pg_cancel
 
 @[markused]
 pub fn libpq_fe_exec_is_unixsock_path(path &i8) bool {
-	return (int(path[false]) == i8(`/`)) || int(path[false]) == i8(`@`)
+	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
 }
 
 @[markused]
@@ -376,14 +376,14 @@ pub fn libpq_fe_exec_surrogate_pair_to_codepoint(first Pg_wchar, second Pg_wchar
 
 @[markused]
 pub fn libpq_fe_exec_utf8_to_unicode(c &u8) Pg_wchar {
-	if (int((unsafe { *c })) & 128) == 0 {
+	if (i32((unsafe { *c })) & 128) == 0 {
 		return Pg_wchar(c[0])
-	} else if (int((unsafe { *c })) & 224) == 192 {
-		return Pg_wchar((((int(c[0]) & 31) << 6) | (int(c[1]) & 63)))
-	} else if (int((unsafe { *c })) & 240) == 224 {
-		return Pg_wchar((((int(c[0]) & 15) << 12) | ((int(c[1]) & 63) << 6) | (int(c[2]) & 63)))
-	} else if (int((unsafe { *c })) & 248) == 240 {
-		return Pg_wchar((((int(c[0]) & 7) << 18) | ((int(c[1]) & 63) << 12) | ((int(c[2]) & 63) << 6) | (int(c[3]) & 63)))
+	} else if (i32((unsafe { *c })) & 224) == 192 {
+		return Pg_wchar((((i32(c[0]) & 31) << 6) | (i32(c[1]) & 63)))
+	} else if (i32((unsafe { *c })) & 240) == 224 {
+		return Pg_wchar((((i32(c[0]) & 15) << 12) | ((i32(c[1]) & 63) << 6) | (i32(c[2]) & 63)))
+	} else if (i32((unsafe { *c })) & 248) == 240 {
+		return Pg_wchar((((i32(c[0]) & 7) << 18) | ((i32(c[1]) & 63) << 12) | ((i32(c[2]) & 63) << 6) | (i32(c[3]) & 63)))
 	} else {
 		return u32(4294967295)
 	}
@@ -410,7 +410,7 @@ pub fn libpq_fe_exec_unicode_to_utf8(c Pg_wchar, utf8string &u8) &u8 {
 }
 
 @[markused]
-pub fn libpq_fe_exec_unicode_utf8len(c Pg_wchar) int {
+pub fn libpq_fe_exec_unicode_utf8len(c Pg_wchar) i32 {
 	if c <= Pg_wchar(127) {
 		return 1
 	} else if c <= Pg_wchar(2047) {
@@ -481,8 +481,8 @@ pub fn pq_make_empty_pg_result(conn &PGconn, status ExecStatusType) &PGresult {
 
 @[export: 'PQsetResultAttrs']
 @[markused]
-pub fn pq_set_result_attrs(res &PGresult, num_attributes int, att_descs &PGresAttDesc) int {
-	i := 0
+pub fn pq_set_result_attrs(res &PGresult, num_attributes i32, att_descs &PGresAttDesc) i32 {
+	i := i32(0)
 	if isnil(res) || usize(&PGresult(res)) == usize(&libpq_fe_exec_oom_result) {
 		return 0
 	}
@@ -517,9 +517,9 @@ pub fn pq_set_result_attrs(res &PGresult, num_attributes int, att_descs &PGresAt
 
 @[export: 'PQcopyResult']
 @[markused]
-pub fn pq_copy_result(src &PGresult, flags int) &PGresult {
+pub fn pq_copy_result(src &PGresult, flags i32) &PGresult {
 	dest := &PGresult(0)
-	i := 0
+	i := i32(0)
 	if isnil(src) {
 		return unsafe { nil }
 	}
@@ -536,8 +536,8 @@ pub fn pq_copy_result(src &PGresult, flags int) &PGresult {
 		}
 	}
 	if flags & 2 {
-		tup := 0
-		field := 0
+		tup := i32(0)
+		field := i32(0)
 
 		for tup = 0; tup < src.ntups; tup++ {
 			for field = 0; field < src.numAttributes; field++ {
@@ -573,10 +573,10 @@ pub fn pq_copy_result(src &PGresult, flags int) &PGresult {
 }
 
 @[markused]
-pub fn dup_events(events &PGEvent, count int, mem_size &usize) &PGEvent {
+pub fn dup_events(events &PGEvent, count i32, mem_size &usize) &PGEvent {
 	mut new_events := &PGEvent(0)
 	msize := usize(0)
-	i := 0
+	i := i32(0)
 	if isnil(events) || count <= 0 {
 		return unsafe { nil }
 	}
@@ -610,7 +610,7 @@ pub fn dup_events(events &PGEvent, count int, mem_size &usize) &PGEvent {
 
 @[export: 'PQsetvalue']
 @[markused]
-pub fn pq_setvalue(res &PGresult, tup_num int, field_num int, value &i8, len int) int {
+pub fn pq_setvalue(res &PGresult, tup_num i32, field_num i32, value &i8, len i32) i32 {
 	attval := &PGresAttValue(0)
 	errmsg := unsafe { &i8(nil) }
 	if isnil(res) || usize(&PGresult(res)) == usize(&libpq_fe_exec_oom_result) {
@@ -625,7 +625,7 @@ pub fn pq_setvalue(res &PGresult, tup_num int, field_num int, value &i8, len int
 	}
 	if tup_num == res.ntups {
 		mut tup := &PGresAttValue(0)
-		i := 0
+		i := i32(0)
 		tup = &PGresAttValue(pq_result_alloc_vdup0(res, u64(res.numAttributes) * sizeof(PGresAttValue), (1 != 0)))
 		if isnil(tup) {
 			unsafe {
@@ -744,19 +744,19 @@ pub fn pq_result_alloc_vdup0(res &PGresult, n_bytes usize, is_binary bool) voidp
 	block.next = res.curBlock
 	res.curBlock = block
 	if is_binary {
-		res.curOffset = int((if (sizeof(PGresult_data)) > u64(8) {
+		res.curOffset = i32((if (sizeof(PGresult_data)) > u64(8) {
 			(sizeof(PGresult_data))
 		} else {
 			u64(8)
 		}))
-		res.spaceLeft = int(u64(2048) - (if (sizeof(PGresult_data)) > u64(8) {
+		res.spaceLeft = i32(u64(2048) - (if (sizeof(PGresult_data)) > u64(8) {
 			(sizeof(PGresult_data))
 		} else {
 			u64(8)
 		}))
 	} else {
-		res.curOffset = int(sizeof(PGresult_data))
-		res.spaceLeft = int(u64(2048) - sizeof(PGresult_data))
+		res.curOffset = i32(sizeof(PGresult_data))
+		res.spaceLeft = i32(u64(2048) - sizeof(PGresult_data))
 	}
 	space = unsafe { &block.space[0] } + res.curOffset
 	res.curOffset += n_bytes
@@ -785,7 +785,7 @@ pub fn pq_result_strdup(res &PGresult, str &i8) &i8 {
 
 @[export: 'pqSetResultError']
 @[markused]
-pub fn pq_set_result_error(res &PGresult, error_message PQExpBuffer, offset int) {
+pub fn pq_set_result_error(res &PGresult, error_message PQExpBuffer, offset i32) {
 	msg := &i8(0)
 	if isnil(res) {
 		return
@@ -806,7 +806,7 @@ pub fn pq_set_result_error(res &PGresult, error_message PQExpBuffer, offset int)
 @[markused]
 pub fn pq_clear(res &PGresult) {
 	block := &PGresult_data(0)
-	i := 0
+	i := i32(0)
 	if isnil(res) {
 		return
 	}
@@ -875,7 +875,7 @@ pub fn pq_prepare_async_result(conn &PGconn) &PGresult {
 	res = conn.result
 	if res {
 		if u32(res.resultStatus) == u32(ExecStatusType.pgres_fatal_error) {
-			conn.errorReported = int(conn.errorMessage.len)
+			conn.errorReported = i32(conn.errorMessage.len)
 		}
 	} else {
 		if !conn.error_result {
@@ -888,7 +888,7 @@ pub fn pq_prepare_async_result(conn &PGconn) &PGresult {
 		if res {
 			res.resultStatus = ExecStatusType.pgres_fatal_error
 			pq_set_result_error(res, &conn.errorMessage, conn.errorReported)
-			conn.errorReported = int(conn.errorMessage.len)
+			conn.errorReported = i32(conn.errorMessage.len)
 		} else {
 			res = (if true {
 				&PGresult((&libpq_fe_exec_oom_result))
@@ -937,7 +937,7 @@ pub fn pq_internal_notice(hooks &PGNoticeHooks, fmt &i8, ...) {
 @[markused]
 pub fn pq_add_tuple(res &PGresult, tup &PGresAttValue, errmsgp &&u8) bool {
 	if res.ntups >= res.tupArrSize {
-		new_size := 0
+		new_size := i32(0)
 		new_tuples := &&PGresAttValue(0)
 		if res.tupArrSize <= 2147483647 / 2 {
 			new_size = if (res.tupArrSize > 0) { res.tupArrSize * 2 } else { 128 }
@@ -980,7 +980,7 @@ pub fn pq_save_message_field(res &PGresult, code i8, value &i8) {
 
 @[export: 'pqSaveParameterStatus']
 @[markused]
-pub fn pq_save_parameter_status(conn &PGconn, name &i8, value &i8) int {
+pub fn pq_save_parameter_status(conn &PGconn, name &i8, value &i8) i32 {
 	pstatus := &PgParameterStatus(0)
 	prev := &PgParameterStatus(0)
 	pstatus = conn.pstatus
@@ -1021,10 +1021,10 @@ pub fn pq_save_parameter_status(conn &PGconn, name &i8, value &i8) int {
 		conn.std_strings = ((C.c2v_strcmp(value, c'on') == 0) != 0)
 		libpq_fe_exec_static_std_strings = conn.std_strings
 	} else if C.c2v_strcmp(name, c'server_version') == 0 {
-		cnt := 0
-		vmaj := 0
-		vmin := 0
-		vrev := 0
+		cnt := i32(0)
+		vmaj := i32(0)
+		vmin := i32(0)
+		vrev := i32(0)
 
 		cnt = C.c2v_sscanf(value, c'%d.%d.%d', &vmaj, &vmin, &vrev)
 		if cnt == 3 {
@@ -1060,18 +1060,18 @@ pub fn pq_save_parameter_status(conn &PGconn, name &i8, value &i8) int {
 
 @[export: 'pqRowProcessor']
 @[markused]
-pub fn pq_row_processor(conn &PGconn, errmsgp &&u8) int {
+pub fn pq_row_processor(conn &PGconn, errmsgp &&u8) i32 {
 	res := conn.result
 	nfields := res.numAttributes
 	columns := conn.rowBuf
 	mut tup := &PGresAttValue(0)
-	i := 0
-	if int(conn.partialResMode) && usize(conn.saved_result) == usize((voidptr(0))) {
+	i := i32(0)
+	if i32(conn.partialResMode) && usize(conn.saved_result) == usize((voidptr(0))) {
 		res = pq_copy_result(res, 1 | 4 | 8)
 		if isnil(res) {
 			return 0
 		}
-		res.resultStatus = (if int(conn.singleRowMode) {
+		res.resultStatus = (if i32(conn.singleRowMode) {
 			ExecStatusType.pgres_single_tuple
 		} else {
 			ExecStatusType.pgres_tuples_chunk
@@ -1104,7 +1104,7 @@ pub fn pq_row_processor(conn &PGconn, errmsgp &&u8) int {
 	if !pq_add_tuple(res, tup, errmsgp) {
 		return 0
 	}
-	if int(conn.partialResMode) && res.ntups >= conn.maxChunkSize {
+	if i32(conn.partialResMode) && res.ntups >= conn.maxChunkSize {
 		conn.asyncStatus = PGAsyncStatusType.pgasync_ready_more
 	}
 	return 1
@@ -1167,18 +1167,18 @@ pub fn pq_recycle_cmd_queue_entry(conn &PGconn, entry &PGcmdQueueEntry) {
 
 @[export: 'PQsendQuery']
 @[markused]
-pub fn pq_send_query(conn &PGconn, query &i8) int {
+pub fn pq_send_query(conn &PGconn, query &i8) i32 {
 	return pq_send_query_internal(conn, query, (1 != 0))
 }
 
 @[export: 'PQsendQueryContinue']
 @[markused]
-pub fn pq_send_query_continue(conn &PGconn, query &i8) int {
+pub fn pq_send_query_continue(conn &PGconn, query &i8) i32 {
 	return pq_send_query_internal(conn, query, (0 != 0))
 }
 
 @[markused]
-pub fn pq_send_query_internal(conn &PGconn, query &i8, new_query bool) int {
+pub fn pq_send_query_internal(conn &PGconn, query &i8, new_query bool) i32 {
 	entry := unsafe { &PGcmdQueueEntry(nil) }
 	if !pq_send_query_start(conn, new_query) {
 		return 0
@@ -1215,7 +1215,7 @@ pub fn pq_send_query_internal(conn &PGconn, query &i8, new_query bool) int {
 
 @[export: 'PQsendQueryParams']
 @[markused]
-pub fn pq_send_query_params(conn &PGconn, command &i8, n_params int, param_types &Oid, param_values &&u8, param_lengths &int, param_formats &int, result_format int) int {
+pub fn pq_send_query_params(conn &PGconn, command &i8, n_params i32, param_types &Oid, param_values &&u8, param_lengths &i32, param_formats &i32, result_format i32) i32 {
 	if !pq_send_query_start(conn, (1 != 0)) {
 		return 0
 	}
@@ -1232,7 +1232,7 @@ pub fn pq_send_query_params(conn &PGconn, command &i8, n_params int, param_types
 
 @[export: 'PQsendPrepare']
 @[markused]
-pub fn pq_send_prepare(conn &PGconn, stmt_name &i8, query &i8, n_params int, param_types &Oid) int {
+pub fn pq_send_prepare(conn &PGconn, stmt_name &i8, query &i8, n_params i32, param_types &Oid) i32 {
 	entry := unsafe { &PGcmdQueueEntry(nil) }
 	if !pq_send_query_start(conn, (1 != 0)) {
 		return 0
@@ -1259,14 +1259,14 @@ pub fn pq_send_prepare(conn &PGconn, stmt_name &i8, query &i8, n_params int, par
 		}
 	}
 	if n_params > 0 && !isnil(param_types) {
-		i := 0
+		i := i32(0)
 		if pq_put_int(n_params, usize(2), conn) < 0 {
 			unsafe {
 				goto sendFailed
 			}
 		}
 		for i = 0; i < n_params; i++ {
-			if pq_put_int(param_types[i], usize(4), conn) < 0 {
+			if pq_put_int(i32(param_types[i]), usize(4), conn) < 0 {
 				unsafe {
 					goto sendFailed
 				}
@@ -1307,7 +1307,7 @@ pub fn pq_send_prepare(conn &PGconn, stmt_name &i8, query &i8, n_params int, par
 
 @[export: 'PQsendQueryPrepared']
 @[markused]
-pub fn pq_send_query_prepared(conn &PGconn, stmt_name &i8, n_params int, param_values &&u8, param_lengths &int, param_formats &int, result_format int) int {
+pub fn pq_send_query_prepared(conn &PGconn, stmt_name &i8, n_params i32, param_values &&u8, param_lengths &i32, param_formats &i32, result_format i32) i32 {
 	if !pq_send_query_start(conn, (1 != 0)) {
 		return 0
 	}
@@ -1327,7 +1327,7 @@ pub fn pq_send_query_start(conn &PGconn, new_query bool) bool {
 	if isnil(conn) {
 		return false != 0
 	}
-	if int(new_query) && usize(conn.cmd_queue_head) == usize((voidptr(0))) {
+	if i32(new_query) && usize(conn.cmd_queue_head) == usize((voidptr(0))) {
 		reset_pq_exp_buffer(&conn.errorMessage)
 		conn.errorReported = 0
 	}
@@ -1359,8 +1359,8 @@ pub fn pq_send_query_start(conn &PGconn, new_query bool) bool {
 }
 
 @[markused]
-pub fn pq_send_query_guts(conn &PGconn, command &i8, stmt_name &i8, n_params int, param_types &Oid, param_values &&u8, param_lengths &int, param_formats &int, result_format int) int {
-	i := 0
+pub fn pq_send_query_guts(conn &PGconn, command &i8, stmt_name &i8, n_params i32, param_types &Oid, param_values &&u8, param_lengths &i32, param_formats &i32, result_format i32) i32 {
+	i := i32(0)
 	entry := &PGcmdQueueEntry(0)
 	entry = pq_alloc_cmd_queue_entry(conn)
 	if usize(entry) == usize((voidptr(0))) {
@@ -1379,7 +1379,7 @@ pub fn pq_send_query_guts(conn &PGconn, command &i8, stmt_name &i8, n_params int
 				}
 			}
 			for i = 0; i < n_params; i++ {
-				if pq_put_int(param_types[i], usize(4), conn) < 0 {
+				if pq_put_int(i32(param_types[i]), usize(4), conn) < 0 {
 					unsafe {
 						goto sendFailed
 					}
@@ -1430,7 +1430,7 @@ pub fn pq_send_query_guts(conn &PGconn, command &i8, stmt_name &i8, n_params int
 	}
 	for i = 0; i < n_params; i++ {
 		if !isnil(param_values) && !isnil(param_values[i]) {
-			nbytes := 0
+			nbytes := i32(0)
 			if !isnil(param_formats) && param_formats[i] != 0 {
 				if param_lengths {
 					nbytes = param_lengths[i]
@@ -1441,7 +1441,7 @@ pub fn pq_send_query_guts(conn &PGconn, command &i8, stmt_name &i8, n_params int
 					}
 				}
 			} else {
-				nbytes = int(C.c2v_strlen(param_values[i]))
+				nbytes = i32(C.c2v_strlen(param_values[i]))
 			}
 			if pq_put_int(nbytes, usize(4), conn) < 0 || pq_putnchar(voidptr(param_values[i]), usize(nbytes), conn) < 0 {
 				unsafe {
@@ -1510,7 +1510,7 @@ pub fn can_change_result_mode(conn &PGconn) bool {
 	if isnil(conn.cmd_queue_head) || (u32(conn.cmd_queue_head.queryclass) != u32(PGQueryClass.pgquery_simple) && u32(conn.cmd_queue_head.queryclass) != u32(PGQueryClass.pgquery_extended)) {
 		return false != 0
 	}
-	if (usize(conn.result) != usize((voidptr(0))) || int(conn.error_result)) {
+	if (usize(conn.result) != usize((voidptr(0))) || i32(conn.error_result)) {
 		return false != 0
 	}
 	return true != 0
@@ -1518,7 +1518,7 @@ pub fn can_change_result_mode(conn &PGconn) bool {
 
 @[export: 'PQsetSingleRowMode']
 @[markused]
-pub fn pq_set_single_row_mode(conn &PGconn) int {
+pub fn pq_set_single_row_mode(conn &PGconn) i32 {
 	if can_change_result_mode(conn) {
 		conn.partialResMode = (1 != 0)
 		conn.singleRowMode = (1 != 0)
@@ -1531,8 +1531,8 @@ pub fn pq_set_single_row_mode(conn &PGconn) int {
 
 @[export: 'PQsetChunkedRowsMode']
 @[markused]
-pub fn pq_set_chunked_rows_mode(conn &PGconn, chunk_size int) int {
-	if chunk_size > 0 && int(can_change_result_mode(conn)) {
+pub fn pq_set_chunked_rows_mode(conn &PGconn, chunk_size i32) i32 {
+	if chunk_size > 0 && i32(can_change_result_mode(conn)) {
 		conn.partialResMode = (1 != 0)
 		conn.singleRowMode = (0 != 0)
 		conn.maxChunkSize = chunk_size
@@ -1544,7 +1544,7 @@ pub fn pq_set_chunked_rows_mode(conn &PGconn, chunk_size int) int {
 
 @[export: 'PQconsumeInput']
 @[markused]
-pub fn pq_consume_input(conn &PGconn) int {
+pub fn pq_consume_input(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
@@ -1566,12 +1566,12 @@ pub fn parse_input(conn &PGconn) {
 
 @[export: 'PQisBusy']
 @[markused]
-pub fn pq_is_busy(conn &PGconn) int {
+pub fn pq_is_busy(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
 	parse_input(conn)
-	return int(u32(conn.asyncStatus) == u32(PGAsyncStatusType.pgasync_busy) && u32(conn.status) != u32(ConnStatusType.connection_bad))
+	return i32(u32(conn.asyncStatus) == u32(PGAsyncStatusType.pgasync_busy) && u32(conn.status) != u32(ConnStatusType.connection_bad))
 }
 
 @[export: 'PQgetResult']
@@ -1583,7 +1583,7 @@ pub fn pq_get_result(conn &PGconn) &PGresult {
 	}
 	parse_input(conn)
 	for u32(conn.asyncStatus) == u32(PGAsyncStatusType.pgasync_busy) {
-		flush_result := 0
+		flush_result := i32(0)
 		for {
 			flush_result = pq_flush_vdup1(conn)
 			if !(flush_result > 0) {
@@ -1600,7 +1600,7 @@ pub fn pq_get_result(conn &PGconn) &PGresult {
 			return pq_prepare_async_result(conn)
 		}
 		parse_input(conn)
-		if int(conn.write_failed) && u32(conn.asyncStatus) == u32(PGAsyncStatusType.pgasync_busy) {
+		if i32(conn.write_failed) && u32(conn.asyncStatus) == u32(PGAsyncStatusType.pgasync_busy) {
 			pq_save_write_error(conn)
 			conn.asyncStatus = PGAsyncStatusType.pgasync_idle
 			return pq_prepare_async_result(conn)
@@ -1645,7 +1645,7 @@ pub fn pq_get_result(conn &PGconn) &PGresult {
 			res = get_copy_result(conn, ExecStatusType(ExecStatusType.pgres_copy_both))
 		}
 		else {
-			libpq_append_conn_error(conn, c'unexpected asyncStatus: %d', int(conn.asyncStatus))
+			libpq_append_conn_error(conn, c'unexpected asyncStatus: %d', i32(conn.asyncStatus))
 			pq_save_error_result(conn)
 			conn.asyncStatus = PGAsyncStatusType.pgasync_idle
 			res = pq_prepare_async_result(conn)
@@ -1686,7 +1686,7 @@ pub fn pq_exec(conn &PGconn, query &i8) &PGresult {
 
 @[export: 'PQexecParams']
 @[markused]
-pub fn pq_exec_params(conn &PGconn, command &i8, n_params int, param_types &Oid, param_values &&u8, param_lengths &int, param_formats &int, result_format int) &PGresult {
+pub fn pq_exec_params(conn &PGconn, command &i8, n_params i32, param_types &Oid, param_values &&u8, param_lengths &i32, param_formats &i32, result_format i32) &PGresult {
 	if !pq_exec_start(conn) {
 		return unsafe { nil }
 	}
@@ -1698,7 +1698,7 @@ pub fn pq_exec_params(conn &PGconn, command &i8, n_params int, param_types &Oid,
 
 @[export: 'PQprepare']
 @[markused]
-pub fn pq_prepare(conn &PGconn, stmt_name &i8, query &i8, n_params int, param_types &Oid) &PGresult {
+pub fn pq_prepare(conn &PGconn, stmt_name &i8, query &i8, n_params i32, param_types &Oid) &PGresult {
 	if !pq_exec_start(conn) {
 		return unsafe { nil }
 	}
@@ -1710,7 +1710,7 @@ pub fn pq_prepare(conn &PGconn, stmt_name &i8, query &i8, n_params int, param_ty
 
 @[export: 'PQexecPrepared']
 @[markused]
-pub fn pq_exec_prepared(conn &PGconn, stmt_name &i8, n_params int, param_values &&u8, param_lengths &int, param_formats &int, result_format int) &PGresult {
+pub fn pq_exec_prepared(conn &PGconn, stmt_name &i8, n_params i32, param_values &&u8, param_lengths &i32, param_formats &i32, result_format i32) &PGresult {
 	if !pq_exec_start(conn) {
 		return unsafe { nil }
 	}
@@ -1822,13 +1822,13 @@ pub fn pq_describe_portal(conn &PGconn, portal &i8) &PGresult {
 
 @[export: 'PQsendDescribePrepared']
 @[markused]
-pub fn pq_send_describe_prepared(conn &PGconn, stmt &i8) int {
+pub fn pq_send_describe_prepared(conn &PGconn, stmt &i8) i32 {
 	return pq_send_typed_command(conn, i8(`D`), i8(`S`), stmt)
 }
 
 @[export: 'PQsendDescribePortal']
 @[markused]
-pub fn pq_send_describe_portal(conn &PGconn, portal &i8) int {
+pub fn pq_send_describe_portal(conn &PGconn, portal &i8) i32 {
 	return pq_send_typed_command(conn, i8(`D`), i8(`P`), portal)
 }
 
@@ -1858,18 +1858,18 @@ pub fn pq_close_portal(conn &PGconn, portal &i8) &PGresult {
 
 @[export: 'PQsendClosePrepared']
 @[markused]
-pub fn pq_send_close_prepared(conn &PGconn, stmt &i8) int {
+pub fn pq_send_close_prepared(conn &PGconn, stmt &i8) i32 {
 	return pq_send_typed_command(conn, i8(`C`), i8(`S`), stmt)
 }
 
 @[export: 'PQsendClosePortal']
 @[markused]
-pub fn pq_send_close_portal(conn &PGconn, portal &i8) int {
+pub fn pq_send_close_portal(conn &PGconn, portal &i8) i32 {
 	return pq_send_typed_command(conn, i8(`C`), i8(`P`), portal)
 }
 
 @[markused]
-pub fn pq_send_typed_command(conn &PGconn, command i8, type_ i8, target &i8) int {
+pub fn pq_send_typed_command(conn &PGconn, command i8, type_ i8, target &i8) i32 {
 	entry := unsafe { &PGcmdQueueEntry(nil) }
 	if isnil(target) {
 		target = c''
@@ -1893,12 +1893,12 @@ pub fn pq_send_typed_command(conn &PGconn, command i8, type_ i8, target &i8) int
 			}
 		}
 	}
-	if int(command) == i8(`C`) {
+	if i32(command) == i8(`C`) {
 		entry.queryclass = PGQueryClass.pgquery_close
-	} else if int(command) == i8(`D`) {
+	} else if i32(command) == i8(`D`) {
 		entry.queryclass = PGQueryClass.pgquery_describe
 	} else {
-		libpq_append_conn_error(conn, c'unrecognized message type "%c"', int(command))
+		libpq_append_conn_error(conn, c'unrecognized message type "%c"', i32(command))
 		unsafe {
 			goto sendFailed
 		}
@@ -1936,7 +1936,7 @@ pub fn pq_notifies(conn &PGconn) &PGnotify {
 
 @[export: 'PQputCopyData']
 @[markused]
-pub fn pq_put_copy_data(conn &PGconn, buffer &i8, nbytes int) int {
+pub fn pq_put_copy_data(conn &PGconn, buffer &i8, nbytes i32) i32 {
 	if isnil(conn) {
 		return -1
 	}
@@ -1951,7 +1951,7 @@ pub fn pq_put_copy_data(conn &PGconn, buffer &i8, nbytes int) int {
 				return -1
 			}
 			if pq_check_out_buffer_space(usize(conn.outCount + 5) + usize(nbytes), conn) {
-				return if int(conn.nonblocking) { 0 } else { -1 }
+				return if i32(conn.nonblocking) { 0 } else { -1 }
 			}
 		}
 		if pq_put_msg_start(i8(`d`), conn) < 0 || pq_putnchar(voidptr(buffer), usize(nbytes), conn) < 0 || pq_put_msg_end(conn) < 0 {
@@ -1963,7 +1963,7 @@ pub fn pq_put_copy_data(conn &PGconn, buffer &i8, nbytes int) int {
 
 @[export: 'PQputCopyEnd']
 @[markused]
-pub fn pq_put_copy_end(conn &PGconn, errormsg &i8) int {
+pub fn pq_put_copy_end(conn &PGconn, errormsg &i8) i32 {
 	if isnil(conn) {
 		return -1
 	}
@@ -1998,7 +1998,7 @@ pub fn pq_put_copy_end(conn &PGconn, errormsg &i8) int {
 
 @[export: 'PQgetCopyData']
 @[markused]
-pub fn pq_get_copy_data(conn &PGconn, buffer &&u8, async int) int {
+pub fn pq_get_copy_data(conn &PGconn, buffer &&u8, async i32) i32 {
 	unsafe { *buffer = (voidptr(0)) }
 	if isnil(conn) {
 		return -2
@@ -2012,7 +2012,7 @@ pub fn pq_get_copy_data(conn &PGconn, buffer &&u8, async int) int {
 
 @[export: 'PQgetline']
 @[markused]
-pub fn pq_getline(conn &PGconn, buffer &i8, length int) int {
+pub fn pq_getline(conn &PGconn, buffer &i8, length i32) i32 {
 	if isnil(buffer) || length <= 0 {
 		return -1
 	}
@@ -2028,7 +2028,7 @@ pub fn pq_getline(conn &PGconn, buffer &i8, length int) int {
 
 @[export: 'PQgetlineAsync']
 @[markused]
-pub fn pq_getline_async(conn &PGconn, buffer &i8, bufsize int) int {
+pub fn pq_getline_async(conn &PGconn, buffer &i8, bufsize i32) i32 {
 	if isnil(conn) {
 		return -1
 	}
@@ -2037,13 +2037,13 @@ pub fn pq_getline_async(conn &PGconn, buffer &i8, bufsize int) int {
 
 @[export: 'PQputline']
 @[markused]
-pub fn pq_putline(conn &PGconn, string_ &i8) int {
-	return pq_putnbytes(conn, string_, int(C.c2v_strlen(string_)))
+pub fn pq_putline(conn &PGconn, string_ &i8) i32 {
+	return pq_putnbytes(conn, string_, i32(C.c2v_strlen(string_)))
 }
 
 @[export: 'PQputnbytes']
 @[markused]
-pub fn pq_putnbytes(conn &PGconn, buffer &i8, nbytes int) int {
+pub fn pq_putnbytes(conn &PGconn, buffer &i8, nbytes i32) i32 {
 	if pq_put_copy_data(conn, buffer, nbytes) > 0 {
 		return 0
 	} else {
@@ -2053,7 +2053,7 @@ pub fn pq_putnbytes(conn &PGconn, buffer &i8, nbytes int) int {
 
 @[export: 'PQendcopy']
 @[markused]
-pub fn pq_endcopy(conn &PGconn) int {
+pub fn pq_endcopy(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
@@ -2062,13 +2062,13 @@ pub fn pq_endcopy(conn &PGconn) int {
 
 @[export: 'PQfn']
 @[markused]
-pub fn pq_fn(conn &PGconn, fnid int, result_buf &int, result_len &int, result_is_int int, args &PQArgBlock, nargs int) &PGresult {
+pub fn pq_fn(conn &PGconn, fnid i32, result_buf &i32, result_len &i32, result_is_int i32, args &PQArgBlock, nargs i32) &PGresult {
 	return pq_nfn(conn, fnid, result_buf, -1, result_len, result_is_int, args, nargs)
 }
 
 @[export: 'PQnfn']
 @[markused]
-pub fn pq_nfn(conn &PGconn, fnid int, result_buf &int, buf_size int, result_len &int, result_is_int int, args &PQArgBlock, nargs int) &PGresult {
+pub fn pq_nfn(conn &PGconn, fnid i32, result_buf &i32, buf_size i32, result_len &i32, result_is_int i32, args &PQArgBlock, nargs i32) &PGresult {
 	unsafe { *result_len = 0 }
 	if isnil(conn) {
 		return unsafe { nil }
@@ -2081,7 +2081,7 @@ pub fn pq_nfn(conn &PGconn, fnid int, result_buf &int, buf_size int, result_len 
 		libpq_append_conn_error(conn, c'%s not allowed in pipeline mode', voidptr(c'PQfn'))
 		return unsafe { nil }
 	}
-	if conn.sock == (-1) || u32(conn.asyncStatus) != u32(PGAsyncStatusType.pgasync_idle) || (usize(conn.result) != usize((voidptr(0))) || int(conn.error_result)) {
+	if conn.sock == (-1) || u32(conn.asyncStatus) != u32(PGAsyncStatusType.pgasync_idle) || (usize(conn.result) != usize((voidptr(0))) || i32(conn.error_result)) {
 		libpq_append_conn_error(conn, c'connection in wrong state')
 		return unsafe { nil }
 	}
@@ -2090,7 +2090,7 @@ pub fn pq_nfn(conn &PGconn, fnid int, result_buf &int, buf_size int, result_len 
 
 @[export: 'PQenterPipelineMode']
 @[markused]
-pub fn pq_enter_pipeline_mode(conn &PGconn) int {
+pub fn pq_enter_pipeline_mode(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
@@ -2107,7 +2107,7 @@ pub fn pq_enter_pipeline_mode(conn &PGconn) int {
 
 @[export: 'PQexitPipelineMode']
 @[markused]
-pub fn pq_exit_pipeline_mode(conn &PGconn) int {
+pub fn pq_exit_pipeline_mode(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
@@ -2221,18 +2221,18 @@ pub fn pq_pipeline_process_queue(conn &PGconn) {
 
 @[export: 'PQpipelineSync']
 @[markused]
-pub fn pq_pipeline_sync(conn &PGconn) int {
+pub fn pq_pipeline_sync(conn &PGconn) i32 {
 	return pq_pipeline_sync_internal(conn, (1 != 0))
 }
 
 @[export: 'PQsendPipelineSync']
 @[markused]
-pub fn pq_send_pipeline_sync(conn &PGconn) int {
+pub fn pq_send_pipeline_sync(conn &PGconn) i32 {
 	return pq_pipeline_sync_internal(conn, (0 != 0))
 }
 
 @[markused]
-pub fn pq_pipeline_sync_internal(conn &PGconn, immediate_flush bool) int {
+pub fn pq_pipeline_sync_internal(conn &PGconn, immediate_flush bool) i32 {
 	entry := &PGcmdQueueEntry(0)
 	if isnil(conn) {
 		return 0
@@ -2284,7 +2284,7 @@ pub fn pq_pipeline_sync_internal(conn &PGconn, immediate_flush bool) int {
 
 @[export: 'PQsendFlushRequest']
 @[markused]
-pub fn pq_send_flush_request(conn &PGconn) int {
+pub fn pq_send_flush_request(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
@@ -2350,13 +2350,13 @@ pub fn pq_result_verbose_error_message(res &PGresult, verbosity PGVerbosity, sho
 
 @[export: 'PQresultErrorField']
 @[markused]
-pub fn pq_result_error_field(res &PGresult, fieldcode int) &i8 {
+pub fn pq_result_error_field(res &PGresult, fieldcode i32) &i8 {
 	pfield := &PGMessageField(0)
 	if isnil(res) {
 		return unsafe { nil }
 	}
 	for pfield = res.errFields; usize(pfield) != usize((voidptr(0))); pfield = pfield.next {
-		if int(pfield.code) == fieldcode {
+		if i32(pfield.code) == fieldcode {
 			return unsafe { &i8(&pfield.contents[0]) }
 		}
 	}
@@ -2365,7 +2365,7 @@ pub fn pq_result_error_field(res &PGresult, fieldcode int) &i8 {
 
 @[export: 'PQntuples']
 @[markused]
-pub fn pq_ntuples(res &PGresult) int {
+pub fn pq_ntuples(res &PGresult) i32 {
 	if isnil(res) {
 		return 0
 	}
@@ -2374,7 +2374,7 @@ pub fn pq_ntuples(res &PGresult) int {
 
 @[export: 'PQnfields']
 @[markused]
-pub fn pq_nfields(res &PGresult) int {
+pub fn pq_nfields(res &PGresult) i32 {
 	if isnil(res) {
 		return 0
 	}
@@ -2383,7 +2383,7 @@ pub fn pq_nfields(res &PGresult) int {
 
 @[export: 'PQbinaryTuples']
 @[markused]
-pub fn pq_binary_tuples(res &PGresult) int {
+pub fn pq_binary_tuples(res &PGresult) i32 {
 	if isnil(res) {
 		return 0
 	}
@@ -2391,7 +2391,7 @@ pub fn pq_binary_tuples(res &PGresult) int {
 }
 
 @[markused]
-pub fn check_field_number(res &PGresult, field_num int) int {
+pub fn check_field_number(res &PGresult, field_num i32) i32 {
 	if isnil(res) {
 		return 0
 	}
@@ -2403,7 +2403,7 @@ pub fn check_field_number(res &PGresult, field_num int) int {
 }
 
 @[markused]
-pub fn check_tuple_field_number(res &PGresult, tup_num int, field_num int) int {
+pub fn check_tuple_field_number(res &PGresult, tup_num i32, field_num i32) i32 {
 	if isnil(res) {
 		return 0
 	}
@@ -2419,7 +2419,7 @@ pub fn check_tuple_field_number(res &PGresult, tup_num int, field_num int) int {
 }
 
 @[markused]
-pub fn check_param_number(res &PGresult, param_num int) int {
+pub fn check_param_number(res &PGresult, param_num i32) i32 {
 	if isnil(res) {
 		return 0
 	}
@@ -2432,7 +2432,7 @@ pub fn check_param_number(res &PGresult, param_num int) int {
 
 @[export: 'PQfname']
 @[markused]
-pub fn pq_fname(res &PGresult, field_num int) &i8 {
+pub fn pq_fname(res &PGresult, field_num i32) &i8 {
 	if !check_field_number(res, field_num) {
 		return unsafe { nil }
 	}
@@ -2445,22 +2445,22 @@ pub fn pq_fname(res &PGresult, field_num int) &i8 {
 
 @[export: 'PQfnumber']
 @[markused]
-pub fn pq_fnumber(res &PGresult, field_name &i8) int {
+pub fn pq_fnumber(res &PGresult, field_name &i8) i32 {
 	field_case := &i8(0)
 	in_quotes := false
 	all_lower := (1 != 0)
 	iptr := &i8(0)
 	optr := &i8(0)
-	i := 0
+	i := i32(0)
 	if isnil(res) {
 		return -1
 	}
-	if usize(field_name) == usize((voidptr(0))) || int(field_name[0]) == i8(`\0`) || usize(res.attDescs) == usize((voidptr(0))) {
+	if usize(field_name) == usize((voidptr(0))) || i32(field_name[0]) == i8(`\0`) || usize(res.attDescs) == usize((voidptr(0))) {
 		return -1
 	}
 	for iptr = field_name; (unsafe { *iptr }); iptr = unsafe { iptr + 1 } {
 		c := (unsafe { *iptr })
-		if int(c) == i8(`\"`) || int(c) != int(pg_tolower(u8(c))) {
+		if i32(c) == i8(`\"`) || i32(c) != i32(pg_tolower(u8(c))) {
 			all_lower = (0 != 0)
 			break
 		}
@@ -2481,8 +2481,8 @@ pub fn pq_fnumber(res &PGresult, field_name &i8) int {
 	for iptr = field_case; (unsafe { *iptr }); iptr = unsafe { iptr + 1 } {
 		c := (unsafe { *iptr })
 		if in_quotes {
-			if int(c) == i8(`\"`) {
-				if int(iptr[1]) == i8(`\"`) {
+			if i32(c) == i8(`\"`) {
+				if i32(iptr[1]) == i8(`\"`) {
 					mut __c2v_lhs_tmp_0 := unsafe { c2v_pointer_postfix(voidptr(&optr), optr, isize(1)) }
 					unsafe { *__c2v_lhs_tmp_0 = i8(`\"`) }
 					c2v_pointer_postfix(voidptr(&iptr), iptr, isize(1))
@@ -2493,7 +2493,7 @@ pub fn pq_fnumber(res &PGresult, field_name &i8) int {
 				mut __c2v_lhs_tmp_1 := unsafe { c2v_pointer_postfix(voidptr(&optr), optr, isize(1)) }
 				unsafe { *__c2v_lhs_tmp_1 = c }
 			}
-		} else if int(c) == i8(`\"`) {
+		} else if i32(c) == i8(`\"`) {
 			in_quotes = (1 != 0)
 		} else {
 			c = i8(pg_tolower(u8(c)))
@@ -2514,7 +2514,7 @@ pub fn pq_fnumber(res &PGresult, field_name &i8) int {
 
 @[export: 'PQftable']
 @[markused]
-pub fn pq_ftable(res &PGresult, field_num int) Oid {
+pub fn pq_ftable(res &PGresult, field_num i32) Oid {
 	if !check_field_number(res, field_num) {
 		return Oid(0)
 	}
@@ -2527,7 +2527,7 @@ pub fn pq_ftable(res &PGresult, field_num int) Oid {
 
 @[export: 'PQftablecol']
 @[markused]
-pub fn pq_ftablecol(res &PGresult, field_num int) int {
+pub fn pq_ftablecol(res &PGresult, field_num i32) i32 {
 	if !check_field_number(res, field_num) {
 		return 0
 	}
@@ -2540,7 +2540,7 @@ pub fn pq_ftablecol(res &PGresult, field_num int) int {
 
 @[export: 'PQfformat']
 @[markused]
-pub fn pq_fformat(res &PGresult, field_num int) int {
+pub fn pq_fformat(res &PGresult, field_num i32) i32 {
 	if !check_field_number(res, field_num) {
 		return 0
 	}
@@ -2553,7 +2553,7 @@ pub fn pq_fformat(res &PGresult, field_num int) int {
 
 @[export: 'PQftype']
 @[markused]
-pub fn pq_ftype(res &PGresult, field_num int) Oid {
+pub fn pq_ftype(res &PGresult, field_num i32) Oid {
 	if !check_field_number(res, field_num) {
 		return Oid(0)
 	}
@@ -2566,7 +2566,7 @@ pub fn pq_ftype(res &PGresult, field_num int) Oid {
 
 @[export: 'PQfsize']
 @[markused]
-pub fn pq_fsize(res &PGresult, field_num int) int {
+pub fn pq_fsize(res &PGresult, field_num i32) i32 {
 	if !check_field_number(res, field_num) {
 		return 0
 	}
@@ -2579,7 +2579,7 @@ pub fn pq_fsize(res &PGresult, field_num int) int {
 
 @[export: 'PQfmod']
 @[markused]
-pub fn pq_fmod(res &PGresult, field_num int) int {
+pub fn pq_fmod(res &PGresult, field_num i32) i32 {
 	if !check_field_number(res, field_num) {
 		return 0
 	}
@@ -2620,11 +2620,11 @@ pub fn pq_oid_status(res &PGresult) &i8 {
 pub fn pq_oid_value(res &PGresult) Oid {
 	endptr := unsafe { &i8(nil) }
 	result := u64(0)
-	if isnil(res) || C.c2v_strncmp(unsafe { &i8(&res.cmdStatus[0]) }, c'INSERT ', u64(7)) != 0 || int(res.cmdStatus[7]) < i8(`0`) || int(res.cmdStatus[7]) > i8(`9`) {
+	if isnil(res) || C.c2v_strncmp(unsafe { &i8(&res.cmdStatus[0]) }, c'INSERT ', u64(7)) != 0 || i32(res.cmdStatus[7]) < i8(`0`) || i32(res.cmdStatus[7]) > i8(`9`) {
 		return Oid(0)
 	}
 	result = C.c2v_strtoul(unsafe { &res.cmdStatus[0] } + 7, &&u8(&&i8(c2v_address_of(&endptr))), 10)
-	if isnil(endptr) || (int((unsafe { *endptr })) != i8(` `) && int((unsafe { *endptr })) != i8(`\0`)) {
+	if isnil(endptr) || (i32((unsafe { *endptr })) != i8(` `) && i32((unsafe { *endptr })) != i8(`\0`)) {
 		return Oid(0)
 	} else {
 		return Oid(result)
@@ -2642,10 +2642,10 @@ pub fn pq_cmd_tuples(res &PGresult) &i8 {
 	}
 	if C.c2v_strncmp(unsafe { &i8(&res.cmdStatus[0]) }, c'INSERT ', u64(7)) == 0 {
 		p = unsafe { &res.cmdStatus[0] } + 7
-		for int((unsafe { *p })) && int((unsafe { *p })) != i8(` `) {
+		for i32((unsafe { *p })) && i32((unsafe { *p })) != i8(` `) {
 			c2v_pointer_postfix(voidptr(&p), p, isize(1))
 		}
-		if int((unsafe { *p })) == 0 {
+		if i32((unsafe { *p })) == 0 {
 			unsafe {
 				goto interpret_error
 			}
@@ -2661,7 +2661,7 @@ pub fn pq_cmd_tuples(res &PGresult) &i8 {
 		return unsafe { &i8(&c''[0]) }
 	}
 	for c = p; (unsafe { *c }); c = unsafe { c + 1 } {
-		if !C.c2v_isdigit(int(u8((unsafe { *c })))) {
+		if !C.c2v_isdigit(i32(u8((unsafe { *c })))) {
 			unsafe {
 				goto interpret_error
 			}
@@ -2680,7 +2680,7 @@ pub fn pq_cmd_tuples(res &PGresult) &i8 {
 
 @[export: 'PQgetvalue']
 @[markused]
-pub fn pq_getvalue(res &PGresult, tup_num int, field_num int) &i8 {
+pub fn pq_getvalue(res &PGresult, tup_num i32, field_num i32) &i8 {
 	if !check_tuple_field_number(res, tup_num, field_num) {
 		return unsafe { nil }
 	}
@@ -2689,7 +2689,7 @@ pub fn pq_getvalue(res &PGresult, tup_num int, field_num int) &i8 {
 
 @[export: 'PQgetlength']
 @[markused]
-pub fn pq_getlength(res &PGresult, tup_num int, field_num int) int {
+pub fn pq_getlength(res &PGresult, tup_num i32, field_num i32) i32 {
 	if !check_tuple_field_number(res, tup_num, field_num) {
 		return 0
 	}
@@ -2702,7 +2702,7 @@ pub fn pq_getlength(res &PGresult, tup_num int, field_num int) int {
 
 @[export: 'PQgetisnull']
 @[markused]
-pub fn pq_getisnull(res &PGresult, tup_num int, field_num int) int {
+pub fn pq_getisnull(res &PGresult, tup_num i32, field_num i32) i32 {
 	if !check_tuple_field_number(res, tup_num, field_num) {
 		return 1
 	}
@@ -2715,7 +2715,7 @@ pub fn pq_getisnull(res &PGresult, tup_num int, field_num int) int {
 
 @[export: 'PQnparams']
 @[markused]
-pub fn pq_nparams(res &PGresult) int {
+pub fn pq_nparams(res &PGresult) i32 {
 	if isnil(res) {
 		return 0
 	}
@@ -2724,7 +2724,7 @@ pub fn pq_nparams(res &PGresult) int {
 
 @[export: 'PQparamtype']
 @[markused]
-pub fn pq_paramtype(res &PGresult, param_num int) Oid {
+pub fn pq_paramtype(res &PGresult, param_num i32) Oid {
 	if !check_param_number(res, param_num) {
 		return Oid(0)
 	}
@@ -2737,13 +2737,13 @@ pub fn pq_paramtype(res &PGresult, param_num int) Oid {
 
 @[export: 'PQsetnonblocking']
 @[markused]
-pub fn pq_setnonblocking(conn &PGconn, arg int) int {
+pub fn pq_setnonblocking(conn &PGconn, arg i32) i32 {
 	barg := false
 	if isnil(conn) || u32(conn.status) == u32(ConnStatusType.connection_bad) {
 		return -1
 	}
 	barg = ((if arg { 1 } else { 0 }) != 0)
-	if int(barg) == int(conn.nonblocking) {
+	if i32(barg) == i32(conn.nonblocking) {
 		return 0
 	}
 	if usize(conn.cmd_queue_head) == usize((voidptr(0))) {
@@ -2759,22 +2759,22 @@ pub fn pq_setnonblocking(conn &PGconn, arg int) int {
 
 @[export: 'PQisnonblocking']
 @[markused]
-pub fn pq_isnonblocking(conn &PGconn) int {
+pub fn pq_isnonblocking(conn &PGconn) i32 {
 	if isnil(conn) || u32(conn.status) == u32(ConnStatusType.connection_bad) {
 		return 0
 	}
-	return int(conn.nonblocking)
+	return i32(conn.nonblocking)
 }
 
 @[export: 'PQisthreadsafe']
 @[markused]
-pub fn pq_isthreadsafe() int {
+pub fn pq_isthreadsafe() i32 {
 	return 1
 }
 
 @[export: 'PQflush']
 @[markused]
-pub fn pq_flush(conn &PGconn) int {
+pub fn pq_flush(conn &PGconn) i32 {
 	if isnil(conn) || u32(conn.status) == u32(ConnStatusType.connection_bad) {
 		return -1
 	}
@@ -2782,7 +2782,7 @@ pub fn pq_flush(conn &PGconn) int {
 }
 
 @[markused]
-pub fn pq_pipeline_flush(conn &PGconn) int {
+pub fn pq_pipeline_flush(conn &PGconn) i32 {
 	if (u32(conn.pipelineStatus) != u32(PGpipelineStatus.pq_pipeline_on)) || (conn.outCount >= 65536) {
 		return pq_flush_vdup1(conn)
 	}
@@ -2802,7 +2802,7 @@ pub fn pq_free_notify(notify &PGnotify) {
 }
 
 @[markused]
-pub fn pq_escape_string_internal(conn &PGconn, to &i8, from &i8, length usize, error_ &int, encoding int, std_strings bool) usize {
+pub fn pq_escape_string_internal(conn &PGconn, to &i8, from &i8, length usize, error_ &i32, encoding i32, std_strings bool) usize {
 	source := from
 	target := to
 	remaining := C.c2v_strnlen(from, length)
@@ -2812,10 +2812,10 @@ pub fn pq_escape_string_internal(conn &PGconn, to &i8, from &i8, length usize, e
 	}
 	for remaining > usize(0) {
 		c := (unsafe { *source })
-		charlen := 0
-		i := 0
-		if !(int(u8(c)) & 128) {
-			if (int(c) == i8(`\'`) || (int(c) == i8(`\\`) && (!std_strings))) {
+		charlen := i32(0)
+		i := i32(0)
+		if !(i32(u8(c)) & 128) {
+			if (i32(c) == i8(`\'`) || (i32(c) == i8(`\\`) && (!std_strings))) {
 				mut __c2v_lhs_tmp_3 := unsafe { c2v_pointer_postfix(voidptr(&target), target, isize(1)) }
 				unsafe { *__c2v_lhs_tmp_3 = c }
 			}
@@ -2856,7 +2856,7 @@ pub fn pq_escape_string_internal(conn &PGconn, to &i8, from &i8, length usize, e
 
 @[export: 'PQescapeStringConn']
 @[markused]
-pub fn pq_escape_string_conn(conn &PGconn, to &i8, from &i8, length usize, error_ &int) usize {
+pub fn pq_escape_string_conn(conn &PGconn, to &i8, from &i8, length usize, error_ &i32) usize {
 	if isnil(conn) {
 		unsafe { *to = i8(`\0`) }
 		if error_ {
@@ -2886,7 +2886,7 @@ pub fn pq_escape_internal(conn &PGconn, str &i8, len usize, as_ident bool) &i8 {
 	num_backslashes := usize(0)
 	input_len := C.c2v_strnlen(str, len)
 	result_size := usize(0)
-	quote_char := i8(if int(as_ident) { `\"` } else { `\'` })
+	quote_char := i8(if i32(as_ident) { `\"` } else { `\'` })
 	validated_mb := (0 != 0)
 	if isnil(conn) {
 		return unsafe { nil }
@@ -2897,19 +2897,19 @@ pub fn pq_escape_internal(conn &PGconn, str &i8, len usize, as_ident bool) &i8 {
 	}
 	s = str
 	for remaining := input_len; remaining > usize(0); remaining-- {
-		if int((unsafe { *s })) == int(quote_char) {
+		if i32((unsafe { *s })) == i32(quote_char) {
 			num_quotes++
-		} else if int((unsafe { *s })) == i8(`\\`) {
+		} else if i32((unsafe { *s })) == i8(`\\`) {
 			num_backslashes++
-		} else if (int(u8((unsafe { *s }))) & 128) {
-			charlen := 0
+		} else if (i32(u8((unsafe { *s }))) & 128) {
+			charlen := i32(0)
 			charlen = pg_encoding_mblen_or_incomplete(conn.client_encoding, s, remaining)
 			if usize(charlen) > remaining {
 				libpq_append_conn_error(conn, c'incomplete multibyte character')
 				return unsafe { nil }
 			}
 			if !validated_mb {
-				if usize(pg_encoding_verifymbstr(conn.client_encoding, s, int(remaining))) != remaining {
+				if usize(pg_encoding_verifymbstr(conn.client_encoding, s, i32(remaining))) != remaining {
 					libpq_append_conn_error(conn, c'invalid multibyte character')
 					return unsafe { nil }
 				}
@@ -2920,13 +2920,13 @@ pub fn pq_escape_internal(conn &PGconn, str &i8, len usize, as_ident bool) &i8 {
 		}
 		c2v_pointer_postfix(voidptr(&s), s, isize(1))
 	}
-	if int(pg_add_size_overflow(input_len, num_quotes, &result_size)) || int(pg_add_size_overflow(result_size, usize(3), &result_size)) {
+	if i32(pg_add_size_overflow(input_len, num_quotes, &result_size)) || i32(pg_add_size_overflow(result_size, usize(3), &result_size)) {
 		unsafe {
 			goto overflow
 		}
 	}
 	if !as_ident && num_backslashes > usize(0) {
-		if int(pg_add_size_overflow(result_size, num_backslashes, &result_size)) || int(pg_add_size_overflow(result_size, usize(2), &result_size)) {
+		if i32(pg_add_size_overflow(result_size, num_backslashes, &result_size)) || i32(pg_add_size_overflow(result_size, usize(2), &result_size)) {
 			unsafe {
 				goto overflow
 			}
@@ -2946,18 +2946,18 @@ pub fn pq_escape_internal(conn &PGconn, str &i8, len usize, as_ident bool) &i8 {
 	}
 	mut __c2v_lhs_tmp_8 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
 	unsafe { *__c2v_lhs_tmp_8 = quote_char }
-	if num_quotes == usize(0) && (num_backslashes == usize(0) || int(as_ident)) {
+	if num_quotes == usize(0) && (num_backslashes == usize(0) || i32(as_ident)) {
 		C.c2v_memcpy(voidptr(rp), voidptr(str), input_len)
 		c2v_pointer_prefix(voidptr(&rp), rp, isize(input_len))
 	} else {
 		s = str
 		for remaining := input_len; remaining > usize(0); remaining-- {
-			if int((unsafe { *s })) == int(quote_char) || (!as_ident && int((unsafe { *s })) == i8(`\\`)) {
+			if i32((unsafe { *s })) == i32(quote_char) || (!as_ident && i32((unsafe { *s })) == i8(`\\`)) {
 				mut __c2v_lhs_tmp_9 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
 				unsafe { *__c2v_lhs_tmp_9 = *s }
 				mut __c2v_lhs_tmp_10 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
 				unsafe { *__c2v_lhs_tmp_10 = *s }
-			} else if !(int(u8((unsafe { *s }))) & 128) {
+			} else if !(i32(u8((unsafe { *s }))) & 128) {
 				mut __c2v_lhs_tmp_11 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
 				unsafe { *__c2v_lhs_tmp_11 = *s }
 			} else {
@@ -2999,9 +2999,9 @@ pub fn pq_escape_identifier(conn &PGconn, str &i8, len usize) &i8 {
 
 @[markused]
 pub fn get_hex(c i8) i8 {
-	res := -1
-	if int(c) > 0 && int(c) < 127 {
-		res = int(libpq_fe_exec_hexlookup[u8(c)])
+	res := i32(-1)
+	if i32(c) > 0 && i32(c) < 127 {
+		res = i32(libpq_fe_exec_hexlookup[u8(c)])
 	}
 	return i8(res)
 }
@@ -3013,10 +3013,10 @@ pub fn pq_escape_bytea_internal(conn &PGconn, from &u8, from_length usize, to_le
 	result := &u8(0)
 	i := usize(0)
 	len := usize(0)
-	bslash_len := usize((if int(std_strings) { 1 } else { 2 }))
+	bslash_len := usize((if i32(std_strings) { 1 } else { 2 }))
 	len = usize(1)
 	if use_hex {
-		if int(pg_add_size_overflow(len, bslash_len + usize(1), &len)) || int(pg_add_size_overflow(len, from_length, &len)) || int(pg_add_size_overflow(len, from_length, &len)) {
+		if i32(pg_add_size_overflow(len, bslash_len + usize(1), &len)) || i32(pg_add_size_overflow(len, from_length, &len)) || i32(pg_add_size_overflow(len, from_length, &len)) {
 			unsafe {
 				goto overflow
 			}
@@ -3024,19 +3024,19 @@ pub fn pq_escape_bytea_internal(conn &PGconn, from &u8, from_length usize, to_le
 	} else {
 		vp = from
 		for i = from_length; i > usize(0); i-- {
-			if int((unsafe { *vp })) < 32 || int((unsafe { *vp })) > 126 {
+			if i32((unsafe { *vp })) < 32 || i32((unsafe { *vp })) > 126 {
 				if pg_add_size_overflow(len, bslash_len + usize(3), &len) {
 					unsafe {
 						goto overflow
 					}
 				}
-			} else if int((unsafe { *vp })) == `\'` {
+			} else if i32((unsafe { *vp })) == `\'` {
 				if pg_add_size_overflow(len, usize(2), &len) {
 					unsafe {
 						goto overflow
 					}
 				}
-			} else if int((unsafe { *vp })) == `\\` {
+			} else if i32((unsafe { *vp })) == `\\` {
 				if pg_add_size_overflow(len, bslash_len * usize(2), &len) {
 					unsafe {
 						goto overflow
@@ -3076,10 +3076,10 @@ pub fn pq_escape_bytea_internal(conn &PGconn, from &u8, from_length usize, to_le
 		c := (unsafe { *vp })
 		if use_hex {
 			mut __c2v_lhs_tmp_17 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
-			unsafe { *__c2v_lhs_tmp_17 = u8(libpq_fe_exec_hextbl[(int(c) >> 4) & 15]) }
+			unsafe { *__c2v_lhs_tmp_17 = u8(libpq_fe_exec_hextbl[(i32(c) >> 4) & 15]) }
 			mut __c2v_lhs_tmp_18 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
-			unsafe { *__c2v_lhs_tmp_18 = u8(libpq_fe_exec_hextbl[int(c) & 15]) }
-		} else if int(c) < 32 || int(c) > 126 {
+			unsafe { *__c2v_lhs_tmp_18 = u8(libpq_fe_exec_hextbl[i32(c) & 15]) }
+		} else if i32(c) < 32 || i32(c) > 126 {
 			if !std_strings {
 				mut __c2v_lhs_tmp_19 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
 				unsafe { *__c2v_lhs_tmp_19 = u8(`\\`) }
@@ -3087,17 +3087,17 @@ pub fn pq_escape_bytea_internal(conn &PGconn, from &u8, from_length usize, to_le
 			mut __c2v_lhs_tmp_20 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_20 = u8(`\\`) }
 			mut __c2v_lhs_tmp_21 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
-			unsafe { *__c2v_lhs_tmp_21 = u8((int(c) >> 6) + int(`0`)) }
+			unsafe { *__c2v_lhs_tmp_21 = u8((i32(c) >> 6) + i32(`0`)) }
 			mut __c2v_lhs_tmp_22 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
-			unsafe { *__c2v_lhs_tmp_22 = u8(((int(c) >> 3) & 7) + int(`0`)) }
+			unsafe { *__c2v_lhs_tmp_22 = u8(((i32(c) >> 3) & 7) + i32(`0`)) }
 			mut __c2v_lhs_tmp_23 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
-			unsafe { *__c2v_lhs_tmp_23 = u8((int(c) & 7) + int(`0`)) }
-		} else if int(c) == `\'` {
+			unsafe { *__c2v_lhs_tmp_23 = u8((i32(c) & 7) + i32(`0`)) }
+		} else if i32(c) == `\'` {
 			mut __c2v_lhs_tmp_24 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_24 = u8(`\'`) }
 			mut __c2v_lhs_tmp_25 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_25 = u8(`\'`) }
-		} else if int(c) == `\\` {
+		} else if i32(c) == `\\` {
 			if !std_strings {
 				mut __c2v_lhs_tmp_26 := unsafe { c2v_pointer_postfix(voidptr(&rp), rp, isize(1)) }
 				unsafe { *__c2v_lhs_tmp_26 = u8(`\\`) }
@@ -3158,7 +3158,7 @@ pub fn pq_unescape_bytea(strtext &u8, retbuflen &usize) &u8 {
 		return unsafe { nil }
 	}
 	strtextlen = C.c2v_strlen(&i8(voidptr(strtext)))
-	if int(strtext[0]) == `\\` && int(strtext[1]) == `x` {
+	if i32(strtext[0]) == `\\` && i32(strtext[1]) == `x` {
 		s := &u8(0)
 		p := &u8(0)
 		buflen = (strtextlen - usize(2)) / usize(2)
@@ -3173,13 +3173,13 @@ pub fn pq_unescape_bytea(strtext &u8, retbuflen &usize) &u8 {
 			v2 := i8(0)
 
 			v1 = get_hex(i8((unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) })))
-			if !(unsafe { *s }) || int(v1) == int(i8(-1)) {
+			if !(unsafe { *s }) || i32(v1) == i32(i8(-1)) {
 				continue
 			}
 			v2 = get_hex(i8((unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) })))
-			if int(v2) != int(i8(-1)) {
+			if i32(v2) != i32(i8(-1)) {
 				mut __c2v_lhs_tmp_31 := unsafe { c2v_pointer_postfix(voidptr(&p), p, isize(1)) }
-				unsafe { *__c2v_lhs_tmp_31 = u8((int(v1) << 4) | int(v2)) }
+				unsafe { *__c2v_lhs_tmp_31 = u8((i32(v1) << 4) | i32(v2)) }
 			}
 		}
 		buflen = usize(i64((isize(p) - isize(buffer)) / isize(sizeof(u8))))
@@ -3190,27 +3190,27 @@ pub fn pq_unescape_bytea(strtext &u8, retbuflen &usize) &u8 {
 		}
 		j = usize(0)
 		for i = usize(0); i < strtextlen;  {
-			match int(strtext[i]) {
-				int(`\\`) {
+			match i32(strtext[i]) {
+				i32(`\\`) {
 					i++
-					if int(strtext[i]) == `\\` {
+					if i32(strtext[i]) == `\\` {
 						buffer[j++] = strtext[i++]
 					} else {
 						mut __c2v_condition_7 := false
 						mut __c2v_condition_8 := false
-						__c2v_condition_8 = (int(strtext[i]) >= `0` && int(strtext[i]) <= `3`)
+						__c2v_condition_8 = (i32(strtext[i]) >= `0` && i32(strtext[i]) <= `3`)
 						if __c2v_condition_8 {
-							__c2v_condition_8 = (int(strtext[i + usize(1)]) >= `0` && int(strtext[i + usize(1)]) <= `7`)
+							__c2v_condition_8 = (i32(strtext[i + usize(1)]) >= `0` && i32(strtext[i + usize(1)]) <= `7`)
 						}
 						if __c2v_condition_8 {
-							__c2v_condition_8 = (int(strtext[i + usize(2)]) >= `0` && int(strtext[i + usize(2)]) <= `7`)
+							__c2v_condition_8 = (i32(strtext[i + usize(2)]) >= `0` && i32(strtext[i + usize(2)]) <= `7`)
 						}
 						__c2v_condition_7 = __c2v_condition_8
 						if __c2v_condition_7 {
-							byte_ := 0
-							byte_ = (int(strtext[i++]) - int(`0`))
-							byte_ = (byte_ << 3) + (int(strtext[i++]) - int(`0`))
-							byte_ = (byte_ << 3) + (int(strtext[i++]) - int(`0`))
+							byte_ := i32(0)
+							byte_ = (i32(strtext[i++]) - i32(`0`))
+							byte_ = (byte_ << 3) + (i32(strtext[i++]) - i32(`0`))
+							byte_ = (byte_ << 3) + (i32(strtext[i++]) - i32(`0`))
 							buffer[j++] = u8(byte_)
 						}
 					}

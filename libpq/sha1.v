@@ -139,95 +139,95 @@ pub fn sha1_pad(ctx &Pg_sha1_ctx) {
 	padlen := usize(0)
 	padstart := usize(0)
 	for {
-		ctx.m.b8[(int(ctx.count) % 64)] = Uint8(128)
+		ctx.m.b8[(i32(ctx.count) % 64)] = Uint8(128)
 		ctx.count++
 		ctx.count %= 64
-		if int(ctx.count) % 64 == 0 {
+		if i32(ctx.count) % 64 == 0 {
 			sha1_step(ctx)
 		}
 		break
 	}
-	padstart = usize(int(ctx.count) % 64)
+	padstart = usize(i32(ctx.count) % 64)
 	padlen = usize(64) - padstart
 	if padlen < usize(8) {
 		C.c2v_memset(voidptr(unsafe { &ctx.m.b8[0] + padstart }), 0, padlen)
 		ctx.count += padlen
 		ctx.count %= 64
 		sha1_step(ctx)
-		padstart = usize(int(ctx.count) % 64)
+		padstart = usize(i32(ctx.count) % 64)
 		padlen = usize(64) - padstart
 	}
 	C.c2v_memset(voidptr(unsafe { &ctx.m.b8[0] + padstart }), 0, padlen - usize(8))
 	ctx.count += (padlen - usize(8))
 	ctx.count %= 64
 	for {
-		ctx.m.b8[(int(ctx.count) % 64)] = ctx.c.b8[7]
+		ctx.m.b8[(i32(ctx.count) % 64)] = ctx.c.b8[7]
 		ctx.count++
 		ctx.count %= 64
-		if int(ctx.count) % 64 == 0 {
+		if i32(ctx.count) % 64 == 0 {
 			sha1_step(ctx)
 		}
 		break
 	}
 	for {
-		ctx.m.b8[(int(ctx.count) % 64)] = ctx.c.b8[6]
+		ctx.m.b8[(i32(ctx.count) % 64)] = ctx.c.b8[6]
 		ctx.count++
 		ctx.count %= 64
-		if int(ctx.count) % 64 == 0 {
+		if i32(ctx.count) % 64 == 0 {
 			sha1_step(ctx)
 		}
 		break
 	}
 	for {
-		ctx.m.b8[(int(ctx.count) % 64)] = ctx.c.b8[5]
+		ctx.m.b8[(i32(ctx.count) % 64)] = ctx.c.b8[5]
 		ctx.count++
 		ctx.count %= 64
-		if int(ctx.count) % 64 == 0 {
+		if i32(ctx.count) % 64 == 0 {
 			sha1_step(ctx)
 		}
 		break
 	}
 	for {
-		ctx.m.b8[(int(ctx.count) % 64)] = ctx.c.b8[4]
+		ctx.m.b8[(i32(ctx.count) % 64)] = ctx.c.b8[4]
 		ctx.count++
 		ctx.count %= 64
-		if int(ctx.count) % 64 == 0 {
+		if i32(ctx.count) % 64 == 0 {
 			sha1_step(ctx)
 		}
 		break
 	}
 	for {
-		ctx.m.b8[(int(ctx.count) % 64)] = ctx.c.b8[3]
+		ctx.m.b8[(i32(ctx.count) % 64)] = ctx.c.b8[3]
 		ctx.count++
 		ctx.count %= 64
-		if int(ctx.count) % 64 == 0 {
+		if i32(ctx.count) % 64 == 0 {
 			sha1_step(ctx)
 		}
 		break
 	}
 	for {
-		ctx.m.b8[(int(ctx.count) % 64)] = ctx.c.b8[2]
+		ctx.m.b8[(i32(ctx.count) % 64)] = ctx.c.b8[2]
 		ctx.count++
 		ctx.count %= 64
-		if int(ctx.count) % 64 == 0 {
+		if i32(ctx.count) % 64 == 0 {
 			sha1_step(ctx)
 		}
 		break
 	}
 	for {
-		ctx.m.b8[(int(ctx.count) % 64)] = ctx.c.b8[1]
+		ctx.m.b8[(i32(ctx.count) % 64)] = ctx.c.b8[1]
 		ctx.count++
 		ctx.count %= 64
-		if int(ctx.count) % 64 == 0 {
+		if i32(ctx.count) % 64 == 0 {
 			sha1_step(ctx)
 		}
 		break
 	}
 	for {
-		ctx.m.b8[(int(ctx.count) % 64)] = ctx.c.b8[0]
+		ctx.m.b8[(i32(ctx.count) % 64)] = ctx.c.b8[0]
 		ctx.count++
 		ctx.count %= 64
-		if int(ctx.count) % 64 == 0 {
+		if i32(ctx.count) % 64 == 0 {
 			sha1_step(ctx)
 		}
 		break
@@ -282,14 +282,14 @@ pub fn pg_sha1_update(ctx &Pg_sha1_ctx, data &Uint8, len usize) {
 	input = &Uint8(data)
 	off = usize(0)
 	for off < len {
-		gapstart = usize(int(ctx.count) % 64)
+		gapstart = usize(i32(ctx.count) % 64)
 		gaplen = usize(64) - gapstart
 		copysiz = if (gaplen < len - off) { gaplen } else { len - off }
 		C.c2v_memmove(voidptr(unsafe { &ctx.m.b8[0] + gapstart }), voidptr(unsafe { input + off }), copysiz)
 		ctx.count += copysiz
 		ctx.count %= 64
 		ctx.c.b64[0] += Uint64(copysiz * usize(8))
-		if int(ctx.count) % 64 == 0 {
+		if i32(ctx.count) % 64 == 0 {
 			sha1_step(ctx)
 		}
 		off += copysiz

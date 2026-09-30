@@ -13,8 +13,8 @@ pub mut:
 	type_       Pg_cryptohash_type
 	error       Pg_hmac_errno
 	errreason   &i8
-	block_size  int
-	digest_size int
+	block_size  i32
+	digest_size i32
 	k_ipad      [128]Uint8
 	k_opad      [128]Uint8
 }
@@ -70,10 +70,10 @@ pub fn pg_hmac_create(type_ Pg_cryptohash_type) &Pg_hmac_ctx {
 
 @[export: 'pg_hmac_init']
 @[markused]
-pub fn pg_hmac_init(ctx &Pg_hmac_ctx, key &Uint8, len usize) int {
-	i := 0
-	digest_size := 0
-	block_size := 0
+pub fn pg_hmac_init(ctx &Pg_hmac_ctx, key &Uint8, len usize) i32 {
+	i := i32(0)
+	digest_size := i32(0)
+	block_size := i32(0)
 	shrinkbuf := unsafe { &Uint8(nil) }
 	if usize(ctx) == usize((voidptr(0))) {
 		return -1
@@ -108,8 +108,8 @@ pub fn pg_hmac_init(ctx &Pg_hmac_ctx, key &Uint8, len usize) int {
 		pg_cryptohash_free(hash_ctx)
 	}
 	for i = 0; usize(i) < len; i++ {
-		ctx.k_ipad[i] ^= int(key[i])
-		ctx.k_opad[i] ^= int(key[i])
+		ctx.k_ipad[i] ^= i32(key[i])
+		ctx.k_opad[i] ^= i32(key[i])
 	}
 	if pg_cryptohash_init(ctx.hash) < 0 || pg_cryptohash_update(ctx.hash, unsafe { &ctx.k_ipad[0] }, usize(ctx.block_size)) < 0 {
 		ctx.error = Pg_hmac_errno.pg_hmac_error_internal
@@ -127,7 +127,7 @@ pub fn pg_hmac_init(ctx &Pg_hmac_ctx, key &Uint8, len usize) int {
 
 @[export: 'pg_hmac_update']
 @[markused]
-pub fn pg_hmac_update(ctx &Pg_hmac_ctx, data &Uint8, len usize) int {
+pub fn pg_hmac_update(ctx &Pg_hmac_ctx, data &Uint8, len usize) i32 {
 	if usize(ctx) == usize((voidptr(0))) {
 		return -1
 	}
@@ -141,7 +141,7 @@ pub fn pg_hmac_update(ctx &Pg_hmac_ctx, data &Uint8, len usize) int {
 
 @[export: 'pg_hmac_final']
 @[markused]
-pub fn pg_hmac_final(ctx &Pg_hmac_ctx, dest &Uint8, len usize) int {
+pub fn pg_hmac_final(ctx &Pg_hmac_ctx, dest &Uint8, len usize) i32 {
 	h := &Uint8(0)
 	if usize(ctx) == usize((voidptr(0))) {
 		return -1

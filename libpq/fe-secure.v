@@ -7,7 +7,7 @@ pub type PGcancel_fe_secure = Pg_cancel
 
 @[markused]
 pub fn libpq_fe_secure_is_unixsock_path(path &i8) bool {
-	return (int(path[false]) == i8(`/`)) || int(path[false]) == i8(`@`)
+	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
 }
 
 pub struct Sigpipe_info {
@@ -19,21 +19,21 @@ pub mut:
 
 @[export: 'PQsslInUse']
 @[markused]
-pub fn pq_ssl_in_use(conn &PGconn) int {
+pub fn pq_ssl_in_use(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
-	return int(conn.ssl_in_use)
+	return i32(conn.ssl_in_use)
 }
 
 @[export: 'PQinitSSL']
 @[markused]
-pub fn pq_init_ssl(do_init int) {
+pub fn pq_init_ssl(do_init i32) {
 }
 
 @[export: 'PQinitOpenSSL']
 @[markused]
-pub fn pq_init_open_ssl(do_ssl int, do_crypto int) {
+pub fn pq_init_open_ssl(do_ssl i32, do_crypto i32) {
 }
 
 @[export: 'pqsecure_open_client']
@@ -59,7 +59,7 @@ pub fn pqsecure_read(conn &PGconn, ptr voidptr, len usize) isize {
 @[markused]
 pub fn pqsecure_raw_read(conn &PGconn, ptr voidptr, len usize) isize {
 	n := isize(0)
-	result_errno := 0
+	result_errno := i32(0)
 	sebuf := [256]i8{}
 	{
 		c2v_target := C.c2v___error()
@@ -107,8 +107,8 @@ pub fn pqsecure_write(conn &PGconn, ptr voidptr, len usize) isize {
 @[markused]
 pub fn pqsecure_raw_write(conn &PGconn, ptr voidptr, len usize) isize {
 	n := isize(0)
-	flags := 0
-	result_errno := 0
+	flags := i32(0)
+	result_errno := i32(0)
 	msgbuf := [1024]i8{}
 	sebuf := [256]i8{}
 	spinfo := Sigpipe_info{}
@@ -120,7 +120,7 @@ pub fn pqsecure_raw_write(conn &PGconn, ptr voidptr, len usize) isize {
 	}
 	retry_masked: for {
 		spinfo.got_epipe = (0 != 0)
-		if !(int(conn.sigpipe_so) || int(conn.sigpipe_flag)) {
+		if !(i32(conn.sigpipe_so) || i32(conn.sigpipe_flag)) {
 			if pq_block_sigpipe(&spinfo.oldsigmask, &spinfo.sigpipe_pending) < 0 {
 				return isize(-1)
 			}
@@ -169,7 +169,7 @@ pub fn pqsecure_raw_write(conn &PGconn, ptr voidptr, len usize) isize {
 		}
 	}
 	for {
-		if !(int(conn.sigpipe_so) || int(conn.sigpipe_flag)) {
+		if !(i32(conn.sigpipe_so) || i32(conn.sigpipe_flag)) {
 			pq_reset_sigpipe(&spinfo.oldsigmask, spinfo.sigpipe_pending, spinfo.got_epipe)
 		}
 		break
@@ -227,7 +227,7 @@ pub fn pq_set_ssl_key_pass_hook_open_ssl(hook PQsslKeyPassHook_OpenSSL_type) {
 
 @[export: 'PQdefaultSSLKeyPassHook_OpenSSL']
 @[markused]
-pub fn pq_default_ssl_key_pass_hook_open_ssl(buf &i8, size int, conn &PGconn) int {
+pub fn pq_default_ssl_key_pass_hook_open_ssl(buf &i8, size i32, conn &PGconn) i32 {
 	return 0
 }
 
@@ -239,13 +239,13 @@ pub fn pq_getgssctx(conn &PGconn) voidptr {
 
 @[export: 'PQgssEncInUse']
 @[markused]
-pub fn pq_gss_enc_in_use(conn &PGconn) int {
+pub fn pq_gss_enc_in_use(conn &PGconn) i32 {
 	return 0
 }
 
 @[export: 'pq_block_sigpipe']
 @[markused]
-pub fn pq_block_sigpipe(osigset &u32, sigpipe_pending &bool) int {
+pub fn pq_block_sigpipe(osigset &u32, sigpipe_pending &bool) i32 {
 	sigpipe_sigset := u32(0)
 	sigset := u32(0)
 	mut __c2v_lhs_tmp_0 := unsafe { &sigpipe_sigset }
@@ -280,9 +280,9 @@ pub fn pq_block_sigpipe(osigset &u32, sigpipe_pending &bool) int {
 @[markused]
 pub fn pq_reset_sigpipe(osigset &u32, sigpipe_pending bool, got_epipe bool) {
 	save_errno := (unsafe { *C.c2v___error() })
-	signo := 0
+	signo := i32(0)
 	sigset := u32(0)
-	if int(got_epipe) && !sigpipe_pending {
+	if i32(got_epipe) && !sigpipe_pending {
 		if C.c2v_sigpending(&sigset) == 0 && (((unsafe { *(&sigset) }) & (C.c2v___sigbits(13))) != u32(0)) {
 			sigpipe_sigset := u32(0)
 			mut __c2v_lhs_tmp_2 := unsafe { &sigpipe_sigset }

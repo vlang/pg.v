@@ -25,7 +25,7 @@ fn main() {
 		eprintln(unsafe { cstring_to_vstring(&char(libpq.pq_result_error_message(res))) })
 		exit(1)
 	}
-	for row in 0 .. libpq.pq_ntuples(res) {
+	for row in i32(0) .. libpq.pq_ntuples(res) {
 		i := unsafe { cstring_to_vstring(&char(libpq.pq_getvalue(res, row, 0))) }
 		square := unsafe { cstring_to_vstring(&char(libpq.pq_getvalue(res, row, 1))) }
 		println('${i}² = ${square}')

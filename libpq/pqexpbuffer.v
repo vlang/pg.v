@@ -84,7 +84,7 @@ pub fn reset_pq_exp_buffer(str PQExpBuffer) {
 
 @[export: 'enlargePQExpBuffer']
 @[markused]
-pub fn enlarge_pq_exp_buffer(str PQExpBuffer, needed usize) int {
+pub fn enlarge_pq_exp_buffer(str PQExpBuffer, needed usize) i32 {
 	newlen := usize(0)
 	newdata := &i8(0)
 	if (usize(voidptr(str)) == usize(voidptr((voidptr(0)))) || str.maxlen == usize(0)) {
@@ -167,7 +167,7 @@ pub fn append_pq_exp_buffer(str PQExpBuffer, fmt &i8, ...) {
 pub fn append_pq_exp_buffer_va(str PQExpBuffer, fmt &i8, args C.va_list) bool {
 	avail := usize(0)
 	needed := usize(0)
-	nprinted := 0
+	nprinted := i32(0)
 	if str.maxlen > str.len + usize(16) {
 		avail = str.maxlen - str.len
 		nprinted = pg_vsnprintf(str.data + str.len, avail, fmt, args)

@@ -68,11 +68,11 @@ fn pq_exec(conn &libpq.PGconn, query &char) &libpq.PGresult {
 }
 
 fn pq_getisnull(res &libpq.PGresult, row i32, col i32) i32 {
-	return i32(libpq.pq_getisnull(res, int(row), int(col)))
+	return i32(libpq.pq_getisnull(res, row, col))
 }
 
 fn pq_getvalue(res &libpq.PGresult, row i32, col i32) &char {
-	return unsafe { &char(libpq.pq_getvalue(res, int(row), int(col))) }
+	return unsafe { &char(libpq.pq_getvalue(res, row, col)) }
 }
 
 fn pq_result_status(res &libpq.PGresult) i32 {
@@ -88,31 +88,31 @@ fn pq_nfields(res &libpq.PGresult) i32 {
 }
 
 fn pq_fname(res &libpq.PGresult, col i32) &char {
-	return unsafe { &char(libpq.pq_fname(res, int(col))) }
+	return unsafe { &char(libpq.pq_fname(res, col)) }
 }
 
 fn pq_ftype(res &libpq.PGresult, col i32) u32 {
-	return u32(libpq.pq_ftype(res, int(col)))
+	return u32(libpq.pq_ftype(res, col))
 }
 
 fn pq_fmod(res &libpq.PGresult, col i32) i32 {
-	return i32(libpq.pq_fmod(res, int(col)))
+	return i32(libpq.pq_fmod(res, col))
 }
 
 fn pq_fsize(res &libpq.PGresult, col i32) i32 {
-	return i32(libpq.pq_fsize(res, int(col)))
+	return i32(libpq.pq_fsize(res, col))
 }
 
 fn pq_fformat(res &libpq.PGresult, col i32) i32 {
-	return i32(libpq.pq_fformat(res, int(col)))
+	return i32(libpq.pq_fformat(res, col))
 }
 
 fn pq_ftable(res &libpq.PGresult, col i32) u32 {
-	return u32(libpq.pq_ftable(res, int(col)))
+	return u32(libpq.pq_ftable(res, col))
 }
 
 fn pq_ftablecol(res &libpq.PGresult, col i32) i32 {
-	return i32(libpq.pq_ftablecol(res, int(col)))
+	return i32(libpq.pq_ftablecol(res, col))
 }
 
 // Params:
@@ -122,13 +122,13 @@ fn pq_ftablecol(res &libpq.PGresult, col i32) i32 {
 // const int *paramFormats
 fn pq_exec_params(conn &libpq.PGconn, command &char, n_params i32, param_types voidptr, param_values voidptr,
 	param_lengths voidptr, param_formats voidptr, result_format i32) &libpq.PGresult {
-	return libpq.pq_exec_params(conn, unsafe { &i8(command) }, int(n_params), unsafe { &libpq.Oid(param_types) },
-		unsafe { &&u8(param_values) }, unsafe { &int(param_lengths) }, unsafe { &int(param_formats) },
-		int(result_format))
+	return libpq.pq_exec_params(conn, unsafe { &i8(command) }, n_params, unsafe { &libpq.Oid(param_types) },
+		unsafe { &&u8(param_values) }, unsafe { &i32(param_lengths) }, unsafe { &i32(param_formats) },
+		result_format)
 }
 
 fn pq_put_copy_data(conn &libpq.PGconn, buffer &char, nbytes i32) i32 {
-	return i32(libpq.pq_put_copy_data(conn, unsafe { &i8(buffer) }, int(nbytes)))
+	return i32(libpq.pq_put_copy_data(conn, unsafe { &i8(buffer) }, nbytes))
 }
 
 fn pq_put_copy_end(conn &libpq.PGconn, errmsg &char) i32 {
@@ -136,18 +136,18 @@ fn pq_put_copy_end(conn &libpq.PGconn, errmsg &char) i32 {
 }
 
 fn pq_get_copy_data(conn &libpq.PGconn, buffer &&char, async i32) i32 {
-	return i32(libpq.pq_get_copy_data(conn, unsafe { &&u8(buffer) }, int(async)))
+	return i32(libpq.pq_get_copy_data(conn, unsafe { &&u8(buffer) }, async))
 }
 
 fn pq_prepare(conn &libpq.PGconn, stmt_name &char, query &char, n_params i32, param_types voidptr) &libpq.PGresult {
-	return libpq.pq_prepare(conn, unsafe { &i8(stmt_name) }, unsafe { &i8(query) }, int(n_params),
+	return libpq.pq_prepare(conn, unsafe { &i8(stmt_name) }, unsafe { &i8(query) }, n_params,
 		unsafe { &libpq.Oid(voidptr(param_types)) })
 }
 
 fn pq_exec_prepared(conn &libpq.PGconn, stmt_name &char, n_params i32, param_values voidptr,
 	param_lengths voidptr, param_formats voidptr, result_format i32) &libpq.PGresult {
-	return libpq.pq_exec_prepared(conn, unsafe { &i8(stmt_name) }, int(n_params), unsafe { &&u8(param_values) },
-		unsafe { &int(param_lengths) }, unsafe { &int(param_formats) }, int(result_format))
+	return libpq.pq_exec_prepared(conn, unsafe { &i8(stmt_name) }, n_params, unsafe { &&u8(param_values) },
+		unsafe { &i32(param_lengths) }, unsafe { &i32(param_formats) }, result_format)
 }
 
 // cleanup

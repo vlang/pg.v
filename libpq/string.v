@@ -15,21 +15,21 @@ pub fn pg_str_endswith(str &i8, end &i8) bool {
 
 @[export: 'strtoint']
 @[markused]
-pub fn strtoint(str &i8, endptr &&u8, base int) int {
+pub fn strtoint(str &i8, endptr &&u8, base i32) i32 {
 	val := i64(0)
 	val = C.c2v_strtol(str, endptr, base)
-	if val != i64(int(val)) {
+	if val != i64(i32(val)) {
 		{
 			c2v_target := C.c2v___error()
 			unsafe { *c2v_target = 34 }
 		}
 	}
-	return int(val)
+	return i32(val)
 }
 
 @[export: 'pg_clean_ascii']
 @[markused]
-pub fn pg_clean_ascii(str &i8, alloc_flags int) &i8 {
+pub fn pg_clean_ascii(str &i8, alloc_flags i32) &i8 {
 	dstlen := usize(0)
 	dst := &i8(0)
 	p := &i8(0)
@@ -39,9 +39,9 @@ pub fn pg_clean_ascii(str &i8, alloc_flags int) &i8 {
 	if isnil(dst) {
 		return unsafe { nil }
 	}
-	for p = str; int((unsafe { *p })) != i8(`\0`); p = unsafe { p + 1 } {
-		if int((unsafe { *p })) < 32 || int((unsafe { *p })) > 126 {
-			pg_snprintf(unsafe { dst + i }, dstlen - i, c'\\x%02x', int(u8((unsafe { *p }))))
+	for p = str; i32((unsafe { *p })) != i8(`\0`); p = unsafe { p + 1 } {
+		if i32((unsafe { *p })) < 32 || i32((unsafe { *p })) > 126 {
+			pg_snprintf(unsafe { dst + i }, dstlen - i, c'\\x%02x', i32(u8((unsafe { *p }))))
 			i += usize(4)
 		} else {
 			dst[i] = unsafe { *p }
@@ -57,7 +57,7 @@ pub fn pg_clean_ascii(str &i8, alloc_flags int) &i8 {
 @[markused]
 pub fn pg_is_ascii(str &i8) bool {
 	for (unsafe { *str }) {
-		if (int(u8((unsafe { *str }))) & 128) {
+		if (i32(u8((unsafe { *str }))) & 128) {
 			return false != 0
 		}
 		c2v_pointer_postfix(voidptr(&str), str, isize(1))
@@ -67,10 +67,10 @@ pub fn pg_is_ascii(str &i8) bool {
 
 @[export: 'pg_strip_crlf']
 @[markused]
-pub fn pg_strip_crlf(str &i8) int {
-	len := int(C.c2v_strlen(str))
-	for len > 0 && (int(str[len - 1]) == i8(`\n`) || int(str[len - 1]) == i8(`\r`)) {
-		str[c2v_prefix_add(unsafe { &len }, -1)] = i8(`\0`)
+pub fn pg_strip_crlf(str &i8) i32 {
+	len := i32(C.c2v_strlen(str))
+	for len > 0 && (i32(str[len - 1]) == i8(`\n`) || i32(str[len - 1]) == i8(`\r`)) {
+		str[c2v_prefix_add(unsafe { &len }, i32(-1))] = i8(`\0`)
 	}
 	return len
 }

@@ -186,7 +186,7 @@ pub type Int8 = i8
 
 pub type Int16 = i16
 
-pub type Int32 = int
+pub type Int32 = i32
 
 pub type Int64 = i64
 
@@ -212,7 +212,7 @@ pub type Size = usize
 
 pub type Index = u32
 
-pub type Offset = int
+pub type Offset = i32
 
 pub type Float4 = f32
 
@@ -249,22 +249,22 @@ pub type VarChar = Bytea
 pub struct Int2vector {
 pub mut:
 	vl_len_    Int32
-	ndim       int
+	ndim       i32
 	dataoffset Int32
 	elemtype   Oid
-	dim1       int
-	lbound1    int
+	dim1       i32
+	lbound1    i32
 	values     [1]Int16
 }
 
 pub struct Oidvector {
 pub mut:
 	vl_len_    Int32
-	ndim       int
+	ndim       i32
 	dataoffset Int32
 	elemtype   Oid
-	dim1       int
-	lbound1    int
+	dim1       i32
+	lbound1    i32
 	values     [1]Oid
 }
 
@@ -296,9 +296,9 @@ pub mut:
 	force_align_i64 Int64
 }
 
-pub fn fdatasync(fildes int) int
+pub fn fdatasync(fildes i32) i32
 
-pub type Pgsocket = int
+pub type Pgsocket = i32
 
 pub fn has_drive_prefix(path &i8) bool
 
@@ -312,7 +312,7 @@ pub fn join_path_components(ret_path &i8, head &i8, tail &i8)
 
 pub fn canonicalize_path(path &i8)
 
-pub fn canonicalize_path_enc(path &i8, encoding int)
+pub fn canonicalize_path_enc(path &i8, encoding i32)
 
 pub fn make_native_path(filename &i8)
 
@@ -362,61 +362,61 @@ pub fn pgfnames_cleanup(filenames &&u8)
 
 pub fn set_pglocale_pgservice(argv0 &i8, app &i8)
 
-pub fn validate_exec(path &i8) int
+pub fn validate_exec(path &i8) i32
 
-pub fn find_my_exec(argv0 &i8, retpath &i8) int
+pub fn find_my_exec(argv0 &i8, retpath &i8) i32
 
-pub fn find_other_exec(argv0 &i8, target &i8, versionstr &i8, retpath &i8) int
+pub fn find_other_exec(argv0 &i8, target &i8, versionstr &i8, retpath &i8) i32
 
 pub fn pipe_read_line(cmd &i8) &i8
 
 pub fn pg_usleep(microsec i64)
 
-pub fn pg_strsignal(signum int) &i8
+pub fn pg_strsignal(signum i32) &i8
 
-pub fn pclose_check(stream &C.FILE) int
+pub fn pclose_check(stream &C.FILE) i32
 
 pub fn rmtree(path &i8, rmtopdir bool) bool
 
-pub fn pg_qsort(base voidptr, nel usize, elsize usize, cmp fn (voidptr, voidptr) int)
+pub fn pg_qsort(base voidptr, nel usize, elsize usize, cmp fn (voidptr, voidptr) i32)
 
-pub fn pg_qsort_strcmp(a voidptr, b voidptr) int
+pub fn pg_qsort_strcmp(a voidptr, b voidptr) i32
 
-pub type Qsort_arg_comparator = fn (voidptr, voidptr, voidptr) int
+pub type Qsort_arg_comparator = fn (voidptr, voidptr, voidptr) i32
 
 pub fn qsort_arg(base voidptr, nel usize, elsize usize, cmp Qsort_arg_comparator, arg voidptr)
 
 pub fn qsort_interruptible(base voidptr, nel usize, elsize usize, cmp Qsort_arg_comparator, arg voidptr)
 
-pub fn bsearch_arg(key voidptr, base0 voidptr, nmemb usize, size usize, compar fn (voidptr, voidptr, voidptr) int, arg voidptr) voidptr
+pub fn bsearch_arg(key voidptr, base0 voidptr, nmemb usize, size usize, compar fn (voidptr, voidptr, voidptr) i32, arg voidptr) voidptr
 
-pub fn pg_localeconv_r(lc_monetary &i8, lc_numeric &i8, output &C.lconv) int
+pub fn pg_localeconv_r(lc_monetary &i8, lc_numeric &i8, output &C.lconv) i32
 
 pub fn pg_localeconv_free(lconv &C.lconv)
 
-pub fn pg_check_dir(dir &i8) int
+pub fn pg_check_dir(dir &i8) i32
 
-pub fn pg_mkdir_p(path &i8, omode int) int
+pub fn pg_mkdir_p(path &i8, omode i32) i32
 
-pub type Pqsigfunc = fn (int)
+pub type Pqsigfunc = fn (i32)
 
-pub fn pqsignal_fe(signo int, func Pqsigfunc)
+pub fn pqsignal_fe(signo i32, func Pqsigfunc)
 
 pub fn escape_single_quotes_ascii(src &i8) &i8
 
-pub fn wait_result_to_str(exitstatus int) &i8
+pub fn wait_result_to_str(exitstatus i32) &i8
 
-pub fn wait_result_is_signal(exit_status int, signum int) bool
+pub fn wait_result_is_signal(exit_status i32, signum i32) bool
 
-pub fn wait_result_is_any_signal(exit_status int, include_command_not_found bool) bool
+pub fn wait_result_is_any_signal(exit_status i32, include_command_not_found bool) bool
 
-pub fn wait_result_to_exit_code(exit_status int) int
+pub fn wait_result_to_exit_code(exit_status i32) i32
 
 pub fn pg_malloc(size usize) voidptr
 
 pub fn pg_malloc0(size usize) voidptr
 
-pub fn pg_malloc_extended(size usize, flags int) voidptr
+pub fn pg_malloc_extended(size usize, flags i32) voidptr
 
 pub fn pg_realloc(ptr voidptr, size usize) voidptr
 
@@ -430,7 +430,7 @@ pub fn pg_malloc_mul(s1 Size, s2 Size) voidptr
 
 pub fn pg_malloc0_mul(s1 Size, s2 Size) voidptr
 
-pub fn pg_malloc_mul_extended(s1 Size, s2 Size, flags int) voidptr
+pub fn pg_malloc_mul_extended(s1 Size, s2 Size, flags i32) voidptr
 
 pub fn pg_realloc_mul(p voidptr, s1 Size, s2 Size) voidptr
 
@@ -442,7 +442,7 @@ pub fn palloc(size Size) voidptr
 
 pub fn palloc0(size Size) voidptr
 
-pub fn palloc_extended(size Size, flags int) voidptr
+pub fn palloc_extended(size Size, flags i32) voidptr
 
 pub fn repalloc(pointer voidptr, size Size) voidptr
 
@@ -452,23 +452,23 @@ pub fn palloc_mul(s1 Size, s2 Size) voidptr
 
 pub fn palloc0_mul(s1 Size, s2 Size) voidptr
 
-pub fn palloc_mul_extended(s1 Size, s2 Size, flags int) voidptr
+pub fn palloc_mul_extended(s1 Size, s2 Size, flags i32) voidptr
 
 pub fn repalloc_mul(p voidptr, s1 Size, s2 Size) voidptr
 
 @[export: 'pg_b64_encode']
 @[markused]
-pub fn pg_b64_encode(src &Uint8, len int, dst &i8, dstlen int) int {
+pub fn pg_b64_encode(src &Uint8, len i32, dst &i8, dstlen i32) i32 {
 	p := &i8(0)
 	s := &Uint8(0)
 	end := src + len
 
-	pos := 2
+	pos := i32(2)
 	buf := Uint32(0)
 	s = src
 	p = dst
 	for usize(s) < usize(end) {
-		buf |= Uint32(int((unsafe { *s })) << (pos << 3))
+		buf |= Uint32(i32((unsafe { *s })) << (pos << 3))
 		pos--
 		c2v_pointer_postfix(voidptr(&s), s, isize(1))
 		if pos < 0 {
@@ -502,7 +502,7 @@ pub fn pg_b64_encode(src &Uint8, len int, dst &i8, dstlen int) int {
 		mut __c2v_lhs_tmp_6 := unsafe { c2v_pointer_postfix(voidptr(&p), p, isize(1)) }
 		unsafe {
 			*__c2v_lhs_tmp_6 = i8(if (pos == 0) {
-				int(libpq_base64__base64[(buf >> 6) & Uint32(63)])
+				i32(libpq_base64__base64[(buf >> 6) & Uint32(63)])
 			} else {
 				`=`
 			})
@@ -511,7 +511,7 @@ pub fn pg_b64_encode(src &Uint8, len int, dst &i8, dstlen int) int {
 		unsafe { *__c2v_lhs_tmp_7 = i8(`=`) }
 	}
 
-	return int(i64((isize(p) - isize(dst)) / isize(sizeof(i8))))
+	return i32(i64((isize(p) - isize(dst)) / isize(sizeof(i8))))
 	error:
 	C.c2v_memset(voidptr(dst), 0, u64(dstlen))
 	return -1
@@ -519,25 +519,25 @@ pub fn pg_b64_encode(src &Uint8, len int, dst &i8, dstlen int) int {
 
 @[export: 'pg_b64_decode']
 @[markused]
-pub fn pg_b64_decode(src &i8, len int, dst &Uint8, dstlen int) int {
+pub fn pg_b64_decode(src &i8, len i32, dst &Uint8, dstlen i32) i32 {
 	srcend := src + len
 	s := src
 
 	p := dst
 	c := i8(0)
-	b := 0
+	b := i32(0)
 	buf := Uint32(0)
-	pos := 0
-	end := 0
+	pos := i32(0)
+	end := i32(0)
 
 	for usize(s) < usize(srcend) {
 		c = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-		if int(c) == i8(` `) || int(c) == i8(`\t`) || int(c) == i8(`\n`) || int(c) == i8(`\r`) {
+		if i32(c) == i8(` `) || i32(c) == i8(`\t`) || i32(c) == i8(`\n`) || i32(c) == i8(`\r`) {
 			unsafe {
 				goto error
 			}
 		}
-		if int(c) == i8(`=`) {
+		if i32(c) == i8(`=`) {
 			if !end {
 				if pos == 2 {
 					end = 1
@@ -552,8 +552,8 @@ pub fn pg_b64_decode(src &i8, len int, dst &Uint8, dstlen int) int {
 			b = 0
 		} else {
 			b = -1
-			if int(c) > 0 && int(c) < 127 {
-				b = int(libpq_base64_b64lookup[u8(c)])
+			if i32(c) > 0 && i32(c) < 127 {
+				b = i32(libpq_base64_b64lookup[u8(c)])
 			}
 			if b < 0 {
 				unsafe {
@@ -599,7 +599,7 @@ pub fn pg_b64_decode(src &i8, len int, dst &Uint8, dstlen int) int {
 		}
 	}
 
-	return int(i64((isize(p) - isize(dst)) / isize(sizeof(Uint8))))
+	return i32(i64((isize(p) - isize(dst)) / isize(sizeof(Uint8))))
 	error:
 	C.c2v_memset(voidptr(dst), 0, u64(dstlen))
 	return -1
@@ -607,12 +607,12 @@ pub fn pg_b64_decode(src &i8, len int, dst &Uint8, dstlen int) int {
 
 @[export: 'pg_b64_enc_len']
 @[markused]
-pub fn pg_b64_enc_len(srclen int) int {
+pub fn pg_b64_enc_len(srclen i32) i32 {
 	return (srclen + 2) / 3 * 4
 }
 
 @[export: 'pg_b64_dec_len']
 @[markused]
-pub fn pg_b64_dec_len(srclen int) int {
+pub fn pg_b64_dec_len(srclen i32) i32 {
 	return (srclen * 3) >> 2
 }

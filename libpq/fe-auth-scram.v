@@ -14,7 +14,7 @@ pub enum Pg_saslprep_rc {
 
 @[markused]
 pub fn libpq_fe_auth_scram_is_unixsock_path(path &i8) bool {
-	return (int(path[false]) == i8(`/`)) || int(path[false]) == i8(`@`)
+	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
 }
 
 pub enum Fe_scram_state_enum {
@@ -31,15 +31,15 @@ pub mut:
 	password                           &i8
 	sasl_mechanism                     &i8
 	hash_type                          Pg_cryptohash_type
-	key_length                         int
+	key_length                         i32
 	saltedPassword                     [32]Uint8
 	client_nonce                       &i8
 	client_first_message_bare          &i8
 	client_final_message_without_proof &i8
 	server_first_message               &i8
 	salt                               &Uint8
-	saltlen                            int
-	iterations                         int
+	saltlen                            i32
+	iterations                         i32
 	nonce                              &i8
 	server_final_message               &i8
 	serverSignature                    [32]Uint8
@@ -68,12 +68,12 @@ pub fn scram_init(conn &PGconn, password &i8, sasl_mechanism &i8) voidptr {
 	}
 	if password {
 		rc = pg_saslprep(password, &&u8(&&i8(c2v_address_of(&prep_password))))
-		if int(rc) == Pg_saslprep_rc.saslprep_oom {
+		if i32(rc) == Pg_saslprep_rc.saslprep_oom {
 			C.c2v_free(voidptr(state.sasl_mechanism))
 			C.c2v_free(voidptr(state))
 			return unsafe { nil }
 		}
-		if int(rc) != Pg_saslprep_rc.saslprep_success {
+		if i32(rc) != Pg_saslprep_rc.saslprep_success {
 			prep_password = C.c2v_strdup(password)
 			if isnil(prep_password) {
 				C.c2v_free(voidptr(state.sasl_mechanism))
@@ -119,7 +119,7 @@ pub fn scram_free(opaq voidptr) {
 }
 
 @[markused]
-pub fn scram_exchange(opaq voidptr, final bool, input &i8, inputlen int, output &&u8, outputlen &int) SASLStatus {
+pub fn scram_exchange(opaq voidptr, final bool, input &i8, inputlen i32, output &&u8, outputlen &i32) SASLStatus {
 	c2v_gc_register_thread()
 	state := &Fe_scram_state(opaq)
 	conn := state.conn
@@ -142,7 +142,7 @@ pub fn scram_exchange(opaq voidptr, final bool, input &i8, inputlen int, output 
 			if usize((unsafe { *output })) == usize((voidptr(0))) {
 				return SASLStatus.sasl_failed
 			}
-			unsafe { *outputlen = int(C.c2v_strlen(*output)) }
+			unsafe { *outputlen = i32(C.c2v_strlen(*output)) }
 			state.state = Fe_scram_state_enum.fe_scram_nonce_sent
 			return SASLStatus.sasl_continue
 		}
@@ -154,7 +154,7 @@ pub fn scram_exchange(opaq voidptr, final bool, input &i8, inputlen int, output 
 			if usize((unsafe { *output })) == usize((voidptr(0))) {
 				return SASLStatus.sasl_failed
 			}
-			unsafe { *outputlen = int(C.c2v_strlen(*output)) }
+			unsafe { *outputlen = i32(C.c2v_strlen(*output)) }
 			state.state = Fe_scram_state_enum.fe_scram_proof_sent
 			return SASLStatus.sasl_continue
 		}
@@ -172,7 +172,7 @@ pub fn scram_exchange(opaq voidptr, final bool, input &i8, inputlen int, output 
 			}
 			state.state = Fe_scram_state_enum.fe_scram_finished
 			state.conn.client_finished_auth = (1 != 0)
-			return if int(match_) { SASLStatus.sasl_complete } else { SASLStatus.sasl_failed }
+			return if i32(match_) { SASLStatus.sasl_complete } else { SASLStatus.sasl_failed }
 		}
 		else {
 			libpq_append_conn_error(conn, c'invalid SCRAM exchange state')
@@ -186,18 +186,18 @@ pub fn scram_exchange(opaq voidptr, final bool, input &i8, inputlen int, output 
 pub fn read_attr_value(input &&u8, attr i8, error_message PQExpBuffer) &i8 {
 	begin := (unsafe { *input })
 	end := &i8(0)
-	if int((unsafe { *begin })) != int(attr) {
-		libpq_append_error(error_message, c'malformed SCRAM message (attribute "%c" expected)', int(attr))
+	if i32((unsafe { *begin })) != i32(attr) {
+		libpq_append_error(error_message, c'malformed SCRAM message (attribute "%c" expected)', i32(attr))
 		return unsafe { nil }
 	}
 	c2v_pointer_postfix(voidptr(&begin), begin, isize(1))
-	if int((unsafe { *begin })) != i8(`=`) {
-		libpq_append_error(error_message, c'malformed SCRAM message (expected character "=" for attribute "%c")', int(attr))
+	if i32((unsafe { *begin })) != i8(`=`) {
+		libpq_append_error(error_message, c'malformed SCRAM message (expected character "=" for attribute "%c")', i32(attr))
 		return unsafe { nil }
 	}
 	c2v_pointer_postfix(voidptr(&begin), begin, isize(1))
 	end = begin
-	for int((unsafe { *end })) && int((unsafe { *end })) != i8(`,`) {
+	for i32((unsafe { *end })) && i32((unsafe { *end })) != i8(`,`) {
 		c2v_pointer_postfix(voidptr(&end), end, isize(1))
 	}
 	if (unsafe { *end }) {
@@ -214,8 +214,8 @@ pub fn build_client_first_message(state &Fe_scram_state) &i8 {
 	conn := state.conn
 	raw_nonce := [19]Uint8{}
 	result := &i8(0)
-	channel_info_len := 0
-	encoded_len := 0
+	channel_info_len := i32(0)
+	encoded_len := i32(0)
 	buf := PQExpBufferData{}
 	if !pg_strong_random(voidptr(unsafe { &raw_nonce[0] }), usize(18)) {
 		libpq_append_conn_error(conn, c'could not generate nonce')
@@ -244,7 +244,7 @@ pub fn build_client_first_message(state &Fe_scram_state) &i8 {
 			goto oom_error
 		}
 	}
-	channel_info_len = int(buf.len)
+	channel_info_len = i32(buf.len)
 	append_pq_exp_buffer(&buf, c',,n=,r=%s', voidptr(state.client_nonce))
 	if (buf.maxlen == usize(0)) {
 		unsafe {
@@ -277,7 +277,7 @@ pub fn build_client_final_message(state &Fe_scram_state) &i8 {
 	conn := state.conn
 	client_proof := [32]Uint8{}
 	result := &i8(0)
-	encoded_len := 0
+	encoded_len := i32(0)
 	errstr := unsafe { &i8(nil) }
 	init_pq_exp_buffer(&buf)
 	if C.c2v_strcmp(state.sasl_mechanism, c'SCRAM-SHA-256-PLUS') == 0 {
@@ -346,7 +346,7 @@ pub fn read_server_first_message(state &Fe_scram_state, input_param &i8) bool {
 	endptr := &i8(0)
 	encoded_salt := &i8(0)
 	nonce := &i8(0)
-	decoded_salt_len := 0
+	decoded_salt_len := i32(0)
 	state.server_first_message = C.c2v_strdup(input)
 	if usize(state.server_first_message) == usize((voidptr(0))) {
 		libpq_append_conn_error(conn, c'out of memory')
@@ -369,13 +369,13 @@ pub fn read_server_first_message(state &Fe_scram_state, input_param &i8) bool {
 	if usize(encoded_salt) == usize((voidptr(0))) {
 		return false != 0
 	}
-	decoded_salt_len = pg_b64_dec_len(int(C.c2v_strlen(encoded_salt)))
+	decoded_salt_len = pg_b64_dec_len(i32(C.c2v_strlen(encoded_salt)))
 	state.salt = C.c2v_malloc(u64(decoded_salt_len))
 	if usize(state.salt) == usize((voidptr(0))) {
 		libpq_append_conn_error(conn, c'out of memory')
 		return false != 0
 	}
-	state.saltlen = pg_b64_decode(encoded_salt, int(C.c2v_strlen(encoded_salt)), state.salt, decoded_salt_len)
+	state.saltlen = pg_b64_decode(encoded_salt, i32(C.c2v_strlen(encoded_salt)), state.salt, decoded_salt_len)
 	if state.saltlen < 0 {
 		libpq_append_conn_error(conn, c'malformed SCRAM message (invalid salt)')
 		return false != 0
@@ -384,12 +384,12 @@ pub fn read_server_first_message(state &Fe_scram_state, input_param &i8) bool {
 	if usize(iterations_str) == usize((voidptr(0))) {
 		return false != 0
 	}
-	state.iterations = int(C.c2v_strtol(iterations_str, &&u8(&&i8(c2v_address_of(&endptr))), 10))
-	if int((unsafe { *endptr })) != i8(`\0`) || state.iterations < 1 {
+	state.iterations = i32(C.c2v_strtol(iterations_str, &&u8(&&i8(c2v_address_of(&endptr))), 10))
+	if i32((unsafe { *endptr })) != i8(`\0`) || state.iterations < 1 {
 		libpq_append_conn_error(conn, c'malformed SCRAM message (invalid iteration count)')
 		return false != 0
 	}
-	if int((unsafe { *input })) != i8(`\0`) {
+	if i32((unsafe { *input })) != i8(`\0`) {
 		libpq_append_conn_error(conn, c'malformed SCRAM message (garbage at end of server-first-message)')
 	}
 	return true != 0
@@ -401,13 +401,13 @@ pub fn read_server_final_message(state &Fe_scram_state, input_param &i8) bool {
 	conn := state.conn
 	encoded_server_signature := &i8(0)
 	decoded_server_signature := &Uint8(0)
-	server_signature_len := 0
+	server_signature_len := i32(0)
 	state.server_final_message = C.c2v_strdup(input)
 	if isnil(state.server_final_message) {
 		libpq_append_conn_error(conn, c'out of memory')
 		return false != 0
 	}
-	if int((unsafe { *input })) == i8(`e`) {
+	if i32((unsafe { *input })) == i8(`e`) {
 		errmsg := read_attr_value(&&u8(&&i8(c2v_address_of(&input))), i8(`e`), &conn.errorMessage)
 		if usize(errmsg) == usize((voidptr(0))) {
 			return false != 0
@@ -419,16 +419,16 @@ pub fn read_server_final_message(state &Fe_scram_state, input_param &i8) bool {
 	if usize(encoded_server_signature) == usize((voidptr(0))) {
 		return false != 0
 	}
-	if int((unsafe { *input })) != i8(`\0`) {
+	if i32((unsafe { *input })) != i8(`\0`) {
 		libpq_append_conn_error(conn, c'malformed SCRAM message (garbage at end of server-final-message)')
 	}
-	server_signature_len = pg_b64_dec_len(int(C.c2v_strlen(encoded_server_signature)))
+	server_signature_len = pg_b64_dec_len(i32(C.c2v_strlen(encoded_server_signature)))
 	decoded_server_signature = C.c2v_malloc(u64(server_signature_len))
 	if isnil(decoded_server_signature) {
 		libpq_append_conn_error(conn, c'out of memory')
 		return false != 0
 	}
-	server_signature_len = pg_b64_decode(encoded_server_signature, int(C.c2v_strlen(encoded_server_signature)), decoded_server_signature, server_signature_len)
+	server_signature_len = pg_b64_decode(encoded_server_signature, i32(C.c2v_strlen(encoded_server_signature)), decoded_server_signature, server_signature_len)
 	if server_signature_len != state.key_length {
 		C.c2v_free(voidptr(decoded_server_signature))
 		libpq_append_conn_error(conn, c'malformed SCRAM message (invalid server signature)')
@@ -444,7 +444,7 @@ pub fn calculate_client_proof(state &Fe_scram_state, client_final_message_withou
 	stored_key := [32]Uint8{}
 	client_key := [32]Uint8{}
 	client_signature := [32]Uint8{}
-	i := 0
+	i := i32(0)
 	ctx := &Pg_hmac_ctx(0)
 	ctx = pg_hmac_create(state.hash_type)
 	if usize(ctx) == usize((voidptr(0))) {
@@ -512,7 +512,7 @@ pub fn calculate_client_proof(state &Fe_scram_state, client_final_message_withou
 		return false != 0
 	}
 	for i = 0; i < state.key_length; i++ {
-		result[i] = Uint8(int(client_key[i]) ^ int(client_signature[i]))
+		result[i] = Uint8(i32(client_key[i]) ^ i32(client_signature[i]))
 	}
 	pg_hmac_free(ctx)
 	return true != 0
@@ -586,17 +586,17 @@ pub fn verify_server_signature(state &Fe_scram_state, match_ &bool, errstr &&u8)
 
 @[export: 'pg_fe_scram_build_secret']
 @[markused]
-pub fn pg_fe_scram_build_secret(password &i8, iterations int, errstr &&u8) &i8 {
+pub fn pg_fe_scram_build_secret(password &i8, iterations i32, errstr &&u8) &i8 {
 	prep_password := &i8(0)
 	rc := Pg_saslprep_rc{}
 	saltbuf := [16]Uint8{}
 	result := &i8(0)
 	rc = pg_saslprep(password, &&u8(&&i8(c2v_address_of(&prep_password))))
-	if int(rc) == Pg_saslprep_rc.saslprep_oom {
+	if i32(rc) == Pg_saslprep_rc.saslprep_oom {
 		unsafe { *errstr = &c'out of memory'[0] }
 		return unsafe { nil }
 	}
-	if int(rc) == Pg_saslprep_rc.saslprep_success {
+	if i32(rc) == Pg_saslprep_rc.saslprep_success {
 		password = &i8(prep_password)
 	}
 	if !pg_strong_random(voidptr(unsafe { &saltbuf[0] }), usize(16)) {

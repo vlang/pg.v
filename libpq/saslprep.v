@@ -23,14 +23,14 @@ pub fn libpq_saslprep_surrogate_pair_to_codepoint(first Pg_wchar, second Pg_wcha
 
 @[markused]
 pub fn libpq_saslprep_utf8_to_unicode(c &u8) Pg_wchar {
-	if (int((unsafe { *c })) & 128) == 0 {
+	if (i32((unsafe { *c })) & 128) == 0 {
 		return Pg_wchar(c[0])
-	} else if (int((unsafe { *c })) & 224) == 192 {
-		return Pg_wchar((((int(c[0]) & 31) << 6) | (int(c[1]) & 63)))
-	} else if (int((unsafe { *c })) & 240) == 224 {
-		return Pg_wchar((((int(c[0]) & 15) << 12) | ((int(c[1]) & 63) << 6) | (int(c[2]) & 63)))
-	} else if (int((unsafe { *c })) & 248) == 240 {
-		return Pg_wchar((((int(c[0]) & 7) << 18) | ((int(c[1]) & 63) << 12) | ((int(c[2]) & 63) << 6) | (int(c[3]) & 63)))
+	} else if (i32((unsafe { *c })) & 224) == 192 {
+		return Pg_wchar((((i32(c[0]) & 31) << 6) | (i32(c[1]) & 63)))
+	} else if (i32((unsafe { *c })) & 240) == 224 {
+		return Pg_wchar((((i32(c[0]) & 15) << 12) | ((i32(c[1]) & 63) << 6) | (i32(c[2]) & 63)))
+	} else if (i32((unsafe { *c })) & 248) == 240 {
+		return Pg_wchar((((i32(c[0]) & 7) << 18) | ((i32(c[1]) & 63) << 12) | ((i32(c[2]) & 63) << 6) | (i32(c[3]) & 63)))
 	} else {
 		return u32(4294967295)
 	}
@@ -57,7 +57,7 @@ pub fn libpq_saslprep_unicode_to_utf8(c Pg_wchar, utf8string &u8) &u8 {
 }
 
 @[markused]
-pub fn libpq_saslprep_unicode_utf8len(c Pg_wchar) int {
+pub fn libpq_saslprep_unicode_utf8len(c Pg_wchar) i32 {
 	if c <= Pg_wchar(127) {
 		return 1
 	} else if c <= Pg_wchar(2047) {
@@ -85,7 +85,7 @@ pub enum UnicodeNormalizationQC {
 pub fn unicode_is_normalized_quickcheck(form UnicodeNormalizationForm, input &Pg_wchar) UnicodeNormalizationQC
 
 @[markused]
-pub fn codepoint_range_cmp(a voidptr, b voidptr) int {
+pub fn codepoint_range_cmp(a voidptr, b voidptr) i32 {
 	c2v_gc_register_thread()
 	key := &Pg_wchar(a)
 	range := &Pg_wchar(b)
@@ -99,7 +99,7 @@ pub fn codepoint_range_cmp(a voidptr, b voidptr) int {
 }
 
 @[markused]
-pub fn is_code_in_table(code Pg_wchar, map_ &Pg_wchar, mapsize int) bool {
+pub fn is_code_in_table(code Pg_wchar, map_ &Pg_wchar, mapsize i32) bool {
 	if code < map_[0] || code > map_[mapsize - 1] {
 		return false != 0
 	}
@@ -111,10 +111,10 @@ pub fn is_code_in_table(code Pg_wchar, map_ &Pg_wchar, mapsize int) bool {
 }
 
 @[markused]
-pub fn pg_utf8_string_len(source &i8) int {
+pub fn pg_utf8_string_len(source &i8) i32 {
 	p := &u8(voidptr(source))
-	l := 0
-	num_chars := 0
+	l := i32(0)
+	num_chars := i32(0)
 	len := C.c2v_strlen(source)
 	for len {
 		l = pg_utf_mblen(p)
@@ -133,11 +133,11 @@ pub fn pg_utf8_string_len(source &i8) int {
 pub fn pg_saslprep(input &i8, output &&u8) Pg_saslprep_rc {
 	input_chars := unsafe { &Pg_wchar(nil) }
 	output_chars := unsafe { &Pg_wchar(nil) }
-	input_size := 0
+	input_size := i32(0)
 	result := &i8(0)
-	result_size := 0
-	count := 0
-	i := 0
+	result_size := i32(0)
+	count := i32(0)
+	i := i32(0)
 	contains_rand_al_cat := false
 	p := &u8(0)
 	wp := &Pg_wchar(0)

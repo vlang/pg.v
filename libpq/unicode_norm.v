@@ -23,14 +23,14 @@ pub fn libpq_unicode_norm_surrogate_pair_to_codepoint(first Pg_wchar, second Pg_
 
 @[markused]
 pub fn libpq_unicode_norm_utf8_to_unicode(c &u8) Pg_wchar {
-	if (int((unsafe { *c })) & 128) == 0 {
+	if (i32((unsafe { *c })) & 128) == 0 {
 		return Pg_wchar(c[0])
-	} else if (int((unsafe { *c })) & 224) == 192 {
-		return Pg_wchar((((int(c[0]) & 31) << 6) | (int(c[1]) & 63)))
-	} else if (int((unsafe { *c })) & 240) == 224 {
-		return Pg_wchar((((int(c[0]) & 15) << 12) | ((int(c[1]) & 63) << 6) | (int(c[2]) & 63)))
-	} else if (int((unsafe { *c })) & 248) == 240 {
-		return Pg_wchar((((int(c[0]) & 7) << 18) | ((int(c[1]) & 63) << 12) | ((int(c[2]) & 63) << 6) | (int(c[3]) & 63)))
+	} else if (i32((unsafe { *c })) & 224) == 192 {
+		return Pg_wchar((((i32(c[0]) & 31) << 6) | (i32(c[1]) & 63)))
+	} else if (i32((unsafe { *c })) & 240) == 224 {
+		return Pg_wchar((((i32(c[0]) & 15) << 12) | ((i32(c[1]) & 63) << 6) | (i32(c[2]) & 63)))
+	} else if (i32((unsafe { *c })) & 248) == 240 {
+		return Pg_wchar((((i32(c[0]) & 7) << 18) | ((i32(c[1]) & 63) << 12) | ((i32(c[2]) & 63) << 6) | (i32(c[3]) & 63)))
 	} else {
 		return u32(4294967295)
 	}
@@ -57,7 +57,7 @@ pub fn libpq_unicode_norm_unicode_to_utf8(c Pg_wchar, utf8string &u8) &u8 {
 }
 
 @[markused]
-pub fn libpq_unicode_norm_unicode_utf8len(c Pg_wchar) int {
+pub fn libpq_unicode_norm_unicode_utf8len(c Pg_wchar) i32 {
 	if c <= Pg_wchar(127) {
 		return 1
 	} else if c <= Pg_wchar(2047) {
@@ -78,7 +78,7 @@ pub mut:
 }
 
 @[markused]
-pub fn conv_compare(p1 voidptr, p2 voidptr) int {
+pub fn conv_compare(p1 voidptr, p2 voidptr) i32 {
 	c2v_gc_register_thread()
 	v1 := Uint32(0)
 	v2 := Uint32(0)
@@ -104,24 +104,24 @@ pub fn get_canonical_class(code Pg_wchar) Uint8 {
 }
 
 @[markused]
-pub fn get_code_decomposition(entry &Pg_unicode_decomposition, dec_size &int) &Pg_wchar {
-	if ((int(entry.dec_size_flags) & 64) != 0) {
+pub fn get_code_decomposition(entry &Pg_unicode_decomposition, dec_size &i32) &Pg_wchar {
+	if ((i32(entry.dec_size_flags) & 64) != 0) {
 		get_code_decomposition_x = Pg_wchar(entry.dec_index)
 		unsafe { *dec_size = 1 }
 		return &get_code_decomposition_x
 	} else {
-		unsafe { *dec_size = (int(entry.dec_size_flags) & 31) }
+		unsafe { *dec_size = (i32(entry.dec_size_flags) & 31) }
 		return unsafe { &libpq_unicode_norm_unicode_decomp_codepoints[0] + entry.dec_index }
 	}
 }
 
 @[markused]
-pub fn get_decomposed_size(code Pg_wchar, compat bool) int {
+pub fn get_decomposed_size(code Pg_wchar, compat bool) i32 {
 	entry := &Pg_unicode_decomposition(0)
-	size := 0
-	i := 0
+	size := i32(0)
+	i := i32(0)
 	decomp := &Uint32(0)
-	dec_size := 0
+	dec_size := i32(0)
 	if code >= Pg_wchar(44032) && code < Pg_wchar(44032 + 19 * 21 * 28) {
 		tindex := Uint32(0)
 		sindex := Uint32(0)
@@ -134,7 +134,7 @@ pub fn get_decomposed_size(code Pg_wchar, compat bool) int {
 		return 2
 	}
 	entry = get_code_entry(code)
-	if usize(entry) == usize((voidptr(0))) || (int(entry.dec_size_flags) & 31) == 0 || (!compat && ((int(entry.dec_size_flags) & 32) != 0)) {
+	if usize(entry) == usize((voidptr(0))) || (i32(entry.dec_size_flags) & 31) == 0 || (!compat && ((i32(entry.dec_size_flags) & 32) != 0)) {
 		return 1
 	}
 	decomp = get_code_decomposition(entry, &dec_size)
@@ -158,16 +158,16 @@ pub fn recompose_code(start Uint32, code Uint32, result &Uint32) bool {
 		return true != 0
 	} else {
 		entry := &Pg_unicode_decomposition(0)
-		i := 0
+		i := i32(0)
 		for i = 0; u64(i) < 6843; i++ {
 			entry = unsafe { &libpq_unicode_norm_unicode_decomp_main[0] + i }
-			if (int(entry.dec_size_flags) & 31) != 2 {
+			if (i32(entry.dec_size_flags) & 31) != 2 {
 				continue
 			}
-			if ((int(entry.dec_size_flags) & (128 | 32)) != 0) {
+			if ((i32(entry.dec_size_flags) & (128 | 32)) != 0) {
 				continue
 			}
-			if start == libpq_unicode_norm_unicode_decomp_codepoints[entry.dec_index] && code == libpq_unicode_norm_unicode_decomp_codepoints[int(entry.dec_index) + 1] {
+			if start == libpq_unicode_norm_unicode_decomp_codepoints[entry.dec_index] && code == libpq_unicode_norm_unicode_decomp_codepoints[i32(entry.dec_index) + 1] {
 				unsafe { *result = entry.codepoint }
 				return true != 0
 			}
@@ -177,11 +177,11 @@ pub fn recompose_code(start Uint32, code Uint32, result &Uint32) bool {
 }
 
 @[markused]
-pub fn decompose_code(code Pg_wchar, compat bool, result &&Pg_wchar, current &int) {
+pub fn decompose_code(code Pg_wchar, compat bool, result &&Pg_wchar, current &i32) {
 	entry := &Pg_unicode_decomposition(0)
-	i := 0
+	i := i32(0)
 	decomp := &Uint32(0)
-	dec_size := 0
+	dec_size := i32(0)
 	if code >= Pg_wchar(44032) && code < Pg_wchar(44032 + 19 * 21 * 28) {
 		l := Uint32(0)
 		v := Uint32(0)
@@ -204,7 +204,7 @@ pub fn decompose_code(code Pg_wchar, compat bool, result &&Pg_wchar, current &in
 		return
 	}
 	entry = get_code_entry(code)
-	if usize(entry) == usize((voidptr(0))) || (int(entry.dec_size_flags) & 31) == 0 || (!compat && ((int(entry.dec_size_flags) & 32) != 0)) {
+	if usize(entry) == usize((voidptr(0))) || (i32(entry.dec_size_flags) & 31) == 0 || (!compat && ((i32(entry.dec_size_flags) & 32) != 0)) {
 		res := (unsafe { *result })
 		unsafe { res[*current] = code }
 		unsafe { (*current)++ }
@@ -224,14 +224,14 @@ pub fn unicode_normalize(form UnicodeNormalizationForm, input &Pg_wchar) &Pg_wch
 	recompose := ((u32(form) == u32(UnicodeNormalizationForm.unicode_nfc) || u32(form) == u32(UnicodeNormalizationForm.unicode_nfkc)) != 0)
 	decomp_chars := &Pg_wchar(0)
 	recomp_chars := &Pg_wchar(0)
-	decomp_size := 0
-	current_size := 0
+	decomp_size := i32(0)
+	current_size := i32(0)
 
-	count := 0
+	count := i32(0)
 	p := &Pg_wchar(0)
-	last_class := 0
-	starter_pos := 0
-	target_pos := 0
+	last_class := i32(0)
+	starter_pos := i32(0)
+	target_pos := i32(0)
 	starter_ch := Uint32(0)
 	decomp_size = 0
 	for p = input; (unsafe { *p }); p = unsafe { p + 1 } {
@@ -259,10 +259,10 @@ pub fn unicode_normalize(form UnicodeNormalizationForm, input &Pg_wchar) &Pg_wch
 		tmp := Pg_wchar(0)
 		prev_class := get_canonical_class(prev)
 		next_class := get_canonical_class(next)
-		if int(prev_class) == 0 || int(next_class) == 0 {
+		if i32(prev_class) == 0 || i32(next_class) == 0 {
 			continue
 		}
-		if int(prev_class) <= int(next_class) {
+		if i32(prev_class) <= i32(next_class) {
 			continue
 		}
 		tmp = decomp_chars[count - 1]
@@ -287,9 +287,9 @@ pub fn unicode_normalize(form UnicodeNormalizationForm, input &Pg_wchar) &Pg_wch
 	starter_ch = recomp_chars[0]
 	for count = 1; count < decomp_size; count++ {
 		ch := decomp_chars[count]
-		ch_class := int(get_canonical_class(ch))
+		ch_class := i32(get_canonical_class(ch))
 		composite := Pg_wchar(0)
-		if last_class < ch_class && int(recompose_code(starter_ch, ch, unsafe { &Uint32(&composite) })) {
+		if last_class < ch_class && i32(recompose_code(starter_ch, ch, unsafe { &Uint32(&composite) })) {
 			recomp_chars[starter_pos] = composite
 			starter_ch = composite
 		} else if ch_class == 0 {

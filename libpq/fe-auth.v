@@ -3,19 +3,19 @@ module libpq
 
 @[markused]
 pub fn libpq_fe_auth_is_unixsock_path(path &i8) bool {
-	return (int(path[false]) == i8(`/`)) || int(path[false]) == i8(`@`)
+	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
 }
 
 @[markused]
-pub fn pg_sasl_init(conn &PGconn, payloadlen int, async &bool) int {
+pub fn pg_sasl_init(conn &PGconn, payloadlen i32, async &bool) i32 {
 	initialresponse := unsafe { &i8(nil) }
-	initialresponselen := 0
+	initialresponselen := i32(0)
 	selected_mechanism := &i8(0)
 	mechanism_buf := PQExpBufferData{}
 	password := unsafe { &i8(nil) }
 	status := SASLStatus{}
 	init_pq_exp_buffer(&mechanism_buf)
-	if int(conn.channel_binding[0]) == i8(`r`) && !conn.ssl_in_use {
+	if i32(conn.channel_binding[0]) == i8(`r`) && !conn.ssl_in_use {
 		libpq_append_conn_error(conn, c'channel binding required, but SSL not in use')
 		unsafe {
 			goto error
@@ -40,12 +40,12 @@ pub fn pg_sasl_init(conn &PGconn, payloadlen int, async &bool) int {
 				goto oom_error
 			}
 		}
-		if int(mechanism_buf.data[0]) == i8(`\0`) {
+		if i32(mechanism_buf.data[0]) == i8(`\0`) {
 			break
 		}
 		if C.c2v_strcmp(mechanism_buf.data, c'SCRAM-SHA-256-PLUS') == 0 {
 			if conn.ssl_in_use {
-				if int(conn.channel_binding[0]) == i8(`r`) {
+				if i32(conn.channel_binding[0]) == i8(`r`) {
 					libpq_append_conn_error(conn, c'channel binding is required, but client does not support it')
 					unsafe {
 						goto error
@@ -75,7 +75,7 @@ pub fn pg_sasl_init(conn &PGconn, payloadlen int, async &bool) int {
 	}
 	if conn.require_auth {
 		allowed := (0 != 0)
-		for i := 0; u64(i) < 2; i++ {
+		for i := i32(0); u64(i) < 2; i++ {
 			if usize(conn.sasl) == usize(conn.allowed_sasl_mechs[i]) {
 				allowed = (1 != 0)
 				break
@@ -88,18 +88,18 @@ pub fn pg_sasl_init(conn &PGconn, payloadlen int, async &bool) int {
 			}
 		}
 	}
-	if int(conn.channel_binding[0]) == i8(`r`) && C.c2v_strcmp(selected_mechanism, c'SCRAM-SHA-256-PLUS') != 0 {
+	if i32(conn.channel_binding[0]) == i8(`r`) && C.c2v_strcmp(selected_mechanism, c'SCRAM-SHA-256-PLUS') != 0 {
 		libpq_append_conn_error(conn, c'channel binding is required, but server did not offer an authentication method that supports channel binding')
 		unsafe {
 			goto error
 		}
 	}
-	if int(conn.password_needed) && isnil(conn.scram_client_key_binary) {
+	if i32(conn.password_needed) && isnil(conn.scram_client_key_binary) {
 		password = conn.connhost[conn.whichhost].password
 		if usize(password) == usize((voidptr(0))) {
 			password = conn.pgpass
 		}
-		if usize(password) == usize((voidptr(0))) || int(password[0]) == i8(`\0`) {
+		if usize(password) == usize((voidptr(0))) || i32(password[0]) == i8(`\0`) {
 			append_pq_exp_buffer_str(&conn.errorMessage, c'fe_sendauth: no password supplied\n')
 			unsafe {
 				goto error
@@ -178,10 +178,10 @@ pub fn pg_sasl_init(conn &PGconn, payloadlen int, async &bool) int {
 }
 
 @[markused]
-pub fn pg_sasl_continue(conn &PGconn, payloadlen int, final bool, async &bool) int {
+pub fn pg_sasl_continue(conn &PGconn, payloadlen i32, final bool, async &bool) i32 {
 	output := &i8(0)
-	outputlen := 0
-	res := 0
+	outputlen := i32(0)
+	res := i32(0)
 	challenge := &i8(0)
 	status := SASLStatus{}
 	challenge = &i8(C.c2v_malloc(u64(payloadlen + 1)))
@@ -202,7 +202,7 @@ pub fn pg_sasl_continue(conn &PGconn, payloadlen int, final bool, async &bool) i
 	if u32(status) == u32(SASLStatus.sasl_async) {
 		unsafe { *async = (1 != 0) }
 	}
-	if int(final) && u32(status) == u32(SASLStatus.sasl_continue) {
+	if i32(final) && u32(status) == u32(SASLStatus.sasl_continue) {
 		if outputlen != 0 {
 			C.c2v_free(voidptr(output))
 		}
@@ -228,8 +228,8 @@ pub fn pg_sasl_continue(conn &PGconn, payloadlen int, final bool, async &bool) i
 }
 
 @[markused]
-pub fn pg_password_sendauth(conn &PGconn, password &i8, areq AuthRequest) int {
-	ret := 0
+pub fn pg_password_sendauth(conn &PGconn, password &i8, areq AuthRequest) i32 {
+	ret := i32(0)
 	crypt_pwd := unsafe { &i8(nil) }
 	pwd_to_send := &i8(0)
 	md5_salt := [4]Uint8{}
@@ -306,7 +306,7 @@ pub fn check_expected_areq(areq AuthRequest, conn &PGconn) bool {
 	result := (1 != 0)
 	reason := unsafe { &i8(nil) }
 
-	if int(conn.sslcertmode[0]) == i8(`r`) && areq == AuthRequest(0) {
+	if i32(conn.sslcertmode[0]) == i8(`r`) && areq == AuthRequest(0) {
 		if !conn.ssl_cert_requested {
 			libpq_append_conn_error(conn, c'server did not request an SSL certificate')
 			return false != 0
@@ -318,7 +318,7 @@ pub fn check_expected_areq(areq AuthRequest, conn &PGconn) bool {
 	if conn.require_auth {
 		match areq {
 			0 {
-				if !conn.auth_required || int(conn.client_finished_auth) {
+				if !conn.auth_required || i32(conn.client_finished_auth) {
 					unsafe {
 						goto c2v_switch_end_8
 					}
@@ -342,7 +342,7 @@ pub fn check_expected_areq(areq AuthRequest, conn &PGconn) bool {
 		libpq_append_conn_error(conn, c'authentication method requirement "%s" failed: %s', voidptr(conn.require_auth), voidptr(reason))
 		return result
 	}
-	if int(conn.channel_binding[0]) == i8(`r`) {
+	if i32(conn.channel_binding[0]) == i8(`r`) {
 		match areq {
 			10, 11, 12 {
 			}
@@ -363,8 +363,8 @@ pub fn check_expected_areq(areq AuthRequest, conn &PGconn) bool {
 
 @[export: 'pg_fe_sendauth']
 @[markused]
-pub fn pg_fe_sendauth(areq AuthRequest, payloadlen int, conn &PGconn, async &bool) int {
-	oldmsglen := 0
+pub fn pg_fe_sendauth(areq AuthRequest, payloadlen i32, conn &PGconn, async &bool) i32 {
+	oldmsglen := i32(0)
 	unsafe { *async = (0 != 0) }
 	if !check_expected_areq(areq, conn) {
 		return -1
@@ -399,7 +399,7 @@ pub fn pg_fe_sendauth(areq AuthRequest, payloadlen int, conn &PGconn, async &boo
 			if usize(password) == usize((voidptr(0))) {
 				password = conn.pgpass
 			}
-			if usize(password) == usize((voidptr(0))) || int(password[0]) == i8(`\0`) {
+			if usize(password) == usize((voidptr(0))) || i32(password[0]) == i8(`\0`) {
 				append_pq_exp_buffer_str(&conn.errorMessage, c'fe_sendauth: no password supplied\n')
 				return -1
 			}
@@ -420,7 +420,7 @@ pub fn pg_fe_sendauth(areq AuthRequest, payloadlen int, conn &PGconn, async &boo
 				append_pq_exp_buffer_str(&conn.errorMessage, c'fe_sendauth: invalid authentication request from server: AUTH_REQ_SASL_CONT without AUTH_REQ_SASL\n')
 				return -1
 			}
-			oldmsglen = int(conn.errorMessage.len)
+			oldmsglen = i32(conn.errorMessage.len)
 			if areq == AuthRequest(12) {
 				final = (1 != 0)
 			}
@@ -448,7 +448,7 @@ pub fn pg_fe_getusername(user_id u32, error_message PQExpBuffer) &i8 {
 	pwbuf := C.passwd{}
 	pw := unsafe { &C.passwd(nil) }
 	buf := [1024]i8{}
-	rc := 0
+	rc := i32(0)
 	rc = C.c2v_getpwuid_r(user_id, &pwbuf, unsafe { &i8(&buf[0]) }, sizeof([1024]i8), &&C.passwd(&&C.passwd(c2v_address_of(&pw))))
 	if rc != 0 {
 		{
@@ -605,7 +605,7 @@ pub fn pq_set_auth_data_hook(hook PQauthDataHook_type) {
 
 @[export: 'PQdefaultAuthDataHook']
 @[markused]
-pub fn pq_default_auth_data_hook(type_ PGauthData, conn &PGconn, data voidptr) int {
+pub fn pq_default_auth_data_hook(type_ PGauthData, conn &PGconn, data voidptr) i32 {
 	c2v_gc_register_thread()
 	return 0
 }

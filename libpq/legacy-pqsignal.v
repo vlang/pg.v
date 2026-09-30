@@ -1,15 +1,15 @@
 @[translated]
 module libpq
 
-pub fn c2v_fn_sigaction(a0 int, a1 &C.sigaction, a2 &C.sigaction) int {
+pub fn c2v_fn_sigaction(a0 i32, a1 &C.sigaction, a2 &C.sigaction) i32 {
 	return C.c2v_sigaction(a0, a1, a2)
 }
 
-pub type C2vFn_666e2028696e7429 = fn (int)
+pub type C2vFn_666e202869333229 = fn (i32)
 
 @[export: 'pqsignal']
 @[markused]
-pub fn pqsignal(signo int, func Pqsigfunc) Pqsigfunc {
+pub fn pqsignal(signo i32, func Pqsigfunc) Pqsigfunc {
 	act := C.sigaction{}
 	oact := C.sigaction{}
 
@@ -25,7 +25,7 @@ pub fn pqsignal(signo int, func Pqsigfunc) Pqsigfunc {
 		act.sa_flags |= 8
 	}
 	if c2v_fn_sigaction(signo, &act, &oact) < 0 {
-		return C2vFn_666e2028696e7429(voidptr(-1))
+		return C2vFn_666e202869333229(voidptr(-1))
 	}
 	return oact.__sigaction_u.__sa_handler
 }

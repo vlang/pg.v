@@ -112,7 +112,7 @@ pub fn pg_cryptohash_create(type_ Pg_cryptohash_type) &Pg_cryptohash_ctx {
 
 @[export: 'pg_cryptohash_init']
 @[markused]
-pub fn pg_cryptohash_init(ctx &Pg_cryptohash_ctx) int {
+pub fn pg_cryptohash_init(ctx &Pg_cryptohash_ctx) i32 {
 	if usize(ctx) == usize((voidptr(0))) {
 		return -1
 	}
@@ -143,7 +143,7 @@ pub fn pg_cryptohash_init(ctx &Pg_cryptohash_ctx) int {
 
 @[export: 'pg_cryptohash_update']
 @[markused]
-pub fn pg_cryptohash_update(ctx &Pg_cryptohash_ctx, data &Uint8, len usize) int {
+pub fn pg_cryptohash_update(ctx &Pg_cryptohash_ctx, data &Uint8, len usize) i32 {
 	if usize(ctx) == usize((voidptr(0))) {
 		return -1
 	}
@@ -174,7 +174,7 @@ pub fn pg_cryptohash_update(ctx &Pg_cryptohash_ctx, data &Uint8, len usize) int 
 
 @[export: 'pg_cryptohash_final']
 @[markused]
-pub fn pg_cryptohash_final(ctx &Pg_cryptohash_ctx, dest &Uint8, len usize) int {
+pub fn pg_cryptohash_final(ctx &Pg_cryptohash_ctx, dest &Uint8, len usize) i32 {
 	if usize(ctx) == usize((voidptr(0))) {
 		return -1
 	}

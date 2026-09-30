@@ -23,14 +23,14 @@ pub fn libpq_encnames_surrogate_pair_to_codepoint(first Pg_wchar, second Pg_wcha
 
 @[markused]
 pub fn libpq_encnames_utf8_to_unicode(c &u8) Pg_wchar {
-	if (int((unsafe { *c })) & 128) == 0 {
+	if (i32((unsafe { *c })) & 128) == 0 {
 		return Pg_wchar(c[0])
-	} else if (int((unsafe { *c })) & 224) == 192 {
-		return Pg_wchar((((int(c[0]) & 31) << 6) | (int(c[1]) & 63)))
-	} else if (int((unsafe { *c })) & 240) == 224 {
-		return Pg_wchar((((int(c[0]) & 15) << 12) | ((int(c[1]) & 63) << 6) | (int(c[2]) & 63)))
-	} else if (int((unsafe { *c })) & 248) == 240 {
-		return Pg_wchar((((int(c[0]) & 7) << 18) | ((int(c[1]) & 63) << 12) | ((int(c[2]) & 63) << 6) | (int(c[3]) & 63)))
+	} else if (i32((unsafe { *c })) & 224) == 192 {
+		return Pg_wchar((((i32(c[0]) & 31) << 6) | (i32(c[1]) & 63)))
+	} else if (i32((unsafe { *c })) & 240) == 224 {
+		return Pg_wchar((((i32(c[0]) & 15) << 12) | ((i32(c[1]) & 63) << 6) | (i32(c[2]) & 63)))
+	} else if (i32((unsafe { *c })) & 248) == 240 {
+		return Pg_wchar((((i32(c[0]) & 7) << 18) | ((i32(c[1]) & 63) << 12) | ((i32(c[2]) & 63) << 6) | (i32(c[3]) & 63)))
 	} else {
 		return u32(4294967295)
 	}
@@ -57,7 +57,7 @@ pub fn libpq_encnames_unicode_to_utf8(c Pg_wchar, utf8string &u8) &u8 {
 }
 
 @[markused]
-pub fn libpq_encnames_unicode_utf8len(c Pg_wchar) int {
+pub fn libpq_encnames_unicode_utf8len(c Pg_wchar) i32 {
 	if c <= Pg_wchar(127) {
 		return 1
 	} else if c <= Pg_wchar(2047) {
@@ -77,7 +77,7 @@ pub mut:
 
 @[export: 'is_encoding_supported_by_icu']
 @[markused]
-pub fn is_encoding_supported_by_icu(encoding int) bool {
+pub fn is_encoding_supported_by_icu(encoding i32) bool {
 	if !(encoding >= 0 && encoding <= Pg_enc.pg_koi8u) {
 		return false != 0
 	}
@@ -86,7 +86,7 @@ pub fn is_encoding_supported_by_icu(encoding int) bool {
 
 @[export: 'get_encoding_name_for_icu']
 @[markused]
-pub fn get_encoding_name_for_icu(encoding int) &i8 {
+pub fn get_encoding_name_for_icu(encoding i32) &i8 {
 	if !(encoding >= 0 && encoding <= Pg_enc.pg_koi8u) {
 		return unsafe { nil }
 	}
@@ -95,8 +95,8 @@ pub fn get_encoding_name_for_icu(encoding int) &i8 {
 
 @[export: 'pg_valid_client_encoding']
 @[markused]
-pub fn pg_valid_client_encoding(name &i8) int {
-	enc := 0
+pub fn pg_valid_client_encoding(name &i8) i32 {
+	enc := i32(0)
 	enc = pg_char_to_encoding(name)
 	if enc < 0 {
 		return -1
@@ -109,8 +109,8 @@ pub fn pg_valid_client_encoding(name &i8) int {
 
 @[export: 'pg_valid_server_encoding']
 @[markused]
-pub fn pg_valid_server_encoding(name &i8) int {
-	enc := 0
+pub fn pg_valid_server_encoding(name &i8) i32 {
+	enc := i32(0)
 	enc = pg_char_to_encoding(name)
 	if enc < 0 {
 		return -1
@@ -123,8 +123,8 @@ pub fn pg_valid_server_encoding(name &i8) int {
 
 @[export: 'pg_valid_server_encoding_id']
 @[markused]
-pub fn pg_valid_server_encoding_id(encoding int) int {
-	return int((encoding >= 0 && encoding <= Pg_enc.pg_koi8u))
+pub fn pg_valid_server_encoding_id(encoding i32) i32 {
+	return i32((encoding >= 0 && encoding <= Pg_enc.pg_koi8u))
 }
 
 @[markused]
@@ -132,11 +132,11 @@ pub fn clean_encoding_name(key &i8, newkey &i8) &i8 {
 	p := &i8(0)
 	np := &i8(0)
 	p = key
-	for np = newkey; int((unsafe { *p })) != i8(`\0`); p = unsafe { p + 1 } {
-		if C.c2v_isalnum(int(u8((unsafe { *p })))) {
-			if int((unsafe { *p })) >= i8(`A`) && int((unsafe { *p })) <= i8(`Z`) {
+	for np = newkey; i32((unsafe { *p })) != i8(`\0`); p = unsafe { p + 1 } {
+		if C.c2v_isalnum(i32(u8((unsafe { *p })))) {
+			if i32((unsafe { *p })) >= i8(`A`) && i32((unsafe { *p })) <= i8(`Z`) {
 				mut __c2v_lhs_tmp_0 := unsafe { c2v_pointer_postfix(voidptr(&np), np, isize(1)) }
-				unsafe { *__c2v_lhs_tmp_0 = i8(int(*p) + int(`a`) - int(`A`)) }
+				unsafe { *__c2v_lhs_tmp_0 = i8(i32(*p) + i32(`a`) - i32(`A`)) }
 			} else {
 				mut __c2v_lhs_tmp_1 := unsafe { c2v_pointer_postfix(voidptr(&np), np, isize(1)) }
 				unsafe { *__c2v_lhs_tmp_1 = *p }
@@ -149,17 +149,17 @@ pub fn clean_encoding_name(key &i8, newkey &i8) &i8 {
 
 @[export: 'pg_char_to_encoding']
 @[markused]
-pub fn pg_char_to_encoding(name &i8) int {
+pub fn pg_char_to_encoding(name &i8) i32 {
 	nel := 81
 	base := unsafe { &Pg_encname(&libpq_encnames_pg_encname_tbl[0]) }
 	last := base + nel - 1
 	position := &Pg_encname(0)
 
-	result := 0
+	result := i32(0)
 	buff := [64]i8{}
 	key := &i8(0)
 
-	if usize(name) == usize((voidptr(0))) || int((unsafe { *name })) == i8(`\0`) {
+	if usize(name) == usize((voidptr(0))) || i32((unsafe { *name })) == i8(`\0`) {
 		return -1
 	}
 	if C.c2v_strlen(name) >= u64(64) {
@@ -168,11 +168,11 @@ pub fn pg_char_to_encoding(name &i8) int {
 	key = clean_encoding_name(name, unsafe { &i8(&buff[0]) })
 	for usize(last) >= usize(base) {
 		position = base + ((i64((isize(last) - isize(base)) / isize(sizeof(Pg_encname)))) >> 1)
-		result = int(key[0]) - int(position.name[0])
+		result = i32(key[0]) - i32(position.name[0])
 		if result == 0 {
 			result = C.c2v_strcmp(key, position.name)
 			if result == 0 {
-				return int(position.encoding)
+				return i32(position.encoding)
 			}
 		}
 		if result < 0 {
@@ -186,7 +186,7 @@ pub fn pg_char_to_encoding(name &i8) int {
 
 @[export: 'pg_encoding_to_char']
 @[markused]
-pub fn pg_encoding_to_char(encoding int) &i8 {
+pub fn pg_encoding_to_char(encoding i32) &i8 {
 	if (encoding >= 0 && encoding < Pg_enc.pg_last_encoding_) {
 		p := unsafe { &pg_enc2name_tbl[0] + encoding }
 

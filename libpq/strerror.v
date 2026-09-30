@@ -3,16 +3,16 @@ module libpq
 
 @[export: 'pg_strerror']
 @[markused]
-pub fn pg_strerror(errnum int) &i8 {
+pub fn pg_strerror(errnum i32) &i8 {
 	return pg_strerror_r(errnum, unsafe { &i8(&pg_strerror_errorstr_buf[0]) }, sizeof([256]i8))
 }
 
 @[export: 'pg_strerror_r']
 @[markused]
-pub fn pg_strerror_r(errnum int, buf &i8, buflen usize) &i8 {
+pub fn pg_strerror_r(errnum i32, buf &i8, buflen usize) &i8 {
 	str := &i8(0)
 	str = gnuish_strerror_r(errnum, buf, buflen)
-	if usize(str) == usize((voidptr(0))) || int((unsafe { *str })) == i8(`\0`) || int((unsafe { *str })) == i8(`?`) {
+	if usize(str) == usize((voidptr(0))) || i32((unsafe { *str })) == i8(`\0`) || i32((unsafe { *str })) == i8(`?`) {
 		str = get_errno_symbol(errnum)
 	}
 	if usize(str) == usize((voidptr(0))) {
@@ -23,7 +23,7 @@ pub fn pg_strerror_r(errnum int, buf &i8, buflen usize) &i8 {
 }
 
 @[markused]
-pub fn gnuish_strerror_r(errnum int, buf &i8, buflen usize) &i8 {
+pub fn gnuish_strerror_r(errnum i32, buf &i8, buflen usize) &i8 {
 	if C.c2v_strerror_r(errnum, buf, buflen) == 0 {
 		return buf
 	}
@@ -31,7 +31,7 @@ pub fn gnuish_strerror_r(errnum int, buf &i8, buflen usize) &i8 {
 }
 
 @[markused]
-pub fn get_errno_symbol(errnum int) &i8 {
+pub fn get_errno_symbol(errnum i32) &i8 {
 	match errnum {
 		7 {
 			return unsafe { &i8(&c'E2BIG'[0]) }

@@ -3,19 +3,19 @@ module libpq
 
 @[markused]
 pub fn libpq_ip_is_unixsock_path(path &i8) bool {
-	return (int(path[false]) == i8(`/`)) || int(path[false]) == i8(`@`)
+	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
 }
 
 @[export: 'pg_getaddrinfo_all']
 @[markused]
-pub fn pg_getaddrinfo_all(hostname &i8, servname &i8, hintp &C.addrinfo, result &&C.addrinfo) int {
-	rc := 0
+pub fn pg_getaddrinfo_all(hostname &i8, servname &i8, hintp &C.addrinfo, result &&C.addrinfo) i32 {
+	rc := i32(0)
 	unsafe { *result = (voidptr(0)) }
 	if hintp.ai_family == 1 {
 		return getaddrinfo_unix(servname, hintp, result)
 	}
 	rc = C.c2v_getaddrinfo(unsafe {
-		if (isnil(hostname) || int(hostname[0]) == i8(`\0`)) {
+		if (isnil(hostname) || i32(hostname[0]) == i8(`\0`)) {
 			&i8(nil)
 		} else {
 			hostname
@@ -26,7 +26,7 @@ pub fn pg_getaddrinfo_all(hostname &i8, servname &i8, hintp &C.addrinfo, result 
 
 @[export: 'pg_freeaddrinfo_all']
 @[markused]
-pub fn pg_freeaddrinfo_all(hint_ai_family int, ai &C.addrinfo) {
+pub fn pg_freeaddrinfo_all(hint_ai_family i32, ai &C.addrinfo) {
 	if hint_ai_family == 1 {
 		for usize(ai) != usize((voidptr(0))) {
 			p := ai
@@ -43,9 +43,9 @@ pub fn pg_freeaddrinfo_all(hint_ai_family int, ai &C.addrinfo) {
 
 @[export: 'pg_getnameinfo_all']
 @[markused]
-pub fn pg_getnameinfo_all(addr &C.sockaddr_storage, salen int, node &i8, nodelen int, service &i8, servicelen int, flags int) int {
-	rc := 0
-	if !isnil(addr) && int(addr.ss_family) == 1 {
+pub fn pg_getnameinfo_all(addr &C.sockaddr_storage, salen i32, node &i8, nodelen i32, service &i8, servicelen i32, flags i32) i32 {
+	rc := i32(0)
+	if !isnil(addr) && i32(addr.ss_family) == 1 {
 		rc = getnameinfo_unix(&C.sockaddr_un(voidptr(addr)), salen, node, nodelen, service, servicelen, flags)
 	} else {
 		rc = C.c2v_getnameinfo(&C.sockaddr(voidptr(addr)), u32(salen), node, u32(nodelen), service, u32(servicelen), flags)
@@ -62,7 +62,7 @@ pub fn pg_getnameinfo_all(addr &C.sockaddr_storage, salen int, node &i8, nodelen
 }
 
 @[markused]
-pub fn getaddrinfo_unix(path &i8, hintsp &C.addrinfo, result &&C.addrinfo) int {
+pub fn getaddrinfo_unix(path &i8, hintsp &C.addrinfo, result &&C.addrinfo) i32 {
 	hints := C.addrinfo{}
 
 	aip := &C.addrinfo(0)
@@ -102,7 +102,7 @@ pub fn getaddrinfo_unix(path &i8, hintsp &C.addrinfo, result &&C.addrinfo) int {
 	aip.ai_addr = &C.sockaddr(voidptr(unp))
 	aip.ai_addrlen = u32(sizeof(C.sockaddr_un))
 	C.c2v_strcpy(unsafe { &i8(&unp.sun_path[0]) }, path)
-	if int(path[0]) == i8(`@`) {
+	if i32(path[0]) == i8(`@`) {
 		unp.sun_path[0] = i8(`\0`)
 		aip.ai_addrlen = u32((u64(usize(__offsetof(C.sockaddr_un, sun_path)))) + C.c2v_strlen(path))
 	}
@@ -110,9 +110,9 @@ pub fn getaddrinfo_unix(path &i8, hintsp &C.addrinfo, result &&C.addrinfo) int {
 }
 
 @[markused]
-pub fn getnameinfo_unix(sa &C.sockaddr_un, salen int, node &i8, nodelen int, service &i8, servicelen int, flags int) int {
-	ret := 0
-	if usize(sa) == usize((voidptr(0))) || int(sa.sun_family) != 1 || (usize(node) == usize((voidptr(0))) && usize(service) == usize((voidptr(0)))) {
+pub fn getnameinfo_unix(sa &C.sockaddr_un, salen i32, node &i8, nodelen i32, service &i8, servicelen i32, flags i32) i32 {
+	ret := i32(0)
+	if usize(sa) == usize((voidptr(0))) || i32(sa.sun_family) != 1 || (usize(node) == usize((voidptr(0))) && usize(service) == usize((voidptr(0)))) {
 		return 4
 	}
 	if node {
@@ -122,7 +122,7 @@ pub fn getnameinfo_unix(sa &C.sockaddr_un, salen int, node &i8, nodelen int, ser
 		}
 	}
 	if service {
-		if int(sa.sun_path[0]) == i8(`\0`) && int(sa.sun_path[1]) != i8(`\0`) {
+		if i32(sa.sun_path[0]) == i8(`\0`) && i32(sa.sun_path[1]) != i8(`\0`) {
 			ret = pg_snprintf(service, usize(servicelen), c'@%s', voidptr(unsafe { &sa.sun_path[0] } + 1))
 		} else {
 			ret = pg_snprintf(service, usize(servicelen), c'%s', unsafe { voidptr(&sa.sun_path[0]) })

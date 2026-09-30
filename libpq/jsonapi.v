@@ -5,15 +5,15 @@ pub struct JsonLexContext_jsonapi {
 pub mut:
 	input                 &i8
 	input_length          usize
-	input_encoding        int
+	input_encoding        i32
 	token_start           &i8
 	token_terminator      &i8
 	prev_token_terminator &i8
 	incremental           bool
 	token_type            JsonTokenType
-	lex_level             int
+	lex_level             i32
 	flags                 Bits32
-	line_number           int
+	line_number           i32
 	line_start            &i8
 	pstack                &JsonParserStack
 	inc_state             &JsonIncrementalState
@@ -44,14 +44,14 @@ pub fn libpq_jsonapi_surrogate_pair_to_codepoint(first Pg_wchar, second Pg_wchar
 
 @[markused]
 pub fn libpq_jsonapi_utf8_to_unicode(c &u8) Pg_wchar {
-	if (int((unsafe { *c })) & 128) == 0 {
+	if (i32((unsafe { *c })) & 128) == 0 {
 		return Pg_wchar(c[0])
-	} else if (int((unsafe { *c })) & 224) == 192 {
-		return Pg_wchar((((int(c[0]) & 31) << 6) | (int(c[1]) & 63)))
-	} else if (int((unsafe { *c })) & 240) == 224 {
-		return Pg_wchar((((int(c[0]) & 15) << 12) | ((int(c[1]) & 63) << 6) | (int(c[2]) & 63)))
-	} else if (int((unsafe { *c })) & 248) == 240 {
-		return Pg_wchar((((int(c[0]) & 7) << 18) | ((int(c[1]) & 63) << 12) | ((int(c[2]) & 63) << 6) | (int(c[3]) & 63)))
+	} else if (i32((unsafe { *c })) & 224) == 192 {
+		return Pg_wchar((((i32(c[0]) & 31) << 6) | (i32(c[1]) & 63)))
+	} else if (i32((unsafe { *c })) & 240) == 224 {
+		return Pg_wchar((((i32(c[0]) & 15) << 12) | ((i32(c[1]) & 63) << 6) | (i32(c[2]) & 63)))
+	} else if (i32((unsafe { *c })) & 248) == 240 {
+		return Pg_wchar((((i32(c[0]) & 7) << 18) | ((i32(c[1]) & 63) << 12) | ((i32(c[2]) & 63) << 6) | (i32(c[3]) & 63)))
 	} else {
 		return u32(4294967295)
 	}
@@ -78,7 +78,7 @@ pub fn libpq_jsonapi_unicode_to_utf8(c Pg_wchar, utf8string &u8) &u8 {
 }
 
 @[markused]
-pub fn libpq_jsonapi_unicode_utf8len(c Pg_wchar) int {
+pub fn libpq_jsonapi_unicode_utf8len(c Pg_wchar) i32 {
 	if c <= Pg_wchar(127) {
 		return 1
 	} else if c <= Pg_wchar(2047) {
@@ -118,11 +118,11 @@ pub fn vector8_has_zero(v Vector8) bool {
 @[markused]
 pub fn vector8_has_le(v Vector8, c Uint8) bool {
 	result := (0 != 0)
-	if Int64(v) >= Int64(0) && int(c) < 128 {
-		result = ((v - vector8_broadcast(Uint8(int(c) + 1))) & ~v & vector8_broadcast(Uint8(128)) != 0)
+	if Int64(v) >= Int64(0) && i32(c) < 128 {
+		result = ((v - vector8_broadcast(Uint8(i32(c) + 1))) & ~v & vector8_broadcast(Uint8(128)) != 0)
 	} else {
 		for i := Size(0); i < sizeof(Vector8); i++ {
-			if int((&Uint8(c2v_address_of(&v)))[i]) <= int(c) {
+			if i32((&Uint8(c2v_address_of(&v)))[i]) <= i32(c) {
 				result = (1 != 0)
 				break
 			}
@@ -154,7 +154,7 @@ pub fn pg_lfind8(key Uint8, base &Uint8, nelem Uint32) bool {
 		}
 	}
 	for ; i < nelem; i++ {
-		if int(key) == int(base[i]) {
+		if i32(key) == i32(base[i]) {
 			return true != 0
 		}
 	}
@@ -173,7 +173,7 @@ pub fn pg_lfind8_le(key Uint8, base &Uint8, nelem Uint32) bool {
 		}
 	}
 	for ; i < nelem; i++ {
-		if int(base[i]) <= int(key) {
+		if i32(base[i]) <= i32(key) {
 			return true != 0
 		}
 	}
@@ -231,7 +231,7 @@ pub enum JsonParserSem {
 
 pub struct JsonParserStack {
 pub mut:
-	stack_size int
+	stack_size i32
 	prediction &i8
 	pred_index usize
 	fnames     &&u8
@@ -278,7 +278,7 @@ pub fn is_valid_json_number(str &i8, len usize) bool {
 	if len <= usize(0) {
 		return false != 0
 	}
-	if int((unsafe { *str })) == i8(`-`) {
+	if i32((unsafe { *str })) == i8(`-`) {
 		dummy_lex.input = str + 1
 		dummy_lex.input_length = len - usize(1)
 	} else {
@@ -292,7 +292,7 @@ pub fn is_valid_json_number(str &i8, len usize) bool {
 
 @[export: 'makeJsonLexContextCstringLen']
 @[markused]
-pub fn make_json_lex_context_cstring_len(lex_param &JsonLexContext, json &i8, len usize, encoding int, need_escapes bool) &JsonLexContext {
+pub fn make_json_lex_context_cstring_len(lex_param &JsonLexContext, json &i8, len usize, encoding i32, need_escapes bool) &JsonLexContext {
 	mut lex := unsafe { &JsonLexContext_jsonapi(voidptr(lex_param)) }
 	if usize(lex) == usize((voidptr(0))) {
 		lex = C.c2v_calloc(u64(1), sizeof(JsonLexContext_jsonapi))
@@ -353,7 +353,7 @@ pub fn allocate_incremental_state(lex &JsonLexContext_jsonapi) bool {
 
 @[export: 'makeJsonLexContextIncremental']
 @[markused]
-pub fn make_json_lex_context_incremental(lex_param &JsonLexContext, encoding int, need_escapes bool) &JsonLexContext {
+pub fn make_json_lex_context_incremental(lex_param &JsonLexContext, encoding i32, need_escapes bool) &JsonLexContext {
 	mut lex := unsafe { &JsonLexContext_jsonapi(voidptr(lex_param)) }
 	if usize(lex) == usize((voidptr(0))) {
 		lex = C.c2v_calloc(u64(1), sizeof(JsonLexContext_jsonapi))
@@ -385,7 +385,7 @@ pub fn make_json_lex_context_incremental(lex_param &JsonLexContext, encoding int
 @[markused]
 pub fn set_json_lex_context_owns_tokens(lex_param &JsonLexContext, owned_by_context bool) {
 	mut lex := unsafe { &JsonLexContext_jsonapi(voidptr(lex_param)) }
-	if int(lex.incremental) && int(lex.inc_state.started) {
+	if i32(lex.incremental) && i32(lex.inc_state.started) {
 		return
 	}
 	if owned_by_context {
@@ -397,7 +397,7 @@ pub fn set_json_lex_context_owns_tokens(lex_param &JsonLexContext, owned_by_cont
 
 @[markused]
 pub fn inc_lex_level(lex &JsonLexContext_jsonapi) bool {
-	if int(lex.incremental) && (lex.lex_level + 1) >= lex.pstack.stack_size {
+	if i32(lex.incremental) && (lex.lex_level + 1) >= lex.pstack.stack_size {
 		new_stack_size := usize(0)
 		new_prediction := &i8(0)
 		new_fnames := &&u8(0)
@@ -418,7 +418,7 @@ pub fn inc_lex_level(lex &JsonLexContext_jsonapi) bool {
 			return false != 0
 		}
 		lex.pstack.fnull = new_fnull
-		lex.pstack.stack_size = int(new_stack_size)
+		lex.pstack.stack_size = i32(new_stack_size)
 	}
 	lex.lex_level += 1
 	if lex.incremental {
@@ -501,7 +501,7 @@ pub fn free_json_lex_context(lex_param &JsonLexContext) {
 		C.c2v_free(voidptr(lex.inc_state))
 		C.c2v_free(voidptr(lex.pstack.prediction))
 		if lex.flags & Bits32((1 << 2)) {
-			i := 0
+			i := i32(0)
 			for i = 0; i <= lex.lex_level; i++ {
 				C.c2v_free(voidptr(lex.pstack.fnames[i]))
 			}
@@ -555,10 +555,10 @@ pub fn pg_parse_json(lex_param &JsonLexContext, sem &JsonSemAction) JsonParseErr
 
 @[export: 'json_count_array_elements']
 @[markused]
-pub fn json_count_array_elements(lex_param &JsonLexContext, elements &int) JsonParseErrorType {
+pub fn json_count_array_elements(lex_param &JsonLexContext, elements &i32) JsonParseErrorType {
 	mut lex := unsafe { &JsonLexContext_jsonapi(voidptr(lex_param)) }
 	copylex := JsonLexContext_jsonapi{}
-	count := 0
+	count := i32(0)
 	result := JsonParseErrorType{}
 	if usize(lex) == usize(&libpq_jsonapi_failed_oom) {
 		return JsonParseErrorType.json_out_of_memory
@@ -640,10 +640,10 @@ pub fn pg_parse_json_incremental(lex_param &JsonLexContext, sem &JsonSemAction, 
 				tok = lex_peek(voidptr(lex))
 			}
 		} else {
-			if (int(top) & 32) && usize(c2v_assign[Td_entry](unsafe { &entry }, libpq_jsonapi_td_parser_table[int(top) - int(JsonNonTerminal.json_nt_json)][tok]).prod) != usize((voidptr(0))) {
+			if (i32(top) & 32) && usize(c2v_assign[Td_entry](unsafe { &entry }, libpq_jsonapi_td_parser_table[i32(top) - i32(JsonNonTerminal.json_nt_json)][tok]).prod) != usize((voidptr(0))) {
 				push_prediction(pstack, entry)
-			} else if (int(top) & 64) {
-				match JsonParserSem(int(top)) {
+			} else if (i32(top) & 64) {
+				match JsonParserSem(i32(top)) {
 					.json_sem_ostart {
 						ostart := sem.object_start
 						if lex.lex_level >= 6400 {
@@ -698,7 +698,7 @@ pub fn pg_parse_json_incremental(lex_param &JsonLexContext, sem &JsonSemAction, 
 						fname := unsafe { &i8(nil) }
 						ostart := sem.object_field_start
 						oend := sem.object_field_end
-						if (ostart != (voidptr(0)) || oend != (voidptr(0))) && int(lex.need_escapes) {
+						if (ostart != (voidptr(0)) || oend != (voidptr(0))) && i32(lex.need_escapes) {
 							fname = C.c2v_strdup(lex.strval.data)
 							if usize(fname) == usize((voidptr(0))) {
 								return JsonParseErrorType.json_out_of_memory
@@ -790,46 +790,46 @@ pub fn pg_parse_json_incremental(lex_param &JsonLexContext, sem &JsonSemAction, 
 					}
 				}
 			} else {
-				match int(top) {
-					int(JsonTokenType.json_token_string) {
-						if int(next_prediction(pstack)) == JsonTokenType.json_token_colon {
+				match i32(top) {
+					i32(JsonTokenType.json_token_string) {
+						if i32(next_prediction(pstack)) == JsonTokenType.json_token_colon {
 							ctx = JsonParseContext.json_parse_string
 						} else {
 							ctx = JsonParseContext.json_parse_value
 						}
 					}
-					int(JsonTokenType.json_token_number), int(JsonTokenType.json_token_true), int(JsonTokenType.json_token_false), int(JsonTokenType.json_token_null), int(JsonTokenType.json_token_array_start), int(JsonTokenType.json_token_object_start) {
+					i32(JsonTokenType.json_token_number), i32(JsonTokenType.json_token_true), i32(JsonTokenType.json_token_false), i32(JsonTokenType.json_token_null), i32(JsonTokenType.json_token_array_start), i32(JsonTokenType.json_token_object_start) {
 						ctx = JsonParseContext.json_parse_value
 					}
-					int(JsonTokenType.json_token_array_end) {
+					i32(JsonTokenType.json_token_array_end) {
 						ctx = JsonParseContext.json_parse_array_next
 					}
-					int(JsonTokenType.json_token_object_end) {
+					i32(JsonTokenType.json_token_object_end) {
 						ctx = JsonParseContext.json_parse_object_next
 					}
-					int(JsonTokenType.json_token_comma) {
-						if int(next_prediction(pstack)) == JsonTokenType.json_token_string {
+					i32(JsonTokenType.json_token_comma) {
+						if i32(next_prediction(pstack)) == JsonTokenType.json_token_string {
 							ctx = JsonParseContext.json_parse_object_next
 						} else {
 							ctx = JsonParseContext.json_parse_array_next
 						}
 					}
-					int(JsonTokenType.json_token_colon) {
+					i32(JsonTokenType.json_token_colon) {
 						ctx = JsonParseContext.json_parse_object_label
 					}
-					int(JsonTokenType.json_token_end) {
+					i32(JsonTokenType.json_token_end) {
 						ctx = JsonParseContext.json_parse_end
 					}
-					int(JsonNonTerminal.json_nt_more_array_elements) {
+					i32(JsonNonTerminal.json_nt_more_array_elements) {
 						ctx = JsonParseContext.json_parse_array_next
 					}
-					int(JsonNonTerminal.json_nt_array_elements) {
+					i32(JsonNonTerminal.json_nt_array_elements) {
 						ctx = JsonParseContext.json_parse_array_start
 					}
-					int(JsonNonTerminal.json_nt_more_key_pairs) {
+					i32(JsonNonTerminal.json_nt_more_key_pairs) {
 						ctx = JsonParseContext.json_parse_object_next
 					}
-					int(JsonNonTerminal.json_nt_key_pairs) {
+					i32(JsonNonTerminal.json_nt_key_pairs) {
 						ctx = JsonParseContext.json_parse_object_start
 					}
 					else {
@@ -880,7 +880,7 @@ pub fn parse_scalar(lex &JsonLexContext_jsonapi, sem &JsonSemAction) JsonParseEr
 			}
 		}
 	} else {
-		len := int((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8)))))
+		len := i32((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8)))))
 		val = &i8(C.c2v_malloc(u64(len + 1)))
 		if usize(val) == usize((voidptr(0))) {
 			return JsonParseErrorType.json_out_of_memory
@@ -911,7 +911,7 @@ pub fn parse_object_field(lex &JsonLexContext_jsonapi, sem &JsonSemAction) JsonP
 	if u32(lex_peek(voidptr(lex))) != u32(JsonTokenType.json_token_string) {
 		return report_parse_error(JsonParseContext(JsonParseContext.json_parse_string), voidptr(lex))
 	}
-	if (ostart != (voidptr(0)) || oend != (voidptr(0))) && int(lex.need_escapes) {
+	if (ostart != (voidptr(0)) || oend != (voidptr(0))) && i32(lex.need_escapes) {
 		fname = C.c2v_strdup(lex.strval.data)
 		if usize(fname) == usize((voidptr(0))) {
 			return JsonParseErrorType.json_out_of_memory
@@ -1122,17 +1122,17 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 		}
 	}
 	s = lex.token_terminator
-	if int(lex.incremental) && lex.inc_state.partial_token.len {
+	if i32(lex.incremental) && lex.inc_state.partial_token.len {
 		ptok := &lex.inc_state.partial_token
 		added := usize(0)
 		tok_done := (0 != 0)
 		dummy_lex := JsonLexContext_jsonapi{}
 
 		partial_result := JsonParseErrorType{}
-		if int(ptok.data[0]) == i8(`\"`) {
-			escapes := 0
-			for i := int(ptok.len - usize(1)); i > 0; i-- {
-				if int(ptok.data[i]) == i8(`\\`) {
+		if i32(ptok.data[0]) == i8(`\"`) {
+			escapes := i32(0)
+			for i := i32(ptok.len - usize(1)); i > 0; i-- {
+				if i32(ptok.data[i]) == i8(`\\`) {
 					escapes++
 				} else {
 					break
@@ -1142,11 +1142,11 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 				c := lex.input[i]
 				append_pq_exp_buffer_char(ptok, i8(c))
 				added++
-				if int(c) == i8(`\"`) && escapes % 2 == 0 {
+				if i32(c) == i8(`\"`) && escapes % 2 == 0 {
 					tok_done = (1 != 0)
 					break
 				}
-				if int(c) == i8(`\\`) {
+				if i32(c) == i8(`\\`) {
 					escapes++
 				} else {
 					escapes = 0
@@ -1154,25 +1154,25 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 			}
 		} else {
 			c := ptok.data[0]
-			if int(c) == i8(`-`) || (int(c) >= i8(`0`) && int(c) <= i8(`9`)) {
+			if i32(c) == i8(`-`) || (i32(c) >= i8(`0`) && i32(c) <= i8(`9`)) {
 				numend := (0 != 0)
 				seen_dot := (0 != 0)
 				seen_exp := (0 != 0)
 				prev := i8(0)
-				for j := 0; usize(j) < ptok.len; j++ {
+				for j := i32(0); usize(j) < ptok.len; j++ {
 					pc := ptok.data[j]
-					if int(pc) == i8(`.`) {
+					if i32(pc) == i8(`.`) {
 						seen_dot = (1 != 0)
-					} else if int(pc) == i8(`e`) || int(pc) == i8(`E`) {
+					} else if i32(pc) == i8(`e`) || i32(pc) == i8(`E`) {
 						seen_exp = (1 != 0)
 					}
 				}
 				prev = ptok.data[ptok.len - usize(1)]
 				for i := usize(0); i < lex.input_length && !numend; i++ {
 					cc := lex.input[i]
-					match int(cc) {
-						int(`+`), int(`-`) {
-							if int(prev) != i8(`e`) && int(prev) != i8(`E`) {
+					match i32(cc) {
+						i32(`+`), i32(`-`) {
+							if i32(prev) != i8(`e`) && i32(prev) != i8(`E`) {
 								numend = (1 != 0)
 								unsafe {
 									goto c2v_switch_end_48
@@ -1181,8 +1181,8 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 							append_pq_exp_buffer_char(ptok, i8(cc))
 							added++
 						}
-						int(`.`) {
-							if int(seen_dot) || int(seen_exp) {
+						i32(`.`) {
+							if i32(seen_dot) || i32(seen_exp) {
 								numend = (1 != 0)
 								unsafe {
 									goto c2v_switch_end_48
@@ -1192,7 +1192,7 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 							append_pq_exp_buffer_char(ptok, i8(cc))
 							added++
 						}
-						int(`e`), int(`E`) {
+						i32(`e`), i32(`E`) {
 							if seen_exp {
 								numend = (1 != 0)
 								unsafe {
@@ -1203,7 +1203,7 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 							append_pq_exp_buffer_char(ptok, i8(cc))
 							added++
 						}
-						int(`0`), int(`1`), int(`2`), int(`3`), int(`4`), int(`5`), int(`6`), int(`7`), int(`8`), int(`9`) {
+						i32(`0`), i32(`1`), i32(`2`), i32(`3`), i32(`4`), i32(`5`), i32(`6`), i32(`7`), i32(`8`), i32(`9`) {
 							append_pq_exp_buffer_char(ptok, i8(cc))
 							added++
 						}
@@ -1220,7 +1220,7 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 			}
 			for i := added; i < lex.input_length; i++ {
 				cc := lex.input[i]
-				if ((int(cc) >= i8(`a`) && int(cc) <= i8(`z`)) || (int(cc) >= i8(`A`) && int(cc) <= i8(`Z`)) || (int(cc) >= i8(`0`) && int(cc) <= i8(`9`)) || int(cc) == i8(`_`) || (int(u8(cc)) & 128)) {
+				if ((i32(cc) >= i8(`a`) && i32(cc) <= i8(`z`)) || (i32(cc) >= i8(`A`) && i32(cc) <= i8(`Z`)) || (i32(cc) >= i8(`0`) && i32(cc) <= i8(`9`)) || i32(cc) == i8(`_`) || (i32(u8(cc)) & 128)) {
 					append_pq_exp_buffer_char(ptok, i8(cc))
 					added++
 				} else {
@@ -1228,7 +1228,7 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 					break
 				}
 			}
-			if added == lex.input_length && int(lex.inc_state.is_last_chunk) {
+			if added == lex.input_length && i32(lex.inc_state.is_last_chunk) {
 				tok_done = (1 != 0)
 			}
 		}
@@ -1265,8 +1265,8 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 		}
 		return partial_result
 	}
-	for usize(s) < usize(end) && (int((unsafe { *s })) == i8(` `) || int((unsafe { *s })) == i8(`\t`) || int((unsafe { *s })) == i8(`\n`) || int((unsafe { *s })) == i8(`\r`)) {
-		if int((unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) })) == i8(`\n`) {
+	for usize(s) < usize(end) && (i32((unsafe { *s })) == i8(` `) || i32((unsafe { *s })) == i8(`\t`) || i32((unsafe { *s })) == i8(`\n`) || i32((unsafe { *s })) == i8(`\r`)) {
+		if i32((unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) })) == i8(`\n`) {
 			lex.line_number++
 			lex.line_start = s
 		}
@@ -1278,52 +1278,52 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 		lex.token_terminator = s
 		lex.token_type = JsonTokenType.json_token_end
 	} else {
-		match int((unsafe { *s })) {
-			int(`{`) {
+		match i32((unsafe { *s })) {
+			i32(`{`) {
 				lex.prev_token_terminator = lex.token_terminator
 				lex.token_terminator = s + 1
 				lex.token_type = JsonTokenType.json_token_object_start
 			}
-			int(`}`) {
+			i32(`}`) {
 				lex.prev_token_terminator = lex.token_terminator
 				lex.token_terminator = s + 1
 				lex.token_type = JsonTokenType.json_token_object_end
 			}
-			int(`[`) {
+			i32(`[`) {
 				lex.prev_token_terminator = lex.token_terminator
 				lex.token_terminator = s + 1
 				lex.token_type = JsonTokenType.json_token_array_start
 			}
-			int(`]`) {
+			i32(`]`) {
 				lex.prev_token_terminator = lex.token_terminator
 				lex.token_terminator = s + 1
 				lex.token_type = JsonTokenType.json_token_array_end
 			}
-			int(`,`) {
+			i32(`,`) {
 				lex.prev_token_terminator = lex.token_terminator
 				lex.token_terminator = s + 1
 				lex.token_type = JsonTokenType.json_token_comma
 			}
-			int(`:`) {
+			i32(`:`) {
 				lex.prev_token_terminator = lex.token_terminator
 				lex.token_terminator = s + 1
 				lex.token_type = JsonTokenType.json_token_colon
 			}
-			int(`\"`) {
+			i32(`\"`) {
 				result = json_lex_string(voidptr(lex))
 				if u32(result) != u32(JsonParseErrorType.json_success) {
 					return result
 				}
 				lex.token_type = JsonTokenType.json_token_string
 			}
-			int(`-`) {
+			i32(`-`) {
 				result = json_lex_number(voidptr(lex), s + 1, (voidptr(0)), (voidptr(0)))
 				if u32(result) != u32(JsonParseErrorType.json_success) {
 					return result
 				}
 				lex.token_type = JsonTokenType.json_token_number
 			}
-			int(`0`), int(`1`), int(`2`), int(`3`), int(`4`), int(`5`), int(`6`), int(`7`), int(`8`), int(`9`) {
+			i32(`0`), i32(`1`), i32(`2`), i32(`3`), i32(`4`), i32(`5`), i32(`6`), i32(`7`), i32(`8`), i32(`9`) {
 				result = json_lex_number(voidptr(lex), s, (voidptr(0)), (voidptr(0)))
 				if u32(result) != u32(JsonParseErrorType.json_success) {
 					return result
@@ -1332,14 +1332,14 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 			}
 			else {
 				p := &i8(0)
-				for p = s; usize(p) < usize(end) && ((int((unsafe { *p })) >= i8(`a`) && int((unsafe { *p })) <= i8(`z`)) || (int((unsafe { *p })) >= i8(`A`) && int((unsafe { *p })) <= i8(`Z`)) || (int((unsafe { *p })) >= i8(`0`) && int((unsafe { *p })) <= i8(`9`)) || int((unsafe { *p })) == i8(`_`) || (int(u8((unsafe { *p }))) & 128)); p = unsafe { p + 1 } {
+				for p = s; usize(p) < usize(end) && ((i32((unsafe { *p })) >= i8(`a`) && i32((unsafe { *p })) <= i8(`z`)) || (i32((unsafe { *p })) >= i8(`A`) && i32((unsafe { *p })) <= i8(`Z`)) || (i32((unsafe { *p })) >= i8(`0`) && i32((unsafe { *p })) <= i8(`9`)) || i32((unsafe { *p })) == i8(`_`) || (i32(u8((unsafe { *p }))) & 128)); p = unsafe { p + 1 } {
 				}
 				if usize(p) == usize(s) {
 					lex.prev_token_terminator = lex.token_terminator
 					lex.token_terminator = s + 1
 					return JsonParseErrorType.json_invalid_token
 				}
-				if int(lex.incremental) && !lex.inc_state.is_last_chunk && usize(p) == usize(lex.input + lex.input_length) {
+				if i32(lex.incremental) && !lex.inc_state.is_last_chunk && usize(p) == usize(lex.input + lex.input_length) {
 					append_binary_pq_exp_buffer(&lex.inc_state.partial_token, s, usize(i64((isize(end) - isize(s)) / isize(sizeof(i8)))))
 					return JsonParseErrorType.json_incomplete
 				}
@@ -1361,7 +1361,7 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 			}
 		}
 	}
-	if int(lex.incremental) && u32(lex.token_type) == u32(JsonTokenType.json_token_end) && !lex.inc_state.is_last_chunk {
+	if i32(lex.incremental) && u32(lex.token_type) == u32(JsonTokenType.json_token_end) && !lex.inc_state.is_last_chunk {
 		return JsonParseErrorType.json_incomplete
 	} else {
 		return JsonParseErrorType.json_success
@@ -1372,7 +1372,7 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 	s := &i8(0)
 	end := lex.input + lex.input_length
-	hi_surrogate := -1
+	hi_surrogate := i32(-1)
 	if lex.need_escapes {
 		if usize(lex.strval) == usize((voidptr(0))) {
 			return JsonParseErrorType.json_out_of_memory
@@ -1385,50 +1385,50 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 		c2v_pointer_postfix(voidptr(&s), s, isize(1))
 		if usize(s) >= usize(end) {
 			for {
-				if int(lex.incremental) && !lex.inc_state.is_last_chunk {
+				if i32(lex.incremental) && !lex.inc_state.is_last_chunk {
 					append_binary_pq_exp_buffer(&lex.inc_state.partial_token, lex.token_start, usize(i64((isize(end) - isize(lex.token_start)) / isize(sizeof(i8)))))
 					return JsonParseErrorType.json_incomplete
 				}
 				lex.token_terminator = s
 				return JsonParseErrorType.json_invalid_token
 			}
-		} else if int((unsafe { *s })) == i8(`\"`) {
+		} else if i32((unsafe { *s })) == i8(`\"`) {
 			break
-		} else if int((unsafe { *s })) == i8(`\\`) {
+		} else if i32((unsafe { *s })) == i8(`\\`) {
 			c2v_pointer_postfix(voidptr(&s), s, isize(1))
 			if usize(s) >= usize(end) {
 				for {
-					if int(lex.incremental) && !lex.inc_state.is_last_chunk {
+					if i32(lex.incremental) && !lex.inc_state.is_last_chunk {
 						append_binary_pq_exp_buffer(&lex.inc_state.partial_token, lex.token_start, usize(i64((isize(end) - isize(lex.token_start)) / isize(sizeof(i8)))))
 						return JsonParseErrorType.json_incomplete
 					}
 					lex.token_terminator = s
 					return JsonParseErrorType.json_invalid_token
 				}
-			} else if int((unsafe { *s })) == i8(`u`) {
-				i := 0
-				ch := 0
+			} else if i32((unsafe { *s })) == i8(`u`) {
+				i := i32(0)
+				ch := i32(0)
 				for i = 1; i <= 4; i++ {
 					c2v_pointer_postfix(voidptr(&s), s, isize(1))
 					if usize(s) >= usize(end) {
 						for {
-							if int(lex.incremental) && !lex.inc_state.is_last_chunk {
+							if i32(lex.incremental) && !lex.inc_state.is_last_chunk {
 								append_binary_pq_exp_buffer(&lex.inc_state.partial_token, lex.token_start, usize(i64((isize(end) - isize(lex.token_start)) / isize(sizeof(i8)))))
 								return JsonParseErrorType.json_incomplete
 							}
 							lex.token_terminator = s
 							return JsonParseErrorType.json_invalid_token
 						}
-					} else if int((unsafe { *s })) >= i8(`0`) && int((unsafe { *s })) <= i8(`9`) {
-						ch = (ch * 16) + (int((unsafe { *s })) - int(`0`))
-					} else if int((unsafe { *s })) >= i8(`a`) && int((unsafe { *s })) <= i8(`f`) {
-						ch = (ch * 16) + (int((unsafe { *s })) - int(`a`)) + 10
-					} else if int((unsafe { *s })) >= i8(`A`) && int((unsafe { *s })) <= i8(`F`) {
-						ch = (ch * 16) + (int((unsafe { *s })) - int(`A`)) + 10
+					} else if i32((unsafe { *s })) >= i8(`0`) && i32((unsafe { *s })) <= i8(`9`) {
+						ch = (ch * 16) + (i32((unsafe { *s })) - i32(`0`))
+					} else if i32((unsafe { *s })) >= i8(`a`) && i32((unsafe { *s })) <= i8(`f`) {
+						ch = (ch * 16) + (i32((unsafe { *s })) - i32(`a`)) + 10
+					} else if i32((unsafe { *s })) >= i8(`A`) && i32((unsafe { *s })) <= i8(`F`) {
+						ch = (ch * 16) + (i32((unsafe { *s })) - i32(`A`)) + 10
 					} else {
 						for {
 							remaining := i64((isize(end) - isize(s)) / isize(sizeof(i8)))
-							charlen := 0
+							charlen := i32(0)
 							charlen = pg_encoding_mblen_or_incomplete(lex.input_encoding, s, usize(remaining))
 							lex.token_terminator = if (isize(charlen) <= remaining) {
 								s + charlen
@@ -1444,7 +1444,7 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 						if hi_surrogate != -1 {
 							for {
 								remaining := i64((isize(end) - isize(s)) / isize(sizeof(i8)))
-								charlen := 0
+								charlen := i32(0)
 								charlen = pg_encoding_mblen_or_incomplete(lex.input_encoding, s, usize(remaining))
 								lex.token_terminator = if (isize(charlen) <= remaining) {
 									s + charlen
@@ -1460,7 +1460,7 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 						if hi_surrogate == -1 {
 							for {
 								remaining := i64((isize(end) - isize(s)) / isize(sizeof(i8)))
-								charlen := 0
+								charlen := i32(0)
 								charlen = pg_encoding_mblen_or_incomplete(lex.input_encoding, s, usize(remaining))
 								lex.token_terminator = if (isize(charlen) <= remaining) {
 									s + charlen
@@ -1470,13 +1470,13 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 								return JsonParseErrorType.json_unicode_low_surrogate
 							}
 						}
-						ch = int(libpq_jsonapi_surrogate_pair_to_codepoint(Pg_wchar(hi_surrogate), Pg_wchar(ch)))
+						ch = i32(libpq_jsonapi_surrogate_pair_to_codepoint(Pg_wchar(hi_surrogate), Pg_wchar(ch)))
 						hi_surrogate = -1
 					}
 					if hi_surrogate != -1 {
 						for {
 							remaining := i64((isize(end) - isize(s)) / isize(sizeof(i8)))
-							charlen := 0
+							charlen := i32(0)
 							charlen = pg_encoding_mblen_or_incomplete(lex.input_encoding, s, usize(remaining))
 							lex.token_terminator = if (isize(charlen) <= remaining) {
 								s + charlen
@@ -1489,7 +1489,7 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 					if ch == 0 {
 						for {
 							remaining := i64((isize(end) - isize(s)) / isize(sizeof(i8)))
-							charlen := 0
+							charlen := i32(0)
 							charlen = pg_encoding_mblen_or_incomplete(lex.input_encoding, s, usize(remaining))
 							lex.token_terminator = if (isize(charlen) <= remaining) {
 								s + charlen
@@ -1501,7 +1501,7 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 					}
 					if lex.input_encoding == Pg_enc.pg_utf8 {
 						utf8str := [5]i8{}
-						utf8len := 0
+						utf8len := i32(0)
 						libpq_jsonapi_unicode_to_utf8(Pg_wchar(ch), &u8(voidptr(unsafe { &utf8str[0] })))
 						utf8len = pg_utf_mblen(&u8(voidptr(unsafe { &utf8str[0] })))
 						append_binary_pq_exp_buffer(lex.strval, unsafe { &i8(&utf8str[0]) }, usize(utf8len))
@@ -1510,7 +1510,7 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 					} else {
 						for {
 							remaining := i64((isize(end) - isize(s)) / isize(sizeof(i8)))
-							charlen := 0
+							charlen := i32(0)
 							charlen = pg_encoding_mblen_or_incomplete(lex.input_encoding, s, usize(remaining))
 							lex.token_terminator = if (isize(charlen) <= remaining) {
 								s + charlen
@@ -1525,7 +1525,7 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 				if hi_surrogate != -1 {
 					for {
 						remaining := i64((isize(end) - isize(s)) / isize(sizeof(i8)))
-						charlen := 0
+						charlen := i32(0)
 						charlen = pg_encoding_mblen_or_incomplete(lex.input_encoding, s, usize(remaining))
 						lex.token_terminator = if (isize(charlen) <= remaining) {
 							s + charlen
@@ -1535,30 +1535,30 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 						return JsonParseErrorType.json_unicode_low_surrogate
 					}
 				}
-				match int((unsafe { *s })) {
-					int(`\"`), int(`\\`), int(`/`) {
+				match i32((unsafe { *s })) {
+					i32(`\"`), i32(`\\`), i32(`/`) {
 						append_pq_exp_buffer_char(lex.strval, i8((unsafe { *s })))
 					}
-					int(`b`) {
+					i32(`b`) {
 						append_pq_exp_buffer_char(lex.strval, i8(`\b`))
 					}
-					int(`f`) {
+					i32(`f`) {
 						append_pq_exp_buffer_char(lex.strval, i8(`\f`))
 					}
-					int(`n`) {
+					i32(`n`) {
 						append_pq_exp_buffer_char(lex.strval, i8(`\n`))
 					}
-					int(`r`) {
+					i32(`r`) {
 						append_pq_exp_buffer_char(lex.strval, i8(`\r`))
 					}
-					int(`t`) {
+					i32(`t`) {
 						append_pq_exp_buffer_char(lex.strval, i8(`\t`))
 					}
 					else {
 						lex.token_start = s
 						for {
 							remaining := i64((isize(end) - isize(s)) / isize(sizeof(i8)))
-							charlen := 0
+							charlen := i32(0)
 							charlen = pg_encoding_mblen_or_incomplete(lex.input_encoding, s, usize(remaining))
 							lex.token_terminator = if (isize(charlen) <= remaining) {
 								s + charlen
@@ -1569,11 +1569,11 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 						}
 					}
 				}
-			} else if usize(C.c2v_strchr(c'"\\/bfnrt', int((unsafe { *s })))) == usize((voidptr(0))) {
+			} else if usize(C.c2v_strchr(c'"\\/bfnrt', i32((unsafe { *s })))) == usize((voidptr(0))) {
 				lex.token_start = s
 				for {
 					remaining := i64((isize(end) - isize(s)) / isize(sizeof(i8)))
-					charlen := 0
+					charlen := i32(0)
 					charlen = pg_encoding_mblen_or_incomplete(lex.input_encoding, s, usize(remaining))
 					lex.token_terminator = if (isize(charlen) <= remaining) {
 						s + charlen
@@ -1588,7 +1588,7 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 			if hi_surrogate != -1 {
 				for {
 					remaining := i64((isize(end) - isize(s)) / isize(sizeof(i8)))
-					charlen := 0
+					charlen := i32(0)
 					charlen = pg_encoding_mblen_or_incomplete(lex.input_encoding, s, usize(remaining))
 					lex.token_terminator = if (isize(charlen) <= remaining) {
 						s + charlen
@@ -1602,9 +1602,9 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 				c2v_pointer_prefix(voidptr(&p), p, isize(sizeof(Vector8)))
 			}
 			for ; usize(p) < usize(end); p = unsafe { p + 1 } {
-				if int((unsafe { *p })) == i8(`\\`) || int((unsafe { *p })) == i8(`\"`) {
+				if i32((unsafe { *p })) == i8(`\\`) || i32((unsafe { *p })) == i8(`\"`) {
 					break
-				} else if int(u8((unsafe { *p }))) <= 31 {
+				} else if i32(u8((unsafe { *p }))) <= 31 {
 					lex.token_terminator = p
 					return JsonParseErrorType.json_escaping_required
 				}
@@ -1619,7 +1619,7 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 		lex.token_terminator = s + 1
 		return JsonParseErrorType.json_unicode_low_surrogate
 	}
-	if int(lex.need_escapes) && (usize((lex.strval)) == usize((voidptr(0))) || lex.strval.maxlen == usize(0)) {
+	if i32(lex.need_escapes) && (usize((lex.strval)) == usize((voidptr(0))) || lex.strval.maxlen == usize(0)) {
 		return JsonParseErrorType.json_out_of_memory
 	}
 	lex.prev_token_terminator = lex.token_terminator
@@ -1630,63 +1630,63 @@ pub fn json_lex_string(lex &JsonLexContext_jsonapi) JsonParseErrorType {
 @[markused]
 pub fn json_lex_number(lex &JsonLexContext_jsonapi, s &i8, num_err &bool, total_len &usize) JsonParseErrorType {
 	error_ := (0 != 0)
-	len := int(i64((isize(s) - isize(lex.input)) / isize(sizeof(i8))))
-	if usize(len) < lex.input_length && int((unsafe { *s })) == i8(`0`) {
+	len := i32(i64((isize(s) - isize(lex.input)) / isize(sizeof(i8))))
+	if usize(len) < lex.input_length && i32((unsafe { *s })) == i8(`0`) {
 		c2v_pointer_postfix(voidptr(&s), s, isize(1))
 		len++
-	} else if usize(len) < lex.input_length && int((unsafe { *s })) >= i8(`1`) && int((unsafe { *s })) <= i8(`9`) {
+	} else if usize(len) < lex.input_length && i32((unsafe { *s })) >= i8(`1`) && i32((unsafe { *s })) <= i8(`9`) {
 		for {
 			c2v_pointer_postfix(voidptr(&s), s, isize(1))
 			len++
-			if !(usize(len) < lex.input_length && int((unsafe { *s })) >= i8(`0`) && int((unsafe { *s })) <= i8(`9`)) {
+			if !(usize(len) < lex.input_length && i32((unsafe { *s })) >= i8(`0`) && i32((unsafe { *s })) <= i8(`9`)) {
 				break
 			}
 		}
 	} else {
 		error_ = (1 != 0)
 	}
-	if usize(len) < lex.input_length && int((unsafe { *s })) == i8(`.`) {
+	if usize(len) < lex.input_length && i32((unsafe { *s })) == i8(`.`) {
 		c2v_pointer_postfix(voidptr(&s), s, isize(1))
 		len++
-		if usize(len) == lex.input_length || int((unsafe { *s })) < i8(`0`) || int((unsafe { *s })) > i8(`9`) {
+		if usize(len) == lex.input_length || i32((unsafe { *s })) < i8(`0`) || i32((unsafe { *s })) > i8(`9`) {
 			error_ = (1 != 0)
 		} else {
 			for {
 				c2v_pointer_postfix(voidptr(&s), s, isize(1))
 				len++
-				if !(usize(len) < lex.input_length && int((unsafe { *s })) >= i8(`0`) && int((unsafe { *s })) <= i8(`9`)) {
+				if !(usize(len) < lex.input_length && i32((unsafe { *s })) >= i8(`0`) && i32((unsafe { *s })) <= i8(`9`)) {
 					break
 				}
 			}
 		}
 	}
-	if usize(len) < lex.input_length && (int((unsafe { *s })) == i8(`e`) || int((unsafe { *s })) == i8(`E`)) {
+	if usize(len) < lex.input_length && (i32((unsafe { *s })) == i8(`e`) || i32((unsafe { *s })) == i8(`E`)) {
 		c2v_pointer_postfix(voidptr(&s), s, isize(1))
 		len++
-		if usize(len) < lex.input_length && (int((unsafe { *s })) == i8(`+`) || int((unsafe { *s })) == i8(`-`)) {
+		if usize(len) < lex.input_length && (i32((unsafe { *s })) == i8(`+`) || i32((unsafe { *s })) == i8(`-`)) {
 			c2v_pointer_postfix(voidptr(&s), s, isize(1))
 			len++
 		}
-		if usize(len) == lex.input_length || int((unsafe { *s })) < i8(`0`) || int((unsafe { *s })) > i8(`9`) {
+		if usize(len) == lex.input_length || i32((unsafe { *s })) < i8(`0`) || i32((unsafe { *s })) > i8(`9`) {
 			error_ = (1 != 0)
 		} else {
 			for {
 				c2v_pointer_postfix(voidptr(&s), s, isize(1))
 				len++
-				if !(usize(len) < lex.input_length && int((unsafe { *s })) >= i8(`0`) && int((unsafe { *s })) <= i8(`9`)) {
+				if !(usize(len) < lex.input_length && i32((unsafe { *s })) >= i8(`0`) && i32((unsafe { *s })) <= i8(`9`)) {
 					break
 				}
 			}
 		}
 	}
-	for ; usize(len) < lex.input_length && ((int((unsafe { *s })) >= i8(`a`) && int((unsafe { *s })) <= i8(`z`)) || (int((unsafe { *s })) >= i8(`A`) && int((unsafe { *s })) <= i8(`Z`)) || (int((unsafe { *s })) >= i8(`0`) && int((unsafe { *s })) <= i8(`9`)) || int((unsafe { *s })) == i8(`_`) || (int(u8((unsafe { *s }))) & 128)); s = unsafe { s + 1 } {
+	for ; usize(len) < lex.input_length && ((i32((unsafe { *s })) >= i8(`a`) && i32((unsafe { *s })) <= i8(`z`)) || (i32((unsafe { *s })) >= i8(`A`) && i32((unsafe { *s })) <= i8(`Z`)) || (i32((unsafe { *s })) >= i8(`0`) && i32((unsafe { *s })) <= i8(`9`)) || i32((unsafe { *s })) == i8(`_`) || (i32(u8((unsafe { *s }))) & 128)); s = unsafe { s + 1 } {
 		error_ = (1 != 0)
 		len++
 	}
 	if usize(total_len) != usize((voidptr(0))) {
 		unsafe { *total_len = usize(len) }
 	}
-	if int(lex.incremental) && !lex.inc_state.is_last_chunk && usize(len) >= lex.input_length {
+	if i32(lex.incremental) && !lex.inc_state.is_last_chunk && usize(len) >= lex.input_length {
 		append_binary_pq_exp_buffer(&lex.inc_state.partial_token, lex.token_start, usize(i64((isize(s) - isize(lex.token_start)) / isize(sizeof(i8)))))
 		if usize(num_err) != usize((voidptr(0))) {
 			unsafe { *num_err = error_ }
@@ -1769,40 +1769,40 @@ pub fn json_errdetail(error_ JsonParseErrorType, lex_param &JsonLexContext) &i8 
 			return unsafe { &i8(&c'JSON nested too deep, maximum permitted depth is 6400.'[0]) }
 		}
 		.json_escaping_invalid {
-			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Escape sequence "\\%.*s" is invalid.'[0]) }, int((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
+			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Escape sequence "\\%.*s" is invalid.'[0]) }, i32((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
 		}
 		.json_escaping_required {
-			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Character with value 0x%02x must be escaped.'[0]) }, int(u8((unsafe { *lex.token_terminator }))))
+			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Character with value 0x%02x must be escaped.'[0]) }, i32(u8((unsafe { *lex.token_terminator }))))
 		}
 		.json_expected_end {
-			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected end of input, but found "%.*s".'[0]) }, int((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
+			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected end of input, but found "%.*s".'[0]) }, i32((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
 		}
 		.json_expected_array_first {
-			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected array element or "]", but found "%.*s".'[0]) }, int((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
+			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected array element or "]", but found "%.*s".'[0]) }, i32((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
 		}
 		.json_expected_array_next {
-			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected "," or "]", but found "%.*s".'[0]) }, int((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
+			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected "," or "]", but found "%.*s".'[0]) }, i32((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
 		}
 		.json_expected_colon {
-			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected ":", but found "%.*s".'[0]) }, int((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
+			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected ":", but found "%.*s".'[0]) }, i32((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
 		}
 		.json_expected_json {
-			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected JSON value, but found "%.*s".'[0]) }, int((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
+			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected JSON value, but found "%.*s".'[0]) }, i32((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
 		}
 		.json_expected_more {
 			return unsafe { &i8(&c'The input string ended unexpectedly.'[0]) }
 		}
 		.json_expected_object_first {
-			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected string or "}", but found "%.*s".'[0]) }, int((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
+			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected string or "}", but found "%.*s".'[0]) }, i32((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
 		}
 		.json_expected_object_next {
-			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected "," or "}", but found "%.*s".'[0]) }, int((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
+			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected "," or "}", but found "%.*s".'[0]) }, i32((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
 		}
 		.json_expected_string {
-			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected string, but found "%.*s".'[0]) }, int((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
+			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Expected string, but found "%.*s".'[0]) }, i32((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
 		}
 		.json_invalid_token {
-			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Token "%.*s" is invalid.'[0]) }, int((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
+			append_pq_exp_buffer(lex.errormsg, unsafe { &i8(&c'Token "%.*s" is invalid.'[0]) }, i32((i64((isize(lex.token_terminator) - isize(lex.token_start)) / isize(sizeof(i8))))), voidptr(lex.token_start))
 		}
 		.json_out_of_memory {
 		}
@@ -1829,7 +1829,7 @@ pub fn json_errdetail(error_ JsonParseErrorType, lex_param &JsonLexContext) &i8 
 	}
 
 	if !isnil(lex.errormsg) && lex.errormsg.len == usize(0) {
-		append_pq_exp_buffer(lex.errormsg, c'unexpected json parse error type: %d', int(error_))
+		append_pq_exp_buffer(lex.errormsg, c'unexpected json parse error type: %d', i32(error_))
 	}
 	if (usize((lex.errormsg)) == usize((voidptr(0))) || lex.errormsg.maxlen == usize(0)) {
 		return unsafe { &i8(&c'out of memory while constructing error description'[0]) }

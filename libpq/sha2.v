@@ -29,7 +29,7 @@ pub fn sha_256_transform(context &Pg_sha256_ctx, data &Uint8) {
 	t2 := Uint32(0)
 	w256 := &Uint32(0)
 
-	j := 0
+	j := i32(0)
 	w256 = &Uint32(voidptr(unsafe { &context.buffer[0] }))
 	a = context.state[0]
 	b = context.state[1]
@@ -171,7 +171,7 @@ pub fn sha_256_last(context &Pg_sha256_ctx) {
 pub fn pg_sha256_final(context &Pg_sha256_ctx, digest &Uint8) {
 	if usize(digest) != usize((voidptr(0))) {
 		sha_256_last(context)
-		j := 0
+		j := i32(0)
 		for j = 0; j < 8; j++ {
 			tmp := context.state[j]
 			tmp = (tmp >> 16) | (tmp << 16)
@@ -211,7 +211,7 @@ pub fn sha_512_transform(context &Pg_sha512_ctx, data &Uint8) {
 	t2 := Uint64(0)
 	w512 := unsafe { &Uint64(&context.buffer[0]) }
 
-	j := 0
+	j := i32(0)
 	a = context.state[0]
 	b = context.state[1]
 	c = context.state[2]
@@ -370,7 +370,7 @@ pub fn sha_512_last(context &Pg_sha512_ctx) {
 pub fn pg_sha512_final(context &Pg_sha512_ctx, digest &Uint8) {
 	if usize(digest) != usize((voidptr(0))) {
 		sha_512_last(context)
-		j := 0
+		j := i32(0)
 		for j = 0; j < 8; j++ {
 			tmp := context.state[j]
 			tmp = (tmp >> 32) | (tmp << 32)
@@ -405,7 +405,7 @@ pub fn pg_sha384_update(context &Pg_sha384_ctx, data &Uint8, len usize) {
 pub fn pg_sha384_final(context &Pg_sha384_ctx, digest &Uint8) {
 	if usize(digest) != usize((voidptr(0))) {
 		sha_512_last(&Pg_sha512_ctx(context))
-		j := 0
+		j := i32(0)
 		for j = 0; j < 6; j++ {
 			tmp := context.state[j]
 			tmp = (tmp >> 32) | (tmp << 32)
@@ -439,7 +439,7 @@ pub fn pg_sha224_update(context &Pg_sha224_ctx, data &Uint8, len usize) {
 pub fn pg_sha224_final(context &Pg_sha224_ctx, digest &Uint8) {
 	if usize(digest) != usize((voidptr(0))) {
 		sha_256_last(unsafe { &Pg_sha256_ctx(context) })
-		j := 0
+		j := i32(0)
 		for j = 0; j < 8; j++ {
 			tmp := context.state[j]
 			tmp = (tmp >> 16) | (tmp << 16)

@@ -9,7 +9,7 @@ only the system C library and V's garbage collector.
 libpq has no amalgamation: the library is built from 41 C files of the
 PostgreSQL sources (15 in `src/interfaces/libpq`, 17 in `src/common`, 9 in
 `src/port`, 40,783 lines). They are translated, unmodified, into the module
-`pg.libpq` (43 files, 65,462 lines of V). No part of it was edited by hand.
+`pg.libpq` (43 files, 65,486 lines of V). No part of it was edited by hand.
 It passes PostgreSQL's client tests with the same results as the C library
 (see [Tests](#tests)).
 
@@ -125,7 +125,7 @@ runs than between the two libraries.
 ## Translating
 
 [`translate/translate.sh`](translate/translate.sh) translates libpq from the
-PostgreSQL sources with c2v (commit cb4bdb8 or later):
+PostgreSQL sources with c2v (commit fe4bcae or later):
 
 ```
 curl -O https://ftp.postgresql.org/pub/source/v18.6/postgresql-18.6.tar.bz2

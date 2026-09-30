@@ -23,14 +23,14 @@ pub fn libpq_wchar_surrogate_pair_to_codepoint(first Pg_wchar, second Pg_wchar) 
 
 @[markused]
 pub fn libpq_wchar_utf8_to_unicode(c &u8) Pg_wchar {
-	if (int((unsafe { *c })) & 128) == 0 {
+	if (i32((unsafe { *c })) & 128) == 0 {
 		return Pg_wchar(c[0])
-	} else if (int((unsafe { *c })) & 224) == 192 {
-		return Pg_wchar((((int(c[0]) & 31) << 6) | (int(c[1]) & 63)))
-	} else if (int((unsafe { *c })) & 240) == 224 {
-		return Pg_wchar((((int(c[0]) & 15) << 12) | ((int(c[1]) & 63) << 6) | (int(c[2]) & 63)))
-	} else if (int((unsafe { *c })) & 248) == 240 {
-		return Pg_wchar((((int(c[0]) & 7) << 18) | ((int(c[1]) & 63) << 12) | ((int(c[2]) & 63) << 6) | (int(c[3]) & 63)))
+	} else if (i32((unsafe { *c })) & 224) == 192 {
+		return Pg_wchar((((i32(c[0]) & 31) << 6) | (i32(c[1]) & 63)))
+	} else if (i32((unsafe { *c })) & 240) == 224 {
+		return Pg_wchar((((i32(c[0]) & 15) << 12) | ((i32(c[1]) & 63) << 6) | (i32(c[2]) & 63)))
+	} else if (i32((unsafe { *c })) & 248) == 240 {
+		return Pg_wchar((((i32(c[0]) & 7) << 18) | ((i32(c[1]) & 63) << 12) | ((i32(c[2]) & 63) << 6) | (i32(c[3]) & 63)))
 	} else {
 		return u32(4294967295)
 	}
@@ -57,7 +57,7 @@ pub fn libpq_wchar_unicode_to_utf8(c Pg_wchar, utf8string &u8) &u8 {
 }
 
 @[markused]
-pub fn libpq_wchar_unicode_utf8len(c Pg_wchar) int {
+pub fn libpq_wchar_unicode_utf8len(c Pg_wchar) i32 {
 	if c <= Pg_wchar(127) {
 		return 1
 	} else if c <= Pg_wchar(2047) {
@@ -95,11 +95,11 @@ pub fn libpq_wchar_vector8_has_zero(v Vector8) bool {
 @[markused]
 pub fn libpq_wchar_vector8_has_le(v Vector8, c Uint8) bool {
 	result := (0 != 0)
-	if Int64(v) >= Int64(0) && int(c) < 128 {
-		result = ((v - libpq_wchar_vector8_broadcast(Uint8(int(c) + 1))) & ~v & libpq_wchar_vector8_broadcast(Uint8(128)) != 0)
+	if Int64(v) >= Int64(0) && i32(c) < 128 {
+		result = ((v - libpq_wchar_vector8_broadcast(Uint8(i32(c) + 1))) & ~v & libpq_wchar_vector8_broadcast(Uint8(128)) != 0)
 	} else {
 		for i := Size(0); i < sizeof(Vector8); i++ {
-			if int((&Uint8(c2v_address_of(&v)))[i]) <= int(c) {
+			if i32((&Uint8(c2v_address_of(&v)))[i]) <= i32(c) {
 				result = (1 != 0)
 				break
 			}
@@ -120,7 +120,7 @@ pub fn libpq_wchar_vector8_or(v1 Vector8, v2 Vector8) Vector8 {
 }
 
 @[markused]
-pub fn is_valid_ascii(s &u8, len int) bool {
+pub fn is_valid_ascii(s &u8, len i32) bool {
 	s_end := s + len
 	chunk := Vector8(0)
 	highbit_cum := libpq_wchar_vector8_broadcast(Uint8(0))
@@ -142,10 +142,10 @@ pub fn is_valid_ascii(s &u8, len int) bool {
 }
 
 @[markused]
-pub fn pg_ascii2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
+pub fn pg_ascii2wchar_with_len(from &u8, to &Pg_wchar, len i32) i32 {
 	c2v_gc_register_thread()
-	cnt := 0
-	for len > 0 && int((unsafe { *from })) {
+	cnt := i32(0)
+	for len > 0 && i32((unsafe { *from })) {
 		mut __c2v_lhs_tmp_0 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 		unsafe { *__c2v_lhs_tmp_0 = *c2v_pointer_postfix(voidptr(&from), from, isize(1)) }
 		len--
@@ -156,47 +156,47 @@ pub fn pg_ascii2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
 }
 
 @[markused]
-pub fn pg_ascii_mblen(s &u8) int {
+pub fn pg_ascii_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
 	return 1
 }
 
 @[markused]
-pub fn pg_ascii_dsplen(s &u8) int {
+pub fn pg_ascii_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
-	if int((unsafe { *s })) == `\0` {
+	if i32((unsafe { *s })) == `\0` {
 		return 0
 	}
-	if int((unsafe { *s })) < 32 || int((unsafe { *s })) == 127 {
+	if i32((unsafe { *s })) < 32 || i32((unsafe { *s })) == 127 {
 		return -1
 	}
 	return 1
 }
 
 @[markused]
-pub fn pg_euc2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
-	cnt := 0
-	for len > 0 && int((unsafe { *from })) {
-		if int((unsafe { *from })) == 142 {
+pub fn pg_euc2wchar_with_len(from &u8, to &Pg_wchar, len i32) i32 {
+	cnt := i32(0)
+	for len > 0 && i32((unsafe { *from })) {
+		if i32((unsafe { *from })) == 142 {
 			if len < 2 {
 				break
 			}
 			c2v_pointer_postfix(voidptr(&from), from, isize(1))
-			unsafe { *to = Pg_wchar((142 << 8) | int(*c2v_pointer_postfix(voidptr(&from), from, isize(1)))) }
+			unsafe { *to = Pg_wchar((142 << 8) | i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1)))) }
 			len -= 2
-		} else if int((unsafe { *from })) == 143 {
+		} else if i32((unsafe { *from })) == 143 {
 			if len < 3 {
 				break
 			}
 			c2v_pointer_postfix(voidptr(&from), from, isize(1))
-			unsafe { *to = Pg_wchar((143 << 16) | (int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8)) }
+			unsafe { *to = Pg_wchar((143 << 16) | (i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8)) }
 			unsafe { *to |= Pg_wchar(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) }
 			len -= 3
-		} else if (int(u8((unsafe { *from }))) & 128) {
+		} else if (i32(u8((unsafe { *from }))) & 128) {
 			if len < 2 {
 				break
 			}
-			unsafe { *to = Pg_wchar(int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8) }
+			unsafe { *to = Pg_wchar(i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8) }
 			unsafe { *to |= Pg_wchar(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) }
 			len -= 2
 		} else {
@@ -211,13 +211,13 @@ pub fn pg_euc2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
 }
 
 @[markused]
-pub fn pg_euc_mblen(s &u8) int {
-	len := 0
-	if int((unsafe { *s })) == 142 {
+pub fn pg_euc_mblen(s &u8) i32 {
+	len := i32(0)
+	if i32((unsafe { *s })) == 142 {
 		len = 2
-	} else if int((unsafe { *s })) == 143 {
+	} else if i32((unsafe { *s })) == 143 {
 		len = 3
-	} else if (int(u8((unsafe { *s }))) & 128) {
+	} else if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = 1
@@ -226,13 +226,13 @@ pub fn pg_euc_mblen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_euc_dsplen(s &u8) int {
-	len := 0
-	if int((unsafe { *s })) == 142 {
+pub fn pg_euc_dsplen(s &u8) i32 {
+	len := i32(0)
+	if i32((unsafe { *s })) == 142 {
 		len = 2
-	} else if int((unsafe { *s })) == 143 {
+	} else if i32((unsafe { *s })) == 143 {
 		len = 2
-	} else if (int(u8((unsafe { *s }))) & 128) {
+	} else if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = pg_ascii_dsplen(s)
@@ -241,26 +241,26 @@ pub fn pg_euc_dsplen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_eucjp2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
+pub fn pg_eucjp2wchar_with_len(from &u8, to &Pg_wchar, len i32) i32 {
 	c2v_gc_register_thread()
 	return pg_euc2wchar_with_len(from, to, len)
 }
 
 @[markused]
-pub fn pg_eucjp_mblen(s &u8) int {
+pub fn pg_eucjp_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
 	return pg_euc_mblen(s)
 }
 
 @[markused]
-pub fn pg_eucjp_dsplen(s &u8) int {
+pub fn pg_eucjp_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if int((unsafe { *s })) == 142 {
+	len := i32(0)
+	if i32((unsafe { *s })) == 142 {
 		len = 1
-	} else if int((unsafe { *s })) == 143 {
+	} else if i32((unsafe { *s })) == 143 {
 		len = 2
-	} else if (int(u8((unsafe { *s }))) & 128) {
+	} else if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = pg_ascii_dsplen(s)
@@ -269,49 +269,49 @@ pub fn pg_eucjp_dsplen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_euckr2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
+pub fn pg_euckr2wchar_with_len(from &u8, to &Pg_wchar, len i32) i32 {
 	c2v_gc_register_thread()
 	return pg_euc2wchar_with_len(from, to, len)
 }
 
 @[markused]
-pub fn pg_euckr_mblen(s &u8) int {
+pub fn pg_euckr_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
 	return pg_euc_mblen(s)
 }
 
 @[markused]
-pub fn pg_euckr_dsplen(s &u8) int {
+pub fn pg_euckr_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
 	return pg_euc_dsplen(s)
 }
 
 @[markused]
-pub fn pg_euccn2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
+pub fn pg_euccn2wchar_with_len(from &u8, to &Pg_wchar, len i32) i32 {
 	c2v_gc_register_thread()
-	cnt := 0
-	for len > 0 && int((unsafe { *from })) {
-		if int((unsafe { *from })) == 142 {
+	cnt := i32(0)
+	for len > 0 && i32((unsafe { *from })) {
+		if i32((unsafe { *from })) == 142 {
 			if len < 3 {
 				break
 			}
 			c2v_pointer_postfix(voidptr(&from), from, isize(1))
-			unsafe { *to = Pg_wchar((142 << 16) | (int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8)) }
+			unsafe { *to = Pg_wchar((142 << 16) | (i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8)) }
 			unsafe { *to |= Pg_wchar(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) }
 			len -= 3
-		} else if int((unsafe { *from })) == 143 {
+		} else if i32((unsafe { *from })) == 143 {
 			if len < 3 {
 				break
 			}
 			c2v_pointer_postfix(voidptr(&from), from, isize(1))
-			unsafe { *to = Pg_wchar((143 << 16) | (int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8)) }
+			unsafe { *to = Pg_wchar((143 << 16) | (i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8)) }
 			unsafe { *to |= Pg_wchar(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) }
 			len -= 3
-		} else if (int(u8((unsafe { *from }))) & 128) {
+		} else if (i32(u8((unsafe { *from }))) & 128) {
 			if len < 2 {
 				break
 			}
-			unsafe { *to = Pg_wchar(int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8) }
+			unsafe { *to = Pg_wchar(i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8) }
 			unsafe { *to |= Pg_wchar(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) }
 			len -= 2
 		} else {
@@ -326,14 +326,14 @@ pub fn pg_euccn2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
 }
 
 @[markused]
-pub fn pg_euccn_mblen(s &u8) int {
+pub fn pg_euccn_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if int((unsafe { *s })) == 142 {
+	len := i32(0)
+	if i32((unsafe { *s })) == 142 {
 		len = 3
-	} else if int((unsafe { *s })) == 143 {
+	} else if i32((unsafe { *s })) == 143 {
 		len = 3
-	} else if (int(u8((unsafe { *s }))) & 128) {
+	} else if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = 1
@@ -342,10 +342,10 @@ pub fn pg_euccn_mblen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_euccn_dsplen(s &u8) int {
+pub fn pg_euccn_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if (int(u8((unsafe { *s }))) & 128) {
+	len := i32(0)
+	if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = pg_ascii_dsplen(s)
@@ -354,32 +354,32 @@ pub fn pg_euccn_dsplen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_euctw2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
+pub fn pg_euctw2wchar_with_len(from &u8, to &Pg_wchar, len i32) i32 {
 	c2v_gc_register_thread()
-	cnt := 0
-	for len > 0 && int((unsafe { *from })) {
-		if int((unsafe { *from })) == 142 {
+	cnt := i32(0)
+	for len > 0 && i32((unsafe { *from })) {
+		if i32((unsafe { *from })) == 142 {
 			if len < 4 {
 				break
 			}
 			c2v_pointer_postfix(voidptr(&from), from, isize(1))
-			unsafe { *to = ((Uint32(142)) << 24) | Uint32((int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 16)) }
-			unsafe { *to |= Pg_wchar(int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8) }
+			unsafe { *to = ((Uint32(142)) << 24) | Uint32((i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 16)) }
+			unsafe { *to |= Pg_wchar(i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8) }
 			unsafe { *to |= Pg_wchar(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) }
 			len -= 4
-		} else if int((unsafe { *from })) == 143 {
+		} else if i32((unsafe { *from })) == 143 {
 			if len < 3 {
 				break
 			}
 			c2v_pointer_postfix(voidptr(&from), from, isize(1))
-			unsafe { *to = Pg_wchar((143 << 16) | (int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8)) }
+			unsafe { *to = Pg_wchar((143 << 16) | (i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8)) }
 			unsafe { *to |= Pg_wchar(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) }
 			len -= 3
-		} else if (int(u8((unsafe { *from }))) & 128) {
+		} else if (i32(u8((unsafe { *from }))) & 128) {
 			if len < 2 {
 				break
 			}
-			unsafe { *to = Pg_wchar(int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8) }
+			unsafe { *to = Pg_wchar(i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8) }
 			unsafe { *to |= Pg_wchar(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) }
 			len -= 2
 		} else {
@@ -394,14 +394,14 @@ pub fn pg_euctw2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
 }
 
 @[markused]
-pub fn pg_euctw_mblen(s &u8) int {
+pub fn pg_euctw_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if int((unsafe { *s })) == 142 {
+	len := i32(0)
+	if i32((unsafe { *s })) == 142 {
 		len = 4
-	} else if int((unsafe { *s })) == 143 {
+	} else if i32((unsafe { *s })) == 143 {
 		len = 3
-	} else if (int(u8((unsafe { *s }))) & 128) {
+	} else if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = 1
@@ -410,14 +410,14 @@ pub fn pg_euctw_mblen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_euctw_dsplen(s &u8) int {
+pub fn pg_euctw_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if int((unsafe { *s })) == 142 {
+	len := i32(0)
+	if i32((unsafe { *s })) == 142 {
 		len = 2
-	} else if int((unsafe { *s })) == 143 {
+	} else if i32((unsafe { *s })) == 143 {
 		len = 2
-	} else if (int(u8((unsafe { *s }))) & 128) {
+	} else if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = pg_ascii_dsplen(s)
@@ -426,9 +426,9 @@ pub fn pg_euctw_dsplen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_wchar2euc_with_len(from &Pg_wchar, to &u8, len int) int {
+pub fn pg_wchar2euc_with_len(from &Pg_wchar, to &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	cnt := 0
+	cnt := i32(0)
 	for len > 0 && (unsafe { *from }) {
 		c := u8(0)
 		c = u8(((unsafe { *from }) >> 24))
@@ -475,55 +475,55 @@ pub fn pg_wchar2euc_with_len(from &Pg_wchar, to &u8, len int) int {
 }
 
 @[markused]
-pub fn pg_johab_mblen(s &u8) int {
+pub fn pg_johab_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
 	return pg_euc_mblen(s)
 }
 
 @[markused]
-pub fn pg_johab_dsplen(s &u8) int {
+pub fn pg_johab_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
 	return pg_euc_dsplen(s)
 }
 
 @[markused]
-pub fn pg_utf2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
+pub fn pg_utf2wchar_with_len(from &u8, to &Pg_wchar, len i32) i32 {
 	c2v_gc_register_thread()
-	cnt := 0
+	cnt := i32(0)
 	c1 := Uint32(0)
 	c2 := Uint32(0)
 	c3 := Uint32(0)
 	c4 := Uint32(0)
 
-	for len > 0 && int((unsafe { *from })) {
-		if (int((unsafe { *from })) & 128) == 0 {
+	for len > 0 && i32((unsafe { *from })) {
+		if (i32((unsafe { *from })) & 128) == 0 {
 			unsafe { *to = *c2v_pointer_postfix(voidptr(&from), from, isize(1)) }
 			len--
-		} else if (int((unsafe { *from })) & 224) == 192 {
+		} else if (i32((unsafe { *from })) & 224) == 192 {
 			if len < 2 {
 				break
 			}
-			c1 = Uint32(int((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 31)
-			c2 = Uint32(int((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 63)
+			c1 = Uint32(i32((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 31)
+			c2 = Uint32(i32((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 63)
 			unsafe { *to = (c1 << 6) | c2 }
 			len -= 2
-		} else if (int((unsafe { *from })) & 240) == 224 {
+		} else if (i32((unsafe { *from })) & 240) == 224 {
 			if len < 3 {
 				break
 			}
-			c1 = Uint32(int((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 15)
-			c2 = Uint32(int((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 63)
-			c3 = Uint32(int((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 63)
+			c1 = Uint32(i32((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 15)
+			c2 = Uint32(i32((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 63)
+			c3 = Uint32(i32((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 63)
 			unsafe { *to = (c1 << 12) | (c2 << 6) | c3 }
 			len -= 3
-		} else if (int((unsafe { *from })) & 248) == 240 {
+		} else if (i32((unsafe { *from })) & 248) == 240 {
 			if len < 4 {
 				break
 			}
-			c1 = Uint32(int((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 7)
-			c2 = Uint32(int((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 63)
-			c3 = Uint32(int((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 63)
-			c4 = Uint32(int((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 63)
+			c1 = Uint32(i32((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 7)
+			c2 = Uint32(i32((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 63)
+			c3 = Uint32(i32((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 63)
+			c4 = Uint32(i32((unsafe { *c2v_pointer_postfix(voidptr(&from), from, isize(1)) })) & 63)
 			unsafe { *to = (c1 << 18) | (c2 << 12) | (c3 << 6) | c4 }
 			len -= 4
 		} else {
@@ -538,11 +538,11 @@ pub fn pg_utf2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
 }
 
 @[markused]
-pub fn pg_wchar2utf_with_len(from &Pg_wchar, to &u8, len int) int {
+pub fn pg_wchar2utf_with_len(from &Pg_wchar, to &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	cnt := 0
+	cnt := i32(0)
 	for len > 0 && (unsafe { *from }) {
-		char_len := 0
+		char_len := i32(0)
 		libpq_wchar_unicode_to_utf8((unsafe { *from }), to)
 		char_len = pg_utf_mblen(to)
 		cnt += char_len
@@ -556,16 +556,16 @@ pub fn pg_wchar2utf_with_len(from &Pg_wchar, to &u8, len int) int {
 
 @[export: 'pg_utf_mblen']
 @[markused]
-pub fn pg_utf_mblen(s &u8) int {
+pub fn pg_utf_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if (int((unsafe { *s })) & 128) == 0 {
+	len := i32(0)
+	if (i32((unsafe { *s })) & 128) == 0 {
 		len = 1
-	} else if (int((unsafe { *s })) & 224) == 192 {
+	} else if (i32((unsafe { *s })) & 224) == 192 {
 		len = 2
-	} else if (int((unsafe { *s })) & 240) == 224 {
+	} else if (i32((unsafe { *s })) & 240) == 224 {
 		len = 3
-	} else if (int((unsafe { *s })) & 248) == 240 {
+	} else if (i32((unsafe { *s })) & 248) == 240 {
 		len = 4
 	} else {
 		len = 1
@@ -580,9 +580,9 @@ pub mut:
 }
 
 @[markused]
-pub fn mbbisearch(ucs Pg_wchar, table &Mbinterval, max int) int {
-	min := 0
-	mid := 0
+pub fn mbbisearch(ucs Pg_wchar, table &Mbinterval, max i32) i32 {
+	min := i32(0)
+	mid := i32(0)
 	if ucs < table[0].first || ucs > table[max].last {
 		return 0
 	}
@@ -600,7 +600,7 @@ pub fn mbbisearch(ucs Pg_wchar, table &Mbinterval, max int) int {
 }
 
 @[markused]
-pub fn ucs_wcwidth(ucs Pg_wchar) int {
+pub fn ucs_wcwidth(ucs Pg_wchar) i32 {
 	if !ucs_wcwidth_nonspacing_inited {
 		c2v_static_init := [Mbinterval{
 			first: u32(173)
@@ -2001,46 +2001,46 @@ pub fn ucs_wcwidth(ucs Pg_wchar) int {
 }
 
 @[markused]
-pub fn pg_utf_dsplen(s &u8) int {
+pub fn pg_utf_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
 	return ucs_wcwidth(libpq_wchar_utf8_to_unicode(s))
 }
 
 @[markused]
-pub fn pg_mule2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
+pub fn pg_mule2wchar_with_len(from &u8, to &Pg_wchar, len i32) i32 {
 	c2v_gc_register_thread()
-	cnt := 0
-	for len > 0 && int((unsafe { *from })) {
-		if (int(u8((unsafe { *from }))) >= 129 && int(u8((unsafe { *from }))) <= 141) {
+	cnt := i32(0)
+	for len > 0 && i32((unsafe { *from })) {
+		if (i32(u8((unsafe { *from }))) >= 129 && i32(u8((unsafe { *from }))) <= 141) {
 			if len < 2 {
 				break
 			}
-			unsafe { *to = Pg_wchar(int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 16) }
+			unsafe { *to = Pg_wchar(i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 16) }
 			unsafe { *to |= Pg_wchar(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) }
 			len -= 2
-		} else if (int(u8((unsafe { *from }))) == 154 || int(u8((unsafe { *from }))) == 155) {
+		} else if (i32(u8((unsafe { *from }))) == 154 || i32(u8((unsafe { *from }))) == 155) {
 			if len < 3 {
 				break
 			}
 			c2v_pointer_postfix(voidptr(&from), from, isize(1))
-			unsafe { *to = Pg_wchar(int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 16) }
+			unsafe { *to = Pg_wchar(i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 16) }
 			unsafe { *to |= Pg_wchar(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) }
 			len -= 3
-		} else if (int(u8((unsafe { *from }))) >= 144 && int(u8((unsafe { *from }))) <= 153) {
+		} else if (i32(u8((unsafe { *from }))) >= 144 && i32(u8((unsafe { *from }))) <= 153) {
 			if len < 3 {
 				break
 			}
-			unsafe { *to = Pg_wchar(int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 16) }
-			unsafe { *to |= Pg_wchar(int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8) }
+			unsafe { *to = Pg_wchar(i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 16) }
+			unsafe { *to |= Pg_wchar(i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8) }
 			unsafe { *to |= Pg_wchar(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) }
 			len -= 3
-		} else if (int(u8((unsafe { *from }))) == 156 || int(u8((unsafe { *from }))) == 157) {
+		} else if (i32(u8((unsafe { *from }))) == 156 || i32(u8((unsafe { *from }))) == 157) {
 			if len < 4 {
 				break
 			}
 			c2v_pointer_postfix(voidptr(&from), from, isize(1))
-			unsafe { *to = Pg_wchar(int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 16) }
-			unsafe { *to |= Pg_wchar(int(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8) }
+			unsafe { *to = Pg_wchar(i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 16) }
+			unsafe { *to |= Pg_wchar(i32(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) << 8) }
 			unsafe { *to |= Pg_wchar(*c2v_pointer_postfix(voidptr(&from), from, isize(1))) }
 			len -= 4
 		} else {
@@ -2055,19 +2055,19 @@ pub fn pg_mule2wchar_with_len(from &u8, to &Pg_wchar, len int) int {
 }
 
 @[markused]
-pub fn pg_wchar2mule_with_len(from &Pg_wchar, to &u8, len int) int {
+pub fn pg_wchar2mule_with_len(from &Pg_wchar, to &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	cnt := 0
+	cnt := i32(0)
 	for len > 0 && (unsafe { *from }) {
 		lb := u8(0)
 		lb = u8(((unsafe { *from }) >> 16) & Pg_wchar(255))
-		if (int(u8(lb)) >= 129 && int(u8(lb)) <= 141) {
+		if (i32(u8(lb)) >= 129 && i32(u8(lb)) <= 141) {
 			mut __c2v_lhs_tmp_11 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_11 = lb }
 			mut __c2v_lhs_tmp_12 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_12 = u8(*from & Pg_wchar(255)) }
 			cnt += 2
-		} else if (int(u8(lb)) >= 144 && int(u8(lb)) <= 153) {
+		} else if (i32(u8(lb)) >= 144 && i32(u8(lb)) <= 153) {
 			mut __c2v_lhs_tmp_13 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_13 = lb }
 			mut __c2v_lhs_tmp_14 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
@@ -2075,7 +2075,7 @@ pub fn pg_wchar2mule_with_len(from &Pg_wchar, to &u8, len int) int {
 			mut __c2v_lhs_tmp_15 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_15 = u8(*from & Pg_wchar(255)) }
 			cnt += 3
-		} else if (int(u8(lb)) >= 160 && int(u8(lb)) <= 223) {
+		} else if (i32(u8(lb)) >= 160 && i32(u8(lb)) <= 223) {
 			mut __c2v_lhs_tmp_16 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_16 = u8(154) }
 			mut __c2v_lhs_tmp_17 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
@@ -2083,7 +2083,7 @@ pub fn pg_wchar2mule_with_len(from &Pg_wchar, to &u8, len int) int {
 			mut __c2v_lhs_tmp_18 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_18 = u8(*from & Pg_wchar(255)) }
 			cnt += 3
-		} else if (int(u8(lb)) >= 224 && int(u8(lb)) <= 239) {
+		} else if (i32(u8(lb)) >= 224 && i32(u8(lb)) <= 239) {
 			mut __c2v_lhs_tmp_19 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_19 = u8(155) }
 			mut __c2v_lhs_tmp_20 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
@@ -2091,7 +2091,7 @@ pub fn pg_wchar2mule_with_len(from &Pg_wchar, to &u8, len int) int {
 			mut __c2v_lhs_tmp_21 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_21 = u8(*from & Pg_wchar(255)) }
 			cnt += 3
-		} else if (int(u8(lb)) >= 240 && int(u8(lb)) <= 244) {
+		} else if (i32(u8(lb)) >= 240 && i32(u8(lb)) <= 244) {
 			mut __c2v_lhs_tmp_22 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_22 = u8(156) }
 			mut __c2v_lhs_tmp_23 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
@@ -2101,7 +2101,7 @@ pub fn pg_wchar2mule_with_len(from &Pg_wchar, to &u8, len int) int {
 			mut __c2v_lhs_tmp_25 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_25 = u8(*from & Pg_wchar(255)) }
 			cnt += 4
-		} else if (int(u8(lb)) >= 245 && int(u8(lb)) <= 254) {
+		} else if (i32(u8(lb)) >= 245 && i32(u8(lb)) <= 254) {
 			mut __c2v_lhs_tmp_26 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_26 = u8(157) }
 			mut __c2v_lhs_tmp_27 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
@@ -2125,16 +2125,16 @@ pub fn pg_wchar2mule_with_len(from &Pg_wchar, to &u8, len int) int {
 
 @[export: 'pg_mule_mblen']
 @[markused]
-pub fn pg_mule_mblen(s &u8) int {
+pub fn pg_mule_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if (int(u8((unsafe { *s }))) >= 129 && int(u8((unsafe { *s }))) <= 141) {
+	len := i32(0)
+	if (i32(u8((unsafe { *s }))) >= 129 && i32(u8((unsafe { *s }))) <= 141) {
 		len = 2
-	} else if (int(u8((unsafe { *s }))) == 154 || int(u8((unsafe { *s }))) == 155) {
+	} else if (i32(u8((unsafe { *s }))) == 154 || i32(u8((unsafe { *s }))) == 155) {
 		len = 3
-	} else if (int(u8((unsafe { *s }))) >= 144 && int(u8((unsafe { *s }))) <= 153) {
+	} else if (i32(u8((unsafe { *s }))) >= 144 && i32(u8((unsafe { *s }))) <= 153) {
 		len = 3
-	} else if (int(u8((unsafe { *s }))) == 156 || int(u8((unsafe { *s }))) == 157) {
+	} else if (i32(u8((unsafe { *s }))) == 156 || i32(u8((unsafe { *s }))) == 157) {
 		len = 4
 	} else {
 		len = 1
@@ -2143,16 +2143,16 @@ pub fn pg_mule_mblen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_mule_dsplen(s &u8) int {
+pub fn pg_mule_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if (int(u8((unsafe { *s }))) >= 129 && int(u8((unsafe { *s }))) <= 141) {
+	len := i32(0)
+	if (i32(u8((unsafe { *s }))) >= 129 && i32(u8((unsafe { *s }))) <= 141) {
 		len = 1
-	} else if (int(u8((unsafe { *s }))) == 154 || int(u8((unsafe { *s }))) == 155) {
+	} else if (i32(u8((unsafe { *s }))) == 154 || i32(u8((unsafe { *s }))) == 155) {
 		len = 1
-	} else if (int(u8((unsafe { *s }))) >= 144 && int(u8((unsafe { *s }))) <= 153) {
+	} else if (i32(u8((unsafe { *s }))) >= 144 && i32(u8((unsafe { *s }))) <= 153) {
 		len = 2
-	} else if (int(u8((unsafe { *s }))) == 156 || int(u8((unsafe { *s }))) == 157) {
+	} else if (i32(u8((unsafe { *s }))) == 156 || i32(u8((unsafe { *s }))) == 157) {
 		len = 2
 	} else {
 		len = 1
@@ -2161,10 +2161,10 @@ pub fn pg_mule_dsplen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_latin12wchar_with_len(from &u8, to &Pg_wchar, len int) int {
+pub fn pg_latin12wchar_with_len(from &u8, to &Pg_wchar, len i32) i32 {
 	c2v_gc_register_thread()
-	cnt := 0
-	for len > 0 && int((unsafe { *from })) {
+	cnt := i32(0)
+	for len > 0 && i32((unsafe { *from })) {
 		mut __c2v_lhs_tmp_31 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 		unsafe { *__c2v_lhs_tmp_31 = *c2v_pointer_postfix(voidptr(&from), from, isize(1)) }
 		len--
@@ -2175,9 +2175,9 @@ pub fn pg_latin12wchar_with_len(from &u8, to &Pg_wchar, len int) int {
 }
 
 @[markused]
-pub fn pg_wchar2single_with_len(from &Pg_wchar, to &u8, len int) int {
+pub fn pg_wchar2single_with_len(from &Pg_wchar, to &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	cnt := 0
+	cnt := i32(0)
 	for len > 0 && (unsafe { *from }) {
 		mut __c2v_lhs_tmp_32 := unsafe { c2v_pointer_postfix(voidptr(&to), to, isize(1)) }
 		unsafe { *__c2v_lhs_tmp_32 = *c2v_pointer_postfix(voidptr(&from), from, isize(1)) }
@@ -2189,24 +2189,24 @@ pub fn pg_wchar2single_with_len(from &Pg_wchar, to &u8, len int) int {
 }
 
 @[markused]
-pub fn pg_latin1_mblen(s &u8) int {
+pub fn pg_latin1_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
 	return 1
 }
 
 @[markused]
-pub fn pg_latin1_dsplen(s &u8) int {
+pub fn pg_latin1_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
 	return pg_ascii_dsplen(s)
 }
 
 @[markused]
-pub fn pg_sjis_mblen(s &u8) int {
+pub fn pg_sjis_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if int((unsafe { *s })) >= 161 && int((unsafe { *s })) <= 223 {
+	len := i32(0)
+	if i32((unsafe { *s })) >= 161 && i32((unsafe { *s })) <= 223 {
 		len = 1
-	} else if (int(u8((unsafe { *s }))) & 128) {
+	} else if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = 1
@@ -2215,12 +2215,12 @@ pub fn pg_sjis_mblen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_sjis_dsplen(s &u8) int {
+pub fn pg_sjis_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if int((unsafe { *s })) >= 161 && int((unsafe { *s })) <= 223 {
+	len := i32(0)
+	if i32((unsafe { *s })) >= 161 && i32((unsafe { *s })) <= 223 {
 		len = 1
-	} else if (int(u8((unsafe { *s }))) & 128) {
+	} else if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = pg_ascii_dsplen(s)
@@ -2229,10 +2229,10 @@ pub fn pg_sjis_dsplen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_big5_mblen(s &u8) int {
+pub fn pg_big5_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if (int(u8((unsafe { *s }))) & 128) {
+	len := i32(0)
+	if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = 1
@@ -2241,10 +2241,10 @@ pub fn pg_big5_mblen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_big5_dsplen(s &u8) int {
+pub fn pg_big5_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if (int(u8((unsafe { *s }))) & 128) {
+	len := i32(0)
+	if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = pg_ascii_dsplen(s)
@@ -2253,10 +2253,10 @@ pub fn pg_big5_dsplen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_gbk_mblen(s &u8) int {
+pub fn pg_gbk_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if (int(u8((unsafe { *s }))) & 128) {
+	len := i32(0)
+	if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = 1
@@ -2265,10 +2265,10 @@ pub fn pg_gbk_mblen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_gbk_dsplen(s &u8) int {
+pub fn pg_gbk_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if (int(u8((unsafe { *s }))) & 128) {
+	len := i32(0)
+	if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = pg_ascii_dsplen(s)
@@ -2277,10 +2277,10 @@ pub fn pg_gbk_dsplen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_uhc_mblen(s &u8) int {
+pub fn pg_uhc_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if (int(u8((unsafe { *s }))) & 128) {
+	len := i32(0)
+	if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = 1
@@ -2289,10 +2289,10 @@ pub fn pg_uhc_mblen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_uhc_dsplen(s &u8) int {
+pub fn pg_uhc_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if (int(u8((unsafe { *s }))) & 128) {
+	len := i32(0)
+	if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = pg_ascii_dsplen(s)
@@ -2301,12 +2301,12 @@ pub fn pg_uhc_dsplen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_gb18030_mblen(s &u8) int {
+pub fn pg_gb18030_mblen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if !(int(u8((unsafe { *s }))) & 128) {
+	len := i32(0)
+	if !(i32(u8((unsafe { *s }))) & 128) {
 		len = 1
-	} else if int((unsafe { *(s + 1) })) >= 48 && int((unsafe { *(s + 1) })) <= 57 {
+	} else if i32((unsafe { *(s + 1) })) >= 48 && i32((unsafe { *(s + 1) })) <= 57 {
 		len = 4
 	} else {
 		len = 2
@@ -2315,10 +2315,10 @@ pub fn pg_gb18030_mblen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_gb18030_dsplen(s &u8) int {
+pub fn pg_gb18030_dsplen(s &u8) i32 {
 	c2v_gc_register_thread()
-	len := 0
-	if (int(u8((unsafe { *s }))) & 128) {
+	len := i32(0)
+	if (i32(u8((unsafe { *s }))) & 128) {
 		len = 2
 	} else {
 		len = pg_ascii_dsplen(s)
@@ -2327,38 +2327,38 @@ pub fn pg_gb18030_dsplen(s &u8) int {
 }
 
 @[markused]
-pub fn pg_ascii_verifychar(s &u8, len int) int {
+pub fn pg_ascii_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	return 1
 }
 
 @[markused]
-pub fn pg_ascii_verifystr(s &u8, len int) int {
+pub fn pg_ascii_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	nullpos := &u8(C.c2v_memchr(voidptr(s), 0, u64(len)))
 	if usize(nullpos) == usize((voidptr(0))) {
 		return len
 	} else {
-		return int(i64((isize(nullpos) - isize(s)) / isize(sizeof(u8))))
+		return i32(i64((isize(nullpos) - isize(s)) / isize(sizeof(u8))))
 	}
 }
 
 @[markused]
-pub fn pg_eucjp_verifychar(s &u8, len int) int {
+pub fn pg_eucjp_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	l := 0
+	l := i32(0)
 	c1 := u8(0)
 	c2 := u8(0)
 
 	c1 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-	match int(c1) {
+	match i32(c1) {
 		142 {
 			l = 2
 			if l > len {
 				return -1
 			}
 			c2 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-			if int(c2) < 161 || int(c2) > 223 {
+			if i32(c2) < 161 || i32(c2) > 223 {
 				return -1
 			}
 		}
@@ -2368,25 +2368,25 @@ pub fn pg_eucjp_verifychar(s &u8, len int) int {
 				return -1
 			}
 			c2 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-			if !(int(c2) >= 161 && int(c2) <= 254) {
+			if !(i32(c2) >= 161 && i32(c2) <= 254) {
 				return -1
 			}
 			c2 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-			if !(int(c2) >= 161 && int(c2) <= 254) {
+			if !(i32(c2) >= 161 && i32(c2) <= 254) {
 				return -1
 			}
 		}
 		else {
-			if (int(u8(c1)) & 128) {
+			if (i32(u8(c1)) & 128) {
 				l = 2
 				if l > len {
 					return -1
 				}
-				if !(int(c1) >= 161 && int(c1) <= 254) {
+				if !(i32(c1) >= 161 && i32(c1) <= 254) {
 					return -1
 				}
 				c2 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-				if !(int(c2) >= 161 && int(c2) <= 254) {
+				if !(i32(c2) >= 161 && i32(c2) <= 254) {
 					return -1
 				}
 			} else {
@@ -2399,13 +2399,13 @@ pub fn pg_eucjp_verifychar(s &u8, len int) int {
 }
 
 @[markused]
-pub fn pg_eucjp_verifystr(s &u8, len int) int {
+pub fn pg_eucjp_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	start := s
 	for len > 0 {
-		l := 0
-		if !(int(u8((unsafe { *s }))) & 128) {
-			if int((unsafe { *s })) == `\0` {
+		l := i32(0)
+		if !(i32(u8((unsafe { *s }))) & 128) {
+			if i32((unsafe { *s })) == `\0` {
 				break
 			}
 			l = 1
@@ -2418,27 +2418,27 @@ pub fn pg_eucjp_verifystr(s &u8, len int) int {
 		c2v_pointer_prefix(voidptr(&s), s, isize(l))
 		len -= l
 	}
-	return int(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
+	return i32(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
 }
 
 @[markused]
-pub fn pg_euckr_verifychar(s &u8, len int) int {
+pub fn pg_euckr_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	l := 0
+	l := i32(0)
 	c1 := u8(0)
 	c2 := u8(0)
 
 	c1 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-	if (int(u8(c1)) & 128) {
+	if (i32(u8(c1)) & 128) {
 		l = 2
 		if l > len {
 			return -1
 		}
-		if !(int(c1) >= 161 && int(c1) <= 254) {
+		if !(i32(c1) >= 161 && i32(c1) <= 254) {
 			return -1
 		}
 		c2 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-		if !(int(c2) >= 161 && int(c2) <= 254) {
+		if !(i32(c2) >= 161 && i32(c2) <= 254) {
 			return -1
 		}
 	} else {
@@ -2448,13 +2448,13 @@ pub fn pg_euckr_verifychar(s &u8, len int) int {
 }
 
 @[markused]
-pub fn pg_euckr_verifystr(s &u8, len int) int {
+pub fn pg_euckr_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	start := s
 	for len > 0 {
-		l := 0
-		if !(int(u8((unsafe { *s }))) & 128) {
-			if int((unsafe { *s })) == `\0` {
+		l := i32(0)
+		if !(i32(u8((unsafe { *s }))) & 128) {
+			if i32((unsafe { *s })) == `\0` {
 				break
 			}
 			l = 1
@@ -2467,33 +2467,33 @@ pub fn pg_euckr_verifystr(s &u8, len int) int {
 		c2v_pointer_prefix(voidptr(&s), s, isize(l))
 		len -= l
 	}
-	return int(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
+	return i32(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
 }
 
 @[markused]
-pub fn pg_euctw_verifychar(s &u8, len int) int {
+pub fn pg_euctw_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	l := 0
+	l := i32(0)
 	c1 := u8(0)
 	c2 := u8(0)
 
 	c1 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-	match int(c1) {
+	match i32(c1) {
 		142 {
 			l = 4
 			if l > len {
 				return -1
 			}
 			c2 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-			if int(c2) < 161 || int(c2) > 167 {
+			if i32(c2) < 161 || i32(c2) > 167 {
 				return -1
 			}
 			c2 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-			if !(int(c2) >= 161 && int(c2) <= 254) {
+			if !(i32(c2) >= 161 && i32(c2) <= 254) {
 				return -1
 			}
 			c2 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-			if !(int(c2) >= 161 && int(c2) <= 254) {
+			if !(i32(c2) >= 161 && i32(c2) <= 254) {
 				return -1
 			}
 		}
@@ -2501,13 +2501,13 @@ pub fn pg_euctw_verifychar(s &u8, len int) int {
 			return -1
 		}
 		else {
-			if (int(u8(c1)) & 128) {
+			if (i32(u8(c1)) & 128) {
 				l = 2
 				if l > len {
 					return -1
 				}
 				c2 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
-				if !(int(c2) >= 161 && int(c2) <= 254) {
+				if !(i32(c2) >= 161 && i32(c2) <= 254) {
 					return -1
 				}
 			} else {
@@ -2520,13 +2520,13 @@ pub fn pg_euctw_verifychar(s &u8, len int) int {
 }
 
 @[markused]
-pub fn pg_euctw_verifystr(s &u8, len int) int {
+pub fn pg_euctw_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	start := s
 	for len > 0 {
-		l := 0
-		if !(int(u8((unsafe { *s }))) & 128) {
-			if int((unsafe { *s })) == `\0` {
+		l := i32(0)
+		if !(i32(u8((unsafe { *s }))) & 128) {
+			if i32((unsafe { *s })) == `\0` {
 				break
 			}
 			l = 1
@@ -2539,14 +2539,14 @@ pub fn pg_euctw_verifystr(s &u8, len int) int {
 		c2v_pointer_prefix(voidptr(&s), s, isize(l))
 		len -= l
 	}
-	return int(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
+	return i32(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
 }
 
 @[markused]
-pub fn pg_johab_verifychar(s &u8, len int) int {
+pub fn pg_johab_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	l := 0
-	mbl := 0
+	l := i32(0)
+	mbl := i32(0)
 
 	c := u8(0)
 	mbl = pg_johab_mblen(s)
@@ -2554,7 +2554,7 @@ pub fn pg_johab_verifychar(s &u8, len int) int {
 	if len < l {
 		return -1
 	}
-	if !(int(u8((unsafe { *s }))) & 128) {
+	if !(i32(u8((unsafe { *s }))) & 128) {
 		return mbl
 	}
 	for {
@@ -2563,7 +2563,7 @@ pub fn pg_johab_verifychar(s &u8, len int) int {
 			break
 		}
 		c = unsafe { *c2v_pointer_prefix(voidptr(&s), s, isize(1)) }
-		if !(int(c) >= 161 && int(c) <= 254) {
+		if !(i32(c) >= 161 && i32(c) <= 254) {
 			return -1
 		}
 	}
@@ -2571,13 +2571,13 @@ pub fn pg_johab_verifychar(s &u8, len int) int {
 }
 
 @[markused]
-pub fn pg_johab_verifystr(s &u8, len int) int {
+pub fn pg_johab_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	start := s
 	for len > 0 {
-		l := 0
-		if !(int(u8((unsafe { *s }))) & 128) {
-			if int((unsafe { *s })) == `\0` {
+		l := i32(0)
+		if !(i32(u8((unsafe { *s }))) & 128) {
+			if i32((unsafe { *s })) == `\0` {
 				break
 			}
 			l = 1
@@ -2590,14 +2590,14 @@ pub fn pg_johab_verifystr(s &u8, len int) int {
 		c2v_pointer_prefix(voidptr(&s), s, isize(l))
 		len -= l
 	}
-	return int(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
+	return i32(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
 }
 
 @[markused]
-pub fn pg_mule_verifychar(s &u8, len int) int {
+pub fn pg_mule_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	l := 0
-	mbl := 0
+	l := i32(0)
+	mbl := i32(0)
 
 	c := u8(0)
 	mbl = pg_mule_mblen(s)
@@ -2611,7 +2611,7 @@ pub fn pg_mule_verifychar(s &u8, len int) int {
 			break
 		}
 		c = unsafe { *c2v_pointer_prefix(voidptr(&s), s, isize(1)) }
-		if !(int(u8(c)) & 128) {
+		if !(i32(u8(c)) & 128) {
 			return -1
 		}
 	}
@@ -2619,13 +2619,13 @@ pub fn pg_mule_verifychar(s &u8, len int) int {
 }
 
 @[markused]
-pub fn pg_mule_verifystr(s &u8, len int) int {
+pub fn pg_mule_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	start := s
 	for len > 0 {
-		l := 0
-		if !(int(u8((unsafe { *s }))) & 128) {
-			if int((unsafe { *s })) == `\0` {
+		l := i32(0)
+		if !(i32(u8((unsafe { *s }))) & 128) {
+			if i32((unsafe { *s })) == `\0` {
 				break
 			}
 			l = 1
@@ -2638,31 +2638,31 @@ pub fn pg_mule_verifystr(s &u8, len int) int {
 		c2v_pointer_prefix(voidptr(&s), s, isize(l))
 		len -= l
 	}
-	return int(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
+	return i32(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
 }
 
 @[markused]
-pub fn pg_latin1_verifychar(s &u8, len int) int {
+pub fn pg_latin1_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	return 1
 }
 
 @[markused]
-pub fn pg_latin1_verifystr(s &u8, len int) int {
+pub fn pg_latin1_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	nullpos := &u8(C.c2v_memchr(voidptr(s), 0, u64(len)))
 	if usize(nullpos) == usize((voidptr(0))) {
 		return len
 	} else {
-		return int(i64((isize(nullpos) - isize(s)) / isize(sizeof(u8))))
+		return i32(i64((isize(nullpos) - isize(s)) / isize(sizeof(u8))))
 	}
 }
 
 @[markused]
-pub fn pg_sjis_verifychar(s &u8, len int) int {
+pub fn pg_sjis_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	l := 0
-	mbl := 0
+	l := i32(0)
+	mbl := i32(0)
 
 	c1 := u8(0)
 	c2 := u8(0)
@@ -2677,20 +2677,20 @@ pub fn pg_sjis_verifychar(s &u8, len int) int {
 	}
 	c1 = unsafe { *c2v_pointer_postfix(voidptr(&s), s, isize(1)) }
 	c2 = unsafe { *s }
-	if !((int(c1) >= 129 && int(c1) <= 159) || (int(c1) >= 224 && int(c1) <= 252)) || !((int(c2) >= 64 && int(c2) <= 126) || (int(c2) >= 128 && int(c2) <= 252)) {
+	if !((i32(c1) >= 129 && i32(c1) <= 159) || (i32(c1) >= 224 && i32(c1) <= 252)) || !((i32(c2) >= 64 && i32(c2) <= 126) || (i32(c2) >= 128 && i32(c2) <= 252)) {
 		return -1
 	}
 	return mbl
 }
 
 @[markused]
-pub fn pg_sjis_verifystr(s &u8, len int) int {
+pub fn pg_sjis_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	start := s
 	for len > 0 {
-		l := 0
-		if !(int(u8((unsafe { *s }))) & 128) {
-			if int((unsafe { *s })) == `\0` {
+		l := i32(0)
+		if !(i32(u8((unsafe { *s }))) & 128) {
+			if i32((unsafe { *s })) == `\0` {
 				break
 			}
 			l = 1
@@ -2703,21 +2703,21 @@ pub fn pg_sjis_verifystr(s &u8, len int) int {
 		c2v_pointer_prefix(voidptr(&s), s, isize(l))
 		len -= l
 	}
-	return int(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
+	return i32(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
 }
 
 @[markused]
-pub fn pg_big5_verifychar(s &u8, len int) int {
+pub fn pg_big5_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	l := 0
-	mbl := 0
+	l := i32(0)
+	mbl := i32(0)
 
 	mbl = pg_big5_mblen(s)
 	l = mbl
 	if len < l {
 		return -1
 	}
-	if l == 2 && int(s[0]) == 141 && int(s[1]) == ` ` {
+	if l == 2 && i32(s[0]) == 141 && i32(s[1]) == ` ` {
 		return -1
 	}
 	for {
@@ -2725,7 +2725,7 @@ pub fn pg_big5_verifychar(s &u8, len int) int {
 		if !(l > 0) {
 			break
 		}
-		if int((unsafe { *c2v_pointer_prefix(voidptr(&s), s, isize(1)) })) == `\0` {
+		if i32((unsafe { *c2v_pointer_prefix(voidptr(&s), s, isize(1)) })) == `\0` {
 			return -1
 		}
 	}
@@ -2733,13 +2733,13 @@ pub fn pg_big5_verifychar(s &u8, len int) int {
 }
 
 @[markused]
-pub fn pg_big5_verifystr(s &u8, len int) int {
+pub fn pg_big5_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	start := s
 	for len > 0 {
-		l := 0
-		if !(int(u8((unsafe { *s }))) & 128) {
-			if int((unsafe { *s })) == `\0` {
+		l := i32(0)
+		if !(i32(u8((unsafe { *s }))) & 128) {
+			if i32((unsafe { *s })) == `\0` {
 				break
 			}
 			l = 1
@@ -2752,21 +2752,21 @@ pub fn pg_big5_verifystr(s &u8, len int) int {
 		c2v_pointer_prefix(voidptr(&s), s, isize(l))
 		len -= l
 	}
-	return int(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
+	return i32(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
 }
 
 @[markused]
-pub fn pg_gbk_verifychar(s &u8, len int) int {
+pub fn pg_gbk_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	l := 0
-	mbl := 0
+	l := i32(0)
+	mbl := i32(0)
 
 	mbl = pg_gbk_mblen(s)
 	l = mbl
 	if len < l {
 		return -1
 	}
-	if l == 2 && int(s[0]) == 141 && int(s[1]) == ` ` {
+	if l == 2 && i32(s[0]) == 141 && i32(s[1]) == ` ` {
 		return -1
 	}
 	for {
@@ -2774,7 +2774,7 @@ pub fn pg_gbk_verifychar(s &u8, len int) int {
 		if !(l > 0) {
 			break
 		}
-		if int((unsafe { *c2v_pointer_prefix(voidptr(&s), s, isize(1)) })) == `\0` {
+		if i32((unsafe { *c2v_pointer_prefix(voidptr(&s), s, isize(1)) })) == `\0` {
 			return -1
 		}
 	}
@@ -2782,13 +2782,13 @@ pub fn pg_gbk_verifychar(s &u8, len int) int {
 }
 
 @[markused]
-pub fn pg_gbk_verifystr(s &u8, len int) int {
+pub fn pg_gbk_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	start := s
 	for len > 0 {
-		l := 0
-		if !(int(u8((unsafe { *s }))) & 128) {
-			if int((unsafe { *s })) == `\0` {
+		l := i32(0)
+		if !(i32(u8((unsafe { *s }))) & 128) {
+			if i32((unsafe { *s })) == `\0` {
 				break
 			}
 			l = 1
@@ -2801,21 +2801,21 @@ pub fn pg_gbk_verifystr(s &u8, len int) int {
 		c2v_pointer_prefix(voidptr(&s), s, isize(l))
 		len -= l
 	}
-	return int(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
+	return i32(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
 }
 
 @[markused]
-pub fn pg_uhc_verifychar(s &u8, len int) int {
+pub fn pg_uhc_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	l := 0
-	mbl := 0
+	l := i32(0)
+	mbl := i32(0)
 
 	mbl = pg_uhc_mblen(s)
 	l = mbl
 	if len < l {
 		return -1
 	}
-	if l == 2 && int(s[0]) == 141 && int(s[1]) == ` ` {
+	if l == 2 && i32(s[0]) == 141 && i32(s[1]) == ` ` {
 		return -1
 	}
 	for {
@@ -2823,7 +2823,7 @@ pub fn pg_uhc_verifychar(s &u8, len int) int {
 		if !(l > 0) {
 			break
 		}
-		if int((unsafe { *c2v_pointer_prefix(voidptr(&s), s, isize(1)) })) == `\0` {
+		if i32((unsafe { *c2v_pointer_prefix(voidptr(&s), s, isize(1)) })) == `\0` {
 			return -1
 		}
 	}
@@ -2831,13 +2831,13 @@ pub fn pg_uhc_verifychar(s &u8, len int) int {
 }
 
 @[markused]
-pub fn pg_uhc_verifystr(s &u8, len int) int {
+pub fn pg_uhc_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	start := s
 	for len > 0 {
-		l := 0
-		if !(int(u8((unsafe { *s }))) & 128) {
-			if int((unsafe { *s })) == `\0` {
+		l := i32(0)
+		if !(i32(u8((unsafe { *s }))) & 128) {
+			if i32((unsafe { *s })) == `\0` {
 				break
 			}
 			l = 1
@@ -2850,33 +2850,33 @@ pub fn pg_uhc_verifystr(s &u8, len int) int {
 		c2v_pointer_prefix(voidptr(&s), s, isize(l))
 		len -= l
 	}
-	return int(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
+	return i32(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
 }
 
 @[markused]
-pub fn pg_gb18030_verifychar(s &u8, len int) int {
+pub fn pg_gb18030_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	l := 0
-	if !(int(u8((unsafe { *s }))) & 128) {
+	l := i32(0)
+	if !(i32(u8((unsafe { *s }))) & 128) {
 		l = 1
-	} else if len >= 4 && int((unsafe { *(s + 1) })) >= 48 && int((unsafe { *(s + 1) })) <= 57 {
+	} else if len >= 4 && i32((unsafe { *(s + 1) })) >= 48 && i32((unsafe { *(s + 1) })) <= 57 {
 		mut __c2v_condition_0 := false
 		mut __c2v_condition_1 := false
-		__c2v_condition_1 = int((unsafe { *s })) >= 129
+		__c2v_condition_1 = i32((unsafe { *s })) >= 129
 		if __c2v_condition_1 {
-			__c2v_condition_1 = int((unsafe { *s })) <= 254
+			__c2v_condition_1 = i32((unsafe { *s })) <= 254
 		}
 		if __c2v_condition_1 {
-			__c2v_condition_1 = int((unsafe { *(s + 2) })) >= 129
+			__c2v_condition_1 = i32((unsafe { *(s + 2) })) >= 129
 		}
 		if __c2v_condition_1 {
-			__c2v_condition_1 = int((unsafe { *(s + 2) })) <= 254
+			__c2v_condition_1 = i32((unsafe { *(s + 2) })) <= 254
 		}
 		if __c2v_condition_1 {
-			__c2v_condition_1 = int((unsafe { *(s + 3) })) >= 48
+			__c2v_condition_1 = i32((unsafe { *(s + 3) })) >= 48
 		}
 		if __c2v_condition_1 {
-			__c2v_condition_1 = int((unsafe { *(s + 3) })) <= 57
+			__c2v_condition_1 = i32((unsafe { *(s + 3) })) <= 57
 		}
 		__c2v_condition_0 = __c2v_condition_1
 		if __c2v_condition_0 {
@@ -2884,8 +2884,8 @@ pub fn pg_gb18030_verifychar(s &u8, len int) int {
 		} else {
 			l = -1
 		}
-	} else if len >= 2 && int((unsafe { *s })) >= 129 && int((unsafe { *s })) <= 254 {
-		if (int((unsafe { *(s + 1) })) >= 64 && int((unsafe { *(s + 1) })) <= 126) || (int((unsafe { *(s + 1) })) >= 128 && int((unsafe { *(s + 1) })) <= 254) {
+	} else if len >= 2 && i32((unsafe { *s })) >= 129 && i32((unsafe { *s })) <= 254 {
+		if (i32((unsafe { *(s + 1) })) >= 64 && i32((unsafe { *(s + 1) })) <= 126) || (i32((unsafe { *(s + 1) })) >= 128 && i32((unsafe { *(s + 1) })) <= 254) {
 			l = 2
 		} else {
 			l = -1
@@ -2897,13 +2897,13 @@ pub fn pg_gb18030_verifychar(s &u8, len int) int {
 }
 
 @[markused]
-pub fn pg_gb18030_verifystr(s &u8, len int) int {
+pub fn pg_gb18030_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	start := s
 	for len > 0 {
-		l := 0
-		if !(int(u8((unsafe { *s }))) & 128) {
-			if int((unsafe { *s })) == `\0` {
+		l := i32(0)
+		if !(i32(u8((unsafe { *s }))) & 128) {
+			if i32((unsafe { *s })) == `\0` {
 				break
 			}
 			l = 1
@@ -2916,23 +2916,23 @@ pub fn pg_gb18030_verifystr(s &u8, len int) int {
 		c2v_pointer_prefix(voidptr(&s), s, isize(l))
 		len -= l
 	}
-	return int(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
+	return i32(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
 }
 
 @[markused]
-pub fn pg_utf8_verifychar(s &u8, len int) int {
+pub fn pg_utf8_verifychar(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
-	l := 0
-	if (int((unsafe { *s })) & 128) == 0 {
-		if int((unsafe { *s })) == `\0` {
+	l := i32(0)
+	if (i32((unsafe { *s })) & 128) == 0 {
+		if i32((unsafe { *s })) == `\0` {
 			return -1
 		}
 		return 1
-	} else if (int((unsafe { *s })) & 224) == 192 {
+	} else if (i32((unsafe { *s })) & 224) == 192 {
 		l = 2
-	} else if (int((unsafe { *s })) & 240) == 224 {
+	} else if (i32((unsafe { *s })) & 240) == 224 {
 		l = 3
-	} else if (int((unsafe { *s })) & 248) == 240 {
+	} else if (i32((unsafe { *s })) & 248) == 240 {
 		l = 4
 	} else {
 		l = 1
@@ -2947,7 +2947,7 @@ pub fn pg_utf8_verifychar(s &u8, len int) int {
 }
 
 @[markused]
-pub fn utf8_advance(s &u8, state &Uint32, len int) {
+pub fn utf8_advance(s &u8, state &Uint32, len i32) {
 	for len > 0 {
 		unsafe { *state = libpq_wchar_utf8_transition[*c2v_pointer_postfix(voidptr(&s), s, isize(1))] >> u32((*state & Uint32(31))) }
 		len--
@@ -2956,15 +2956,15 @@ pub fn utf8_advance(s &u8, state &Uint32, len int) {
 }
 
 @[markused]
-pub fn pg_utf8_verifystr(s &u8, len int) int {
+pub fn pg_utf8_verifystr(s &u8, len i32) i32 {
 	c2v_gc_register_thread()
 	start := s
 	orig_len := len
 	state := Uint32(11)
 	if u64(len) >= (u64(2) * sizeof(Vector8)) {
 		for u64(len) >= (u64(2) * sizeof(Vector8)) {
-			if state != Uint32(11) || !is_valid_ascii(s, int((u64(2) * sizeof(Vector8)))) {
-				utf8_advance(s, &state, int((u64(2) * sizeof(Vector8))))
+			if state != Uint32(11) || !is_valid_ascii(s, i32((u64(2) * sizeof(Vector8)))) {
+				utf8_advance(s, &state, i32((u64(2) * sizeof(Vector8))))
 			}
 			c2v_pointer_prefix(voidptr(&s), s, isize((u64(2) * sizeof(Vector8))))
 			len -= (u64(2) * sizeof(Vector8))
@@ -2984,9 +2984,9 @@ pub fn pg_utf8_verifystr(s &u8, len int) int {
 		}
 	}
 	for len > 0 {
-		l := 0
-		if !(int(u8((unsafe { *s }))) & 128) {
-			if int((unsafe { *s })) == `\0` {
+		l := i32(0)
+		if !(i32(u8((unsafe { *s }))) & 128) {
+			if i32((unsafe { *s })) == `\0` {
 				break
 			}
 			l = 1
@@ -2999,17 +2999,17 @@ pub fn pg_utf8_verifystr(s &u8, len int) int {
 		c2v_pointer_prefix(voidptr(&s), s, isize(l))
 		len -= l
 	}
-	return int(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
+	return i32(i64((isize(s) - isize(start)) / isize(sizeof(u8))))
 }
 
 @[export: 'pg_utf8_islegal']
 @[markused]
-pub fn pg_utf8_islegal(source &u8, length int) bool {
+pub fn pg_utf8_islegal(source &u8, length i32) bool {
 	a := u8(0)
 	match length {
 		4 {
 			a = source[3]
-			if int(a) < 128 || int(a) > 191 {
+			if i32(a) < 128 || i32(a) > 191 {
 				return false != 0
 			}
 			unsafe {
@@ -3019,7 +3019,7 @@ pub fn pg_utf8_islegal(source &u8, length int) bool {
 		3 {
 			c2v_case_60_3:
 			a = source[2]
-			if int(a) < 128 || int(a) > 191 {
+			if i32(a) < 128 || i32(a) > 191 {
 				return false != 0
 			}
 			unsafe {
@@ -3029,29 +3029,29 @@ pub fn pg_utf8_islegal(source &u8, length int) bool {
 		2 {
 			c2v_case_60_5:
 			a = source[1]
-			match int((unsafe { *source })) {
+			match i32((unsafe { *source })) {
 				224 {
-					if int(a) < 160 || int(a) > 191 {
+					if i32(a) < 160 || i32(a) > 191 {
 						return false != 0
 					}
 				}
 				237 {
-					if int(a) < 128 || int(a) > 159 {
+					if i32(a) < 128 || i32(a) > 159 {
 						return false != 0
 					}
 				}
 				240 {
-					if int(a) < 144 || int(a) > 191 {
+					if i32(a) < 144 || i32(a) > 191 {
 						return false != 0
 					}
 				}
 				244 {
-					if int(a) < 128 || int(a) > 143 {
+					if i32(a) < 128 || i32(a) > 143 {
 						return false != 0
 					}
 				}
 				else {
-					if int(a) < 128 || int(a) > 191 {
+					if i32(a) < 128 || i32(a) > 191 {
 						return false != 0
 					}
 				}
@@ -3063,10 +3063,10 @@ pub fn pg_utf8_islegal(source &u8, length int) bool {
 		1 {
 			c2v_case_60_7:
 			a = unsafe { *source }
-			if int(a) >= 128 && int(a) < 194 {
+			if i32(a) >= 128 && i32(a) < 194 {
 				return false != 0
 			}
-			if int(a) > 244 {
+			if i32(a) > 244 {
 				return false != 0
 			}
 		}
@@ -3080,25 +3080,25 @@ pub fn pg_utf8_islegal(source &u8, length int) bool {
 
 @[export: 'pg_encoding_set_invalid']
 @[markused]
-pub fn pg_encoding_set_invalid(encoding int, dst &i8) {
+pub fn pg_encoding_set_invalid(encoding i32, dst &i8) {
 	dst[0] = i8((if encoding == Pg_enc.pg_utf8 { 192 } else { 141 }))
 	dst[1] = i8(` `)
 }
 
 @[export: 'pg_encoding_mblen']
 @[markused]
-pub fn pg_encoding_mblen(encoding int, mbstr &i8) int {
+pub fn pg_encoding_mblen(encoding i32, mbstr &i8) i32 {
 	return if (encoding >= 0 && encoding < Pg_enc.pg_last_encoding_) {
 		pg_wchar_table[encoding].mblen(&u8(voidptr(mbstr)))
 	} else {
-		pg_wchar_table[int(Pg_enc.pg_sql_ascii)].mblen(&u8(voidptr(mbstr)))
+		pg_wchar_table[i32(Pg_enc.pg_sql_ascii)].mblen(&u8(voidptr(mbstr)))
 	}
 }
 
 @[export: 'pg_encoding_mblen_or_incomplete']
 @[markused]
-pub fn pg_encoding_mblen_or_incomplete(encoding int, mbstr &i8, remaining usize) int {
-	if remaining < usize(1) || (encoding == Pg_enc.pg_gb18030 && (int(u8((unsafe { *mbstr }))) & 128) && remaining < usize(2)) {
+pub fn pg_encoding_mblen_or_incomplete(encoding i32, mbstr &i8, remaining usize) i32 {
+	if remaining < usize(1) || (encoding == Pg_enc.pg_gb18030 && (i32(u8((unsafe { *mbstr }))) & 128) && remaining < usize(2)) {
 		return 2147483647
 	}
 	return pg_encoding_mblen(encoding, mbstr)
@@ -3106,46 +3106,46 @@ pub fn pg_encoding_mblen_or_incomplete(encoding int, mbstr &i8, remaining usize)
 
 @[export: 'pg_encoding_mblen_bounded']
 @[markused]
-pub fn pg_encoding_mblen_bounded(encoding int, mbstr &i8) int {
-	return int(C.c2v_strnlen(mbstr, usize(pg_encoding_mblen(encoding, mbstr))))
+pub fn pg_encoding_mblen_bounded(encoding i32, mbstr &i8) i32 {
+	return i32(C.c2v_strnlen(mbstr, usize(pg_encoding_mblen(encoding, mbstr))))
 }
 
 @[export: 'pg_encoding_dsplen']
 @[markused]
-pub fn pg_encoding_dsplen(encoding int, mbstr &i8) int {
+pub fn pg_encoding_dsplen(encoding i32, mbstr &i8) i32 {
 	return if (encoding >= 0 && encoding < Pg_enc.pg_last_encoding_) {
 		pg_wchar_table[encoding].dsplen(&u8(voidptr(mbstr)))
 	} else {
-		pg_wchar_table[int(Pg_enc.pg_sql_ascii)].dsplen(&u8(voidptr(mbstr)))
+		pg_wchar_table[i32(Pg_enc.pg_sql_ascii)].dsplen(&u8(voidptr(mbstr)))
 	}
 }
 
 @[export: 'pg_encoding_verifymbchar']
 @[markused]
-pub fn pg_encoding_verifymbchar(encoding int, mbstr &i8, len int) int {
+pub fn pg_encoding_verifymbchar(encoding i32, mbstr &i8, len i32) i32 {
 	return if (encoding >= 0 && encoding < Pg_enc.pg_last_encoding_) {
 		pg_wchar_table[encoding].mbverifychar(&u8(voidptr(mbstr)), len)
 	} else {
-		pg_wchar_table[int(Pg_enc.pg_sql_ascii)].mbverifychar(&u8(voidptr(mbstr)), len)
+		pg_wchar_table[i32(Pg_enc.pg_sql_ascii)].mbverifychar(&u8(voidptr(mbstr)), len)
 	}
 }
 
 @[export: 'pg_encoding_verifymbstr']
 @[markused]
-pub fn pg_encoding_verifymbstr(encoding int, mbstr &i8, len int) int {
+pub fn pg_encoding_verifymbstr(encoding i32, mbstr &i8, len i32) i32 {
 	return if (encoding >= 0 && encoding < Pg_enc.pg_last_encoding_) {
 		pg_wchar_table[encoding].mbverifystr(&u8(voidptr(mbstr)), len)
 	} else {
-		pg_wchar_table[int(Pg_enc.pg_sql_ascii)].mbverifystr(&u8(voidptr(mbstr)), len)
+		pg_wchar_table[i32(Pg_enc.pg_sql_ascii)].mbverifystr(&u8(voidptr(mbstr)), len)
 	}
 }
 
 @[export: 'pg_encoding_max_length']
 @[markused]
-pub fn pg_encoding_max_length(encoding int) int {
+pub fn pg_encoding_max_length(encoding i32) i32 {
 	return if (encoding >= 0 && encoding < Pg_enc.pg_last_encoding_) {
 		pg_wchar_table[encoding].maxmblen
 	} else {
-		pg_wchar_table[int(Pg_enc.pg_sql_ascii)].maxmblen
+		pg_wchar_table[i32(Pg_enc.pg_sql_ascii)].maxmblen
 	}
 }

@@ -3,13 +3,13 @@ module libpq
 
 pub struct AnonStruct_189 {
 pub mut:
-	base int
-	len  int
+	base i32
+	len  i32
 }
 
 @[export: 'pg_inet_net_ntop']
 @[markused]
-pub fn pg_inet_net_ntop(af int, src voidptr, bits int, dst &i8, size usize) &i8 {
+pub fn pg_inet_net_ntop(af i32, src voidptr, bits i32, dst &i8, size usize) &i8 {
 	match af {
 		(2 + 0) {
 			return inet_net_ntop_ipv4(&u8(src), bits, dst, size)
@@ -29,11 +29,11 @@ pub fn pg_inet_net_ntop(af int, src voidptr, bits int, dst &i8, size usize) &i8 
 }
 
 @[markused]
-pub fn inet_net_ntop_ipv4(src &u8, bits int, dst &i8, size usize) &i8 {
+pub fn inet_net_ntop_ipv4(src &u8, bits i32, dst &i8, size usize) &i8 {
 	odst := dst
 	t := &i8(0)
-	len := 4
-	b := 0
+	len := i32(4)
+	b := i32(0)
 	if bits < 0 || bits > 32 {
 		{
 			c2v_target := C.c2v___error()
@@ -52,7 +52,7 @@ pub fn inet_net_ntop_ipv4(src &u8, bits int, dst &i8, size usize) &i8 {
 			mut __c2v_lhs_tmp_0 := unsafe { c2v_pointer_postfix(voidptr(&dst), dst, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_0 = i8(`.`) }
 		}
-		c2v_pointer_prefix(voidptr(&dst), dst, isize((usize(pg_sprintf(dst, c'%u', int((unsafe { *c2v_pointer_postfix(voidptr(&src), src, isize(1)) })))))))
+		c2v_pointer_prefix(voidptr(&dst), dst, isize((usize(pg_sprintf(dst, c'%u', i32((unsafe { *c2v_pointer_postfix(voidptr(&src), src, isize(1)) })))))))
 		size -= usize((i64((isize(dst) - isize(t)) / isize(sizeof(i8)))))
 	}
 	if bits != 32 {
@@ -73,16 +73,16 @@ pub fn inet_net_ntop_ipv4(src &u8, bits int, dst &i8, size usize) &i8 {
 }
 
 @[markused]
-pub fn decoct(src &u8, bytes int, dst &i8, size usize) int {
+pub fn decoct(src &u8, bytes i32, dst &i8, size usize) i32 {
 	odst := dst
 	t := &i8(0)
-	b := 0
+	b := i32(0)
 	for b = 1; b <= bytes; b++ {
 		if size <= sizeof([5]i8) {
 			return 0
 		}
 		t = dst
-		c2v_pointer_prefix(voidptr(&dst), dst, isize((usize(pg_sprintf(dst, c'%u', int((unsafe { *c2v_pointer_postfix(voidptr(&src), src, isize(1)) })))))))
+		c2v_pointer_prefix(voidptr(&dst), dst, isize((usize(pg_sprintf(dst, c'%u', i32((unsafe { *c2v_pointer_postfix(voidptr(&src), src, isize(1)) })))))))
 		if b != bytes {
 			mut __c2v_lhs_tmp_1 := unsafe { c2v_pointer_postfix(voidptr(&dst), dst, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_1 = i8(`.`) }
@@ -90,18 +90,18 @@ pub fn decoct(src &u8, bytes int, dst &i8, size usize) int {
 		}
 		size -= usize((i64((isize(dst) - isize(t)) / isize(sizeof(i8)))))
 	}
-	return int((i64((isize(dst) - isize(odst)) / isize(sizeof(i8)))))
+	return i32((i64((isize(dst) - isize(odst)) / isize(sizeof(i8)))))
 }
 
 @[markused]
-pub fn inet_net_ntop_ipv6(src &u8, bits int, dst &i8, size usize) &i8 {
+pub fn inet_net_ntop_ipv6(src &u8, bits i32, dst &i8, size usize) &i8 {
 	tmp := [50]i8{}
 	tp := &i8(0)
 	best := AnonStruct_189{}
 	cur := AnonStruct_189{}
 
 	words := [8]u32{}
-	i := 0
+	i := i32(0)
 	if (bits < -1) || (bits > 128) {
 		{
 			c2v_target := C.c2v___error()
@@ -111,7 +111,7 @@ pub fn inet_net_ntop_ipv6(src &u8, bits int, dst &i8, size usize) &i8 {
 	}
 	C.c2v_memset(voidptr(unsafe { &words[0] }), `\0`, sizeof([8]u32))
 	for i = 0; i < 16; i++ {
-		words[i / 2] |= u32((int(src[i]) << ((1 - (i % 2)) << 3)))
+		words[i / 2] |= u32((i32(src[i]) << ((1 - (i % 2)) << 3)))
 	}
 	best.base = -1
 	cur.base = -1
@@ -156,7 +156,7 @@ pub fn inet_net_ntop_ipv6(src &u8, bits int, dst &i8, size usize) &i8 {
 			unsafe { *__c2v_lhs_tmp_3 = i8(`:`) }
 		}
 		if i == 6 && best.base == 0 && (best.len == 6 || (best.len == 7 && words[7] != u32(1)) || (best.len == 5 && words[5] == u32(65535))) {
-			n := 0
+			n := i32(0)
 			n = decoct(src + 12, 4, tp, sizeof([50]i8) - u64((i64((isize(tp) - isize(unsafe { &tmp[0] })) / isize(sizeof(i8))))))
 			if n == 0 {
 				{

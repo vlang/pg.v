@@ -3,11 +3,11 @@ module libpq
 
 @[export: 'scram_SaltedPassword']
 @[markused]
-pub fn scram_salted_password(password &i8, hash_type Pg_cryptohash_type, key_length int, salt &Uint8, saltlen int, iterations int, result &Uint8, errstr &&u8) int {
-	password_len := int(C.c2v_strlen(password))
+pub fn scram_salted_password(password &i8, hash_type Pg_cryptohash_type, key_length i32, salt &Uint8, saltlen i32, iterations i32, result &Uint8, errstr &&u8) i32 {
+	password_len := i32(C.c2v_strlen(password))
 	one := c2v_builtin_bswap32(u32(1))
-	i := 0
-	j := 0
+	i := i32(0)
+	j := i32(0)
 
 	ui := [32]Uint8{}
 	ui_prev := [32]Uint8{}
@@ -62,7 +62,7 @@ pub fn scram_salted_password(password &i8, hash_type Pg_cryptohash_type, key_len
 			return -1
 		}
 		for j = 0; j < key_length; j++ {
-			result[j] ^= int(ui[j])
+			result[j] ^= i32(ui[j])
 		}
 		C.c2v_memcpy(voidptr(unsafe { &ui_prev[0] }), voidptr(unsafe { &ui[0] }), u64(key_length))
 	}
@@ -72,7 +72,7 @@ pub fn scram_salted_password(password &i8, hash_type Pg_cryptohash_type, key_len
 
 @[export: 'scram_H']
 @[markused]
-pub fn scram_h(input &Uint8, hash_type Pg_cryptohash_type, key_length int, result &Uint8, errstr &&u8) int {
+pub fn scram_h(input &Uint8, hash_type Pg_cryptohash_type, key_length i32, result &Uint8, errstr &&u8) i32 {
 	ctx := &Pg_cryptohash_ctx(0)
 	ctx = pg_cryptohash_create(hash_type)
 	if usize(ctx) == usize((voidptr(0))) {
@@ -90,7 +90,7 @@ pub fn scram_h(input &Uint8, hash_type Pg_cryptohash_type, key_length int, resul
 
 @[export: 'scram_ClientKey']
 @[markused]
-pub fn scram_client_key(salted_password &Uint8, hash_type Pg_cryptohash_type, key_length int, result &Uint8, errstr &&u8) int {
+pub fn scram_client_key(salted_password &Uint8, hash_type Pg_cryptohash_type, key_length i32, result &Uint8, errstr &&u8) i32 {
 	ctx := pg_hmac_create(hash_type)
 	if usize(ctx) == usize((voidptr(0))) {
 		unsafe { *errstr = pg_hmac_error((voidptr(0))) }
@@ -121,7 +121,7 @@ pub fn scram_client_key(salted_password &Uint8, hash_type Pg_cryptohash_type, ke
 
 @[export: 'scram_ServerKey']
 @[markused]
-pub fn scram_server_key(salted_password &Uint8, hash_type Pg_cryptohash_type, key_length int, result &Uint8, errstr &&u8) int {
+pub fn scram_server_key(salted_password &Uint8, hash_type Pg_cryptohash_type, key_length i32, result &Uint8, errstr &&u8) i32 {
 	ctx := pg_hmac_create(hash_type)
 	if usize(ctx) == usize((voidptr(0))) {
 		unsafe { *errstr = pg_hmac_error((voidptr(0))) }
@@ -152,17 +152,17 @@ pub fn scram_server_key(salted_password &Uint8, hash_type Pg_cryptohash_type, ke
 
 @[export: 'scram_build_secret']
 @[markused]
-pub fn scram_build_secret(hash_type Pg_cryptohash_type, key_length int, salt &Uint8, saltlen int, iterations int, password &i8, errstr &&u8) &i8 {
+pub fn scram_build_secret(hash_type Pg_cryptohash_type, key_length i32, salt &Uint8, saltlen i32, iterations i32, password &i8, errstr &&u8) &i8 {
 	salted_password := [32]Uint8{}
 	stored_key := [32]Uint8{}
 	server_key := [32]Uint8{}
 	result := &i8(0)
 	p := &i8(0)
-	maxlen := 0
-	encoded_salt_len := 0
-	encoded_stored_len := 0
-	encoded_server_len := 0
-	encoded_result := 0
+	maxlen := i32(0)
+	encoded_salt_len := i32(0)
+	encoded_stored_len := i32(0)
+	encoded_server_len := i32(0)
+	encoded_result := i32(0)
 
 	mut __c2v_condition_17 := false
 	mut __c2v_condition_18 := false
@@ -189,7 +189,7 @@ pub fn scram_build_secret(hash_type Pg_cryptohash_type, key_length int, salt &Ui
 	encoded_salt_len = pg_b64_enc_len(saltlen)
 	encoded_stored_len = pg_b64_enc_len(key_length)
 	encoded_server_len = pg_b64_enc_len(key_length)
-	maxlen = int(C.c2v_strlen(c'SCRAM-SHA-256') + u64(1) + u64(10) + u64(1) + u64(encoded_salt_len) + u64(1) + u64(encoded_stored_len) + u64(1) + u64(encoded_server_len) + u64(1))
+	maxlen = i32(C.c2v_strlen(c'SCRAM-SHA-256') + u64(1) + u64(10) + u64(1) + u64(encoded_salt_len) + u64(1) + u64(encoded_stored_len) + u64(1) + u64(encoded_server_len) + u64(1))
 	result = &i8(C.c2v_malloc(u64(maxlen)))
 	if isnil(result) {
 		unsafe { *errstr = &c'out of memory'[0] }

@@ -9,7 +9,7 @@ pub fn pg_strong_random_init() {
 @[export: 'pg_strong_random']
 @[markused]
 pub fn pg_strong_random(buf voidptr, len usize) bool {
-	f := 0
+	f := i32(0)
 	p := &i8(buf)
 	res := isize(0)
 	f = C.c2v_open(c'/dev/urandom', 0, 0)

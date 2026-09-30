@@ -49,15 +49,15 @@ pub mut:
 
 struct C.tm {
 pub mut:
-	tm_sec int
-	tm_min int
-	tm_hour int
-	tm_mday int
-	tm_mon int
-	tm_year int
-	tm_wday int
-	tm_yday int
-	tm_isdst int
+	tm_sec i32
+	tm_min i32
+	tm_hour i32
+	tm_mday i32
+	tm_mon i32
+	tm_year i32
+	tm_wday i32
+	tm_yday i32
+	tm_isdst i32
 	tm_gmtoff i64
 	tm_zone &i8
 }
@@ -65,7 +65,7 @@ pub mut:
 struct C.timeval {
 pub mut:
 	tv_sec i64
-	tv_usec int
+	tv_usec i32
 }
 
 struct C.stat {
@@ -83,10 +83,10 @@ pub mut:
 	st_birthtimespec Timespec
 	st_size i64
 	st_blocks i64
-	st_blksize int
+	st_blksize i32
 	st_flags u32
 	st_gen u32
-	st_lspare int
+	st_lspare i32
 	st_qspare [2]i64
 }
 
@@ -153,13 +153,13 @@ struct C.sigaction {
 pub mut:
 	__sigaction_u C.__sigaction_u
 	sa_mask u32
-	sa_flags int
+	sa_flags i32
 }
 
 union C.__sigaction_u {
 pub mut:
-	__sa_handler fn (int)
-	__sa_sigaction fn (int, voidptr, voidptr)
+	__sa_handler fn (i32)
+	__sa_sigaction fn (i32, voidptr, voidptr)
 }
 
 @[typedef]
@@ -171,7 +171,7 @@ pub mut:
 
 struct C.pollfd {
 pub mut:
-	fd int
+	fd i32
 	events i16
 	revents i16
 }
@@ -220,10 +220,10 @@ pub mut:
 
 struct C.addrinfo {
 pub mut:
-	ai_flags int
-	ai_family int
-	ai_socktype int
-	ai_protocol int
+	ai_flags i32
+	ai_family i32
+	ai_socktype i32
+	ai_protocol i32
 	ai_addrlen u32
 	ai_canonname &i8
 	ai_addr &C.sockaddr

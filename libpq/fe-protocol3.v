@@ -25,11 +25,11 @@ pub fn libpq_fe_protocol3_pg_mul_s16_overflow(a Int16, b Int16, result &Int16) b
 
 @[markused]
 pub fn libpq_fe_protocol3_pg_neg_s16_overflow(a Int16, result &Int16) bool {
-	if (i64((int(a) == -32768) != 0)) {
+	if (i64((i32(a) == -32768) != 0)) {
 		unsafe { *result = Int16(24301) }
 		return true != 0
 	}
-	unsafe { *result = Int16(-int(a)) }
+	unsafe { *result = Int16(-i32(a)) }
 	return false != 0
 }
 
@@ -139,8 +139,8 @@ pub fn libpq_fe_protocol3_pg_abs_s64(a Int64) Uint64 {
 
 @[markused]
 pub fn libpq_fe_protocol3_pg_add_u16_overflow(a Uint16, b Uint16, result &Uint16) bool {
-	res := Uint16(int(a) + int(b))
-	if int(res) < int(a) {
+	res := Uint16(i32(a) + i32(b))
+	if i32(res) < i32(a) {
 		unsafe { *result = Uint16(24301) }
 		return true != 0
 	}
@@ -150,11 +150,11 @@ pub fn libpq_fe_protocol3_pg_add_u16_overflow(a Uint16, b Uint16, result &Uint16
 
 @[markused]
 pub fn libpq_fe_protocol3_pg_sub_u16_overflow(a Uint16, b Uint16, result &Uint16) bool {
-	if int(b) > int(a) {
+	if i32(b) > i32(a) {
 		unsafe { *result = Uint16(24301) }
 		return true != 0
 	}
-	unsafe { *result = Uint16(int(a) - int(b)) }
+	unsafe { *result = Uint16(i32(a) - i32(b)) }
 	return false != 0
 }
 
@@ -299,38 +299,38 @@ pub fn libpq_fe_protocol3_pg_mul_size_overflow(a usize, b usize, result &usize) 
 }
 
 @[markused]
-pub fn libpq_fe_protocol3_pg_cmp_s16(a Int16, b Int16) int {
+pub fn libpq_fe_protocol3_pg_cmp_s16(a Int16, b Int16) i32 {
 	return Int32(a) - Int32(b)
 }
 
 @[markused]
-pub fn libpq_fe_protocol3_pg_cmp_u16(a Uint16, b Uint16) int {
+pub fn libpq_fe_protocol3_pg_cmp_u16(a Uint16, b Uint16) i32 {
 	return Int32(a) - Int32(b)
 }
 
 @[markused]
-pub fn libpq_fe_protocol3_pg_cmp_s32(a Int32, b Int32) int {
-	return int((a > b)) - int((a < b))
+pub fn libpq_fe_protocol3_pg_cmp_s32(a Int32, b Int32) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 @[markused]
-pub fn libpq_fe_protocol3_pg_cmp_u32(a Uint32, b Uint32) int {
-	return int((a > b)) - int((a < b))
+pub fn libpq_fe_protocol3_pg_cmp_u32(a Uint32, b Uint32) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 @[markused]
-pub fn libpq_fe_protocol3_pg_cmp_s64(a Int64, b Int64) int {
-	return int((a > b)) - int((a < b))
+pub fn libpq_fe_protocol3_pg_cmp_s64(a Int64, b Int64) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 @[markused]
-pub fn libpq_fe_protocol3_pg_cmp_u64(a Uint64, b Uint64) int {
-	return int((a > b)) - int((a < b))
+pub fn libpq_fe_protocol3_pg_cmp_u64(a Uint64, b Uint64) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 @[markused]
-pub fn libpq_fe_protocol3_pg_cmp_size(a usize, b usize) int {
-	return int((a > b)) - int((a < b))
+pub fn libpq_fe_protocol3_pg_cmp_size(a usize, b usize) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 pub type PGcancelConn_fe_protocol3 = Pg_cancel_conn
@@ -339,7 +339,7 @@ pub type PGcancel_fe_protocol3 = Pg_cancel
 
 @[markused]
 pub fn libpq_fe_protocol3_is_unixsock_path(path &i8) bool {
-	return (int(path[false]) == i8(`/`)) || int(path[false]) == i8(`@`)
+	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
 }
 
 @[markused]
@@ -364,14 +364,14 @@ pub fn libpq_fe_protocol3_surrogate_pair_to_codepoint(first Pg_wchar, second Pg_
 
 @[markused]
 pub fn libpq_fe_protocol3_utf8_to_unicode(c &u8) Pg_wchar {
-	if (int((unsafe { *c })) & 128) == 0 {
+	if (i32((unsafe { *c })) & 128) == 0 {
 		return Pg_wchar(c[0])
-	} else if (int((unsafe { *c })) & 224) == 192 {
-		return Pg_wchar((((int(c[0]) & 31) << 6) | (int(c[1]) & 63)))
-	} else if (int((unsafe { *c })) & 240) == 224 {
-		return Pg_wchar((((int(c[0]) & 15) << 12) | ((int(c[1]) & 63) << 6) | (int(c[2]) & 63)))
-	} else if (int((unsafe { *c })) & 248) == 240 {
-		return Pg_wchar((((int(c[0]) & 7) << 18) | ((int(c[1]) & 63) << 12) | ((int(c[2]) & 63) << 6) | (int(c[3]) & 63)))
+	} else if (i32((unsafe { *c })) & 224) == 192 {
+		return Pg_wchar((((i32(c[0]) & 31) << 6) | (i32(c[1]) & 63)))
+	} else if (i32((unsafe { *c })) & 240) == 224 {
+		return Pg_wchar((((i32(c[0]) & 15) << 12) | ((i32(c[1]) & 63) << 6) | (i32(c[2]) & 63)))
+	} else if (i32((unsafe { *c })) & 248) == 240 {
+		return Pg_wchar((((i32(c[0]) & 7) << 18) | ((i32(c[1]) & 63) << 12) | ((i32(c[2]) & 63) << 6) | (i32(c[3]) & 63)))
 	} else {
 		return u32(4294967295)
 	}
@@ -398,7 +398,7 @@ pub fn libpq_fe_protocol3_unicode_to_utf8(c Pg_wchar, utf8string &u8) &u8 {
 }
 
 @[markused]
-pub fn libpq_fe_protocol3_unicode_utf8len(c Pg_wchar) int {
+pub fn libpq_fe_protocol3_unicode_utf8len(c Pg_wchar) i32 {
 	if c <= Pg_wchar(127) {
 		return 1
 	} else if c <= Pg_wchar(2047) {
@@ -414,8 +414,8 @@ pub fn libpq_fe_protocol3_unicode_utf8len(c Pg_wchar) int {
 @[markused]
 pub fn pq_parse_input3(conn &PGconn) {
 	id := i8(0)
-	msg_length := 0
-	avail := 0
+	msg_length := i32(0)
+	avail := i32(0)
 	for {
 		conn.inCursor = conn.inStart
 		if pq_getc(&id, conn) {
@@ -432,7 +432,7 @@ pub fn pq_parse_input3(conn &PGconn) {
 		mut __c2v_condition_1 := false
 		__c2v_condition_1 = msg_length > 30000
 		if __c2v_condition_1 {
-			__c2v_condition_1 = !(int(id) == i8(`d`) || int(id) == i8(`D`) || int(id) == i8(`E`) || int(id) == i8(`V`) || int(id) == i8(`N`) || int(id) == i8(`A`) || int(id) == i8(`T`) || int(id) == i8(`t`))
+			__c2v_condition_1 = !(i32(id) == i8(`d`) || i32(id) == i8(`D`) || i32(id) == i8(`E`) || i32(id) == i8(`V`) || i32(id) == i8(`N`) || i32(id) == i8(`A`) || i32(id) == i8(`T`) || i32(id) == i8(`t`))
 		}
 		__c2v_condition_0 = __c2v_condition_1
 		if __c2v_condition_0 {
@@ -447,11 +447,11 @@ pub fn pq_parse_input3(conn &PGconn) {
 			}
 			return
 		}
-		if int(id) == i8(`A`) {
+		if i32(id) == i8(`A`) {
 			if get_notify(conn) {
 				return
 			}
-		} else if int(id) == i8(`N`) {
+		} else if i32(id) == i8(`N`) {
 			if pq_get_error_notice3(conn, (0 != 0)) {
 				return
 			}
@@ -459,25 +459,25 @@ pub fn pq_parse_input3(conn &PGconn) {
 			if u32(conn.asyncStatus) != u32(PGAsyncStatusType.pgasync_idle) {
 				return
 			}
-			if int(id) == i8(`E`) {
+			if i32(id) == i8(`E`) {
 				if pq_get_error_notice3(conn, (0 != 0)) {
 					return
 				}
-			} else if int(id) == i8(`S`) {
+			} else if i32(id) == i8(`S`) {
 				if get_parameter_status(conn) {
 					return
 				}
 			} else {
-				pq_internal_notice(&conn.noticeHooks, c'message type 0x%02x arrived from server while idle', int(id))
+				pq_internal_notice(&conn.noticeHooks, c'message type 0x%02x arrived from server while idle', i32(id))
 				conn.inCursor += msg_length
 			}
 		} else {
-			match int(id) {
-				int(`C`) {
+			match i32(id) {
+				i32(`C`) {
 					if pq_gets(&conn.workBuffer, conn) {
 						return
 					}
-					if !(usize(conn.result) != usize((voidptr(0))) || int(conn.error_result)) {
+					if !(usize(conn.result) != usize((voidptr(0))) || i32(conn.error_result)) {
 						conn.result = pq_make_empty_pg_result(conn, ExecStatusType(ExecStatusType.pgres_command_ok))
 						if isnil(conn.result) {
 							libpq_append_conn_error(conn, c'out of memory')
@@ -489,13 +489,13 @@ pub fn pq_parse_input3(conn &PGconn) {
 					}
 					conn.asyncStatus = PGAsyncStatusType.pgasync_ready
 				}
-				int(`E`) {
+				i32(`E`) {
 					if pq_get_error_notice3(conn, (1 != 0)) {
 						return
 					}
 					conn.asyncStatus = PGAsyncStatusType.pgasync_ready
 				}
-				int(`Z`) {
+				i32(`Z`) {
 					if get_ready_for_query(conn) {
 						return
 					}
@@ -513,8 +513,8 @@ pub fn pq_parse_input3(conn &PGconn) {
 						conn.asyncStatus = PGAsyncStatusType.pgasync_idle
 					}
 				}
-				int(`I`) {
-					if !(usize(conn.result) != usize((voidptr(0))) || int(conn.error_result)) {
+				i32(`I`) {
+					if !(usize(conn.result) != usize((voidptr(0))) || i32(conn.error_result)) {
 						conn.result = pq_make_empty_pg_result(conn, ExecStatusType(ExecStatusType.pgres_empty_query))
 						if isnil(conn.result) {
 							libpq_append_conn_error(conn, c'out of memory')
@@ -523,9 +523,9 @@ pub fn pq_parse_input3(conn &PGconn) {
 					}
 					conn.asyncStatus = PGAsyncStatusType.pgasync_ready
 				}
-				int(`1`) {
+				i32(`1`) {
 					if !isnil(conn.cmd_queue_head) && u32(conn.cmd_queue_head.queryclass) == u32(PGQueryClass.pgquery_prepare) {
-						if !(usize(conn.result) != usize((voidptr(0))) || int(conn.error_result)) {
+						if !(usize(conn.result) != usize((voidptr(0))) || i32(conn.error_result)) {
 							conn.result = pq_make_empty_pg_result(conn, ExecStatusType(ExecStatusType.pgres_command_ok))
 							if isnil(conn.result) {
 								libpq_append_conn_error(conn, c'out of memory')
@@ -535,11 +535,11 @@ pub fn pq_parse_input3(conn &PGconn) {
 						conn.asyncStatus = PGAsyncStatusType.pgasync_ready
 					}
 				}
-				int(`2`) {
+				i32(`2`) {
 				}
-				int(`3`) {
+				i32(`3`) {
 					if !isnil(conn.cmd_queue_head) && u32(conn.cmd_queue_head.queryclass) == u32(PGQueryClass.pgquery_close) {
-						if !(usize(conn.result) != usize((voidptr(0))) || int(conn.error_result)) {
+						if !(usize(conn.result) != usize((voidptr(0))) || i32(conn.error_result)) {
 							conn.result = pq_make_empty_pg_result(conn, ExecStatusType(ExecStatusType.pgres_command_ok))
 							if isnil(conn.result) {
 								libpq_append_conn_error(conn, c'out of memory')
@@ -549,18 +549,18 @@ pub fn pq_parse_input3(conn &PGconn) {
 						conn.asyncStatus = PGAsyncStatusType.pgasync_ready
 					}
 				}
-				int(`S`) {
+				i32(`S`) {
 					if get_parameter_status(conn) {
 						return
 					}
 				}
-				int(`K`) {
+				i32(`K`) {
 					if get_backend_key_data(conn, msg_length) {
 						return
 					}
 				}
-				int(`T`) {
-					if int(conn.error_result) || (usize(conn.result) != usize((voidptr(0))) && u32(conn.result.resultStatus) == u32(ExecStatusType.pgres_fatal_error)) {
+				i32(`T`) {
+					if i32(conn.error_result) || (usize(conn.result) != usize((voidptr(0))) && u32(conn.result.resultStatus) == u32(ExecStatusType.pgres_fatal_error)) {
 						conn.inCursor += msg_length
 					} else if usize(conn.result) == usize((voidptr(0))) || (!isnil(conn.cmd_queue_head) && u32(conn.cmd_queue_head.queryclass) == u32(PGQueryClass.pgquery_describe)) {
 						if get_row_descriptions(conn, msg_length) {
@@ -571,9 +571,9 @@ pub fn pq_parse_input3(conn &PGconn) {
 						return
 					}
 				}
-				int(`n`) {
+				i32(`n`) {
 					if !isnil(conn.cmd_queue_head) && u32(conn.cmd_queue_head.queryclass) == u32(PGQueryClass.pgquery_describe) {
-						if !(usize(conn.result) != usize((voidptr(0))) || int(conn.error_result)) {
+						if !(usize(conn.result) != usize((voidptr(0))) || i32(conn.error_result)) {
 							conn.result = pq_make_empty_pg_result(conn, ExecStatusType(ExecStatusType.pgres_command_ok))
 							if isnil(conn.result) {
 								libpq_append_conn_error(conn, c'out of memory')
@@ -583,17 +583,17 @@ pub fn pq_parse_input3(conn &PGconn) {
 						conn.asyncStatus = PGAsyncStatusType.pgasync_ready
 					}
 				}
-				int(`t`) {
+				i32(`t`) {
 					if get_param_descriptions(conn, msg_length) {
 						return
 					}
 				}
-				int(`D`) {
+				i32(`D`) {
 					if usize(conn.result) != usize((voidptr(0))) && (u32(conn.result.resultStatus) == u32(ExecStatusType.pgres_tuples_ok) || u32(conn.result.resultStatus) == u32(ExecStatusType.pgres_tuples_chunk)) {
 						if get_another_tuple(conn, msg_length) {
 							return
 						}
-					} else if int(conn.error_result) || (usize(conn.result) != usize((voidptr(0))) && u32(conn.result.resultStatus) == u32(ExecStatusType.pgres_fatal_error)) {
+					} else if i32(conn.error_result) || (usize(conn.result) != usize((voidptr(0))) && u32(conn.result.resultStatus) == u32(ExecStatusType.pgres_fatal_error)) {
 						conn.inCursor += msg_length
 					} else {
 						libpq_append_conn_error(conn, c'server sent data ("D" message) without prior row description ("T" message)')
@@ -601,33 +601,33 @@ pub fn pq_parse_input3(conn &PGconn) {
 						conn.inCursor += msg_length
 					}
 				}
-				int(`G`) {
+				i32(`G`) {
 					if get_copy_start(conn, ExecStatusType(ExecStatusType.pgres_copy_in)) {
 						return
 					}
 					conn.asyncStatus = PGAsyncStatusType.pgasync_copy_in
 				}
-				int(`H`) {
+				i32(`H`) {
 					if get_copy_start(conn, ExecStatusType(ExecStatusType.pgres_copy_out)) {
 						return
 					}
 					conn.asyncStatus = PGAsyncStatusType.pgasync_copy_out
 					conn.copy_already_done = 0
 				}
-				int(`W`) {
+				i32(`W`) {
 					if get_copy_start(conn, ExecStatusType(ExecStatusType.pgres_copy_both)) {
 						return
 					}
 					conn.asyncStatus = PGAsyncStatusType.pgasync_copy_both
 					conn.copy_already_done = 0
 				}
-				int(`d`) {
+				i32(`d`) {
 					conn.inCursor += msg_length
 				}
-				int(`c`) {
+				i32(`c`) {
 				}
 				else {
-					libpq_append_conn_error(conn, c'unexpected response from server; first received character was "%c"', int(id))
+					libpq_append_conn_error(conn, c'unexpected response from server; first received character was "%c"', i32(id))
 					pq_save_error_result(conn)
 					conn.asyncStatus = PGAsyncStatusType.pgasync_ready
 					conn.inCursor += msg_length
@@ -636,10 +636,10 @@ pub fn pq_parse_input3(conn &PGconn) {
 		}
 		if conn.inCursor == conn.inStart + 5 + msg_length {
 			pq_parse_done(conn, conn.inCursor)
-		} else if int(conn.error_result) && u32(conn.status) == u32(ConnStatusType.connection_bad) {
+		} else if i32(conn.error_result) && u32(conn.status) == u32(ConnStatusType.connection_bad) {
 			return
 		} else {
-			libpq_append_conn_error(conn, c'message contents do not agree with length in message type "%c"', int(id))
+			libpq_append_conn_error(conn, c'message contents do not agree with length in message type "%c"', i32(id))
 			pq_save_error_result(conn)
 			conn.asyncStatus = PGAsyncStatusType.pgasync_ready
 			conn.inStart += 5 + msg_length
@@ -656,17 +656,17 @@ pub fn handle_fatal_error(conn &PGconn) {
 }
 
 @[markused]
-pub fn handle_sync_loss(conn &PGconn, id i8, msg_length int) {
-	libpq_append_conn_error(conn, c'lost synchronization with server: got message type "%c", length %d', int(id), msg_length)
+pub fn handle_sync_loss(conn &PGconn, id i8, msg_length i32) {
+	libpq_append_conn_error(conn, c'lost synchronization with server: got message type "%c", length %d', i32(id), msg_length)
 	handle_fatal_error(conn)
 }
 
 @[markused]
-pub fn get_row_descriptions(conn &PGconn, msg_length int) int {
+pub fn get_row_descriptions(conn &PGconn, msg_length i32) i32 {
 	result := &PGresult(0)
-	nfields := 0
+	nfields := i32(0)
 	errmsg := &i8(0)
-	i := 0
+	i := i32(0)
 	if isnil(conn.cmd_queue_head) || (!isnil(conn.cmd_queue_head) && u32(conn.cmd_queue_head.queryclass) == u32(PGQueryClass.pgquery_describe)) {
 		if conn.result {
 			result = conn.result
@@ -699,7 +699,7 @@ pub fn get_row_descriptions(conn &PGconn, msg_length int) int {
 		}
 		for {
 			vstart := voidptr(result.attDescs)
-			val := 0
+			val := i32(0)
 			len := (u64(nfields) * sizeof(PGresAttDesc))
 			if ((usize(vstart)) & (sizeof(i64) - u64(1))) == u64(0) && (len & (sizeof(i64) - u64(1))) == u64(0) && val == 0 && len <= Size(1024) && 1024 != 0 {
 				start := &i64(vstart)
@@ -716,12 +716,12 @@ pub fn get_row_descriptions(conn &PGconn, msg_length int) int {
 	}
 	result.binary = if (nfields > 0) { 1 } else { 0 }
 	for i = 0; i < nfields; i++ {
-		tableid := 0
-		columnid := 0
-		typid := 0
-		typlen := 0
-		atttypmod := 0
-		format := 0
+		tableid := i32(0)
+		columnid := i32(0)
+		typid := i32(0)
+		typlen := i32(0)
+		atttypmod := i32(0)
+		format := i32(0)
 		mut __c2v_condition_2 := false
 		mut __c2v_condition_3 := false
 		__c2v_condition_3 = pq_gets(&conn.workBuffer, conn)
@@ -762,9 +762,9 @@ pub fn get_row_descriptions(conn &PGconn, msg_length int) int {
 				goto advance_and_error
 			}
 		}
-		columnid = int((Int16(columnid)))
-		typlen = int((Int16(typlen)))
-		format = int((Int16(format)))
+		columnid = i32((Int16(columnid)))
+		typlen = i32((Int16(typlen)))
+		format = i32((Int16(format)))
 		result.attDescs[i].name = pq_result_strdup(result, conn.workBuffer.data)
 		if isnil(result.attDescs[i].name) {
 			errmsg = (voidptr(0))
@@ -803,11 +803,11 @@ pub fn get_row_descriptions(conn &PGconn, msg_length int) int {
 }
 
 @[markused]
-pub fn get_param_descriptions(conn &PGconn, msg_length int) int {
+pub fn get_param_descriptions(conn &PGconn, msg_length i32) i32 {
 	result := &PGresult(0)
 	errmsg := unsafe { &i8(nil) }
-	nparams := 0
-	i := 0
+	nparams := i32(0)
+	i := i32(0)
 	result = pq_make_empty_pg_result(conn, ExecStatusType(ExecStatusType.pgres_command_ok))
 	if isnil(result) {
 		unsafe {
@@ -829,7 +829,7 @@ pub fn get_param_descriptions(conn &PGconn, msg_length int) int {
 		}
 		for {
 			vstart := voidptr(result.paramDescs)
-			val := 0
+			val := i32(0)
 			len := (u64(nparams) * sizeof(PGresParamDesc))
 			if ((usize(vstart)) & (sizeof(i64) - u64(1))) == u64(0) && (len & (sizeof(i64) - u64(1))) == u64(0) && val == 0 && len <= Size(1024) && 1024 != 0 {
 				start := &i64(vstart)
@@ -845,7 +845,7 @@ pub fn get_param_descriptions(conn &PGconn, msg_length int) int {
 		}
 	}
 	for i = 0; i < nparams; i++ {
-		typid := 0
+		typid := i32(0)
 		if pq_get_int(&typid, usize(4), conn) {
 			unsafe {
 				goto not_enough_data
@@ -872,14 +872,14 @@ pub fn get_param_descriptions(conn &PGconn, msg_length int) int {
 }
 
 @[markused]
-pub fn get_another_tuple(conn &PGconn, msg_length int) int {
+pub fn get_another_tuple(conn &PGconn, msg_length i32) i32 {
 	result := conn.result
 	nfields := result.numAttributes
 	errmsg := &i8(0)
 	mut rowbuf := &PGdataValue(0)
-	tupnfields := 0
-	vlen := 0
-	i := 0
+	tupnfields := i32(0)
+	vlen := i32(0)
+	i := i32(0)
 	if pq_get_int(&tupnfields, usize(2), conn) {
 		errmsg = unsafe { &c'insufficient data in "D" message'[0] }
 		unsafe {
@@ -939,12 +939,12 @@ pub fn get_another_tuple(conn &PGconn, msg_length int) int {
 
 @[export: 'pqGetErrorNotice3']
 @[markused]
-pub fn pq_get_error_notice3(conn &PGconn, is_error bool) int {
+pub fn pq_get_error_notice3(conn &PGconn, is_error bool) i32 {
 	res := unsafe { &PGresult(nil) }
 	have_position := (0 != 0)
 	work_buf := PQExpBufferData{}
 	id := i8(0)
-	if int(is_error) && u32(conn.pipelineStatus) != u32(PGpipelineStatus.pq_pipeline_off) {
+	if i32(is_error) && u32(conn.pipelineStatus) != u32(PGpipelineStatus.pq_pipeline_off) {
 		conn.pipelineStatus = PGpipelineStatus.pq_pipeline_aborted
 	}
 	if is_error {
@@ -953,7 +953,7 @@ pub fn pq_get_error_notice3(conn &PGconn, is_error bool) int {
 	init_pq_exp_buffer(&work_buf)
 	res = pq_make_empty_pg_result(conn, ExecStatusType(ExecStatusType.pgres_empty_query))
 	if res {
-		res.resultStatus = if int(is_error) {
+		res.resultStatus = if i32(is_error) {
 			ExecStatusType.pgres_fatal_error
 		} else {
 			ExecStatusType.pgres_nonfatal_error
@@ -965,7 +965,7 @@ pub fn pq_get_error_notice3(conn &PGconn, is_error bool) int {
 				goto fail
 			}
 		}
-		if int(id) == i8(`\0`) {
+		if i32(id) == i8(`\0`) {
 			break
 		}
 		if pq_gets(&work_buf, conn) {
@@ -974,13 +974,13 @@ pub fn pq_get_error_notice3(conn &PGconn, is_error bool) int {
 			}
 		}
 		pq_save_message_field(res, i8(id), work_buf.data)
-		if int(id) == i8(`C`) {
+		if i32(id) == i8(`C`) {
 			C.c2v_strlcpy(unsafe { &i8(&conn.last_sqlstate[0]) }, work_buf.data, sizeof([6]i8))
-		} else if int(id) == i8(`P`) {
+		} else if i32(id) == i8(`P`) {
 			have_position = (1 != 0)
 		}
 	}
-	if int(have_position) && !isnil(res) && !isnil(conn.cmd_queue_head) && !isnil(conn.cmd_queue_head.query) {
+	if i32(have_position) && !isnil(res) && !isnil(conn.cmd_queue_head) && !isnil(conn.cmd_queue_head.query) {
 		res.errQuery = pq_result_strdup(res, conn.cmd_queue_head.query)
 	}
 	reset_pq_exp_buffer(&work_buf)
@@ -1024,13 +1024,13 @@ pub fn pq_get_error_notice3(conn &PGconn, is_error bool) int {
 pub fn pq_build_error_message3(msg PQExpBuffer, res &PGresult, verbosity PGVerbosity, show_context PGContextVisibility) {
 	val := &i8(0)
 	querytext := unsafe { &i8(nil) }
-	querypos := 0
+	querypos := i32(0)
 	if usize(res) == usize((voidptr(0))) {
 		append_pq_exp_buffer_str(msg, unsafe { &i8(&c'out of memory\n'[0]) })
 		return
 	}
 	if usize(res.errFields) == usize((voidptr(0))) {
-		if !isnil(res.errMsg) && int(res.errMsg[0]) {
+		if !isnil(res.errMsg) && i32(res.errMsg[0]) {
 			append_pq_exp_buffer_str(msg, res.errMsg)
 		} else {
 			append_pq_exp_buffer_str(msg, unsafe { &i8(&c'no error message available\n'[0]) })
@@ -1153,18 +1153,18 @@ pub fn pq_build_error_message3(msg PQExpBuffer, res &PGresult, verbosity PGVerbo
 }
 
 @[markused]
-pub fn report_error_position(msg PQExpBuffer, query &i8, loc int, encoding int) {
+pub fn report_error_position(msg PQExpBuffer, query &i8, loc i32, encoding i32) {
 	wquery := &i8(0)
-	slen := 0
-	cno := 0
-	i := 0
-	qidx := &int(0)
-	scridx := &int(0)
-	qoffset := 0
-	scroffset := 0
-	ibeg := 0
-	iend := 0
-	loc_line := 0
+	slen := i32(0)
+	cno := i32(0)
+	i := i32(0)
+	qidx := &i32(0)
+	scridx := &i32(0)
+	qoffset := i32(0)
+	scroffset := i32(0)
+	ibeg := i32(0)
+	iend := i32(0)
+	loc_line := i32(0)
 
 	mb_encoding := false
 	beg_trunc := false
@@ -1178,17 +1178,17 @@ pub fn report_error_position(msg PQExpBuffer, query &i8, loc int, encoding int) 
 	if usize(wquery) == usize((voidptr(0))) {
 		return
 	}
-	slen = int(C.c2v_strlen(wquery) + u64(1))
-	if u64(slen) > u64(18446744073709551615) / sizeof(int) {
+	slen = i32(C.c2v_strlen(wquery) + u64(1))
+	if u64(slen) > u64(18446744073709551615) / sizeof(i32) {
 		C.c2v_free(voidptr(wquery))
 		return
 	}
-	qidx = &int(C.c2v_malloc(u64(slen) * sizeof(int)))
+	qidx = &i32(C.c2v_malloc(u64(slen) * sizeof(i32)))
 	if usize(qidx) == usize((voidptr(0))) {
 		C.c2v_free(voidptr(wquery))
 		return
 	}
-	scridx = &int(C.c2v_malloc(u64(slen) * sizeof(int)))
+	scridx = &i32(C.c2v_malloc(u64(slen) * sizeof(i32)))
 	if usize(scridx) == usize((voidptr(0))) {
 		C.c2v_free(voidptr(qidx))
 		C.c2v_free(voidptr(wquery))
@@ -1200,15 +1200,15 @@ pub fn report_error_position(msg PQExpBuffer, query &i8, loc int, encoding int) 
 	loc_line = 1
 	ibeg = 0
 	iend = -1
-	for cno = 0; int(wquery[qoffset]) != i8(`\0`); cno++ {
+	for cno = 0; i32(wquery[qoffset]) != i8(`\0`); cno++ {
 		ch := wquery[qoffset]
 		qidx[cno] = qoffset
 		scridx[cno] = scroffset
-		if int(ch) == i8(`\t`) {
+		if i32(ch) == i8(`\t`) {
 			wquery[qoffset] = i8(` `)
-		} else if int(ch) == i8(`\r`) || int(ch) == i8(`\n`) {
+		} else if i32(ch) == i8(`\r`) || i32(ch) == i8(`\n`) {
 			if cno < loc {
-				if int(ch) == i8(`\r`) || cno == 0 || int(wquery[qidx[cno - 1]]) != i8(`\r`) {
+				if i32(ch) == i8(`\r`) || cno == 0 || i32(wquery[qidx[cno - 1]]) != i8(`\r`) {
 					loc_line++
 				}
 				ibeg = cno + 1
@@ -1218,7 +1218,7 @@ pub fn report_error_position(msg PQExpBuffer, query &i8, loc int, encoding int) 
 			}
 		}
 		if mb_encoding {
-			w := 0
+			w := i32(0)
 			w = pg_encoding_dsplen(encoding, unsafe { wquery + qoffset })
 			if w <= 0 {
 				w = 1
@@ -1256,7 +1256,7 @@ pub fn report_error_position(msg PQExpBuffer, query &i8, loc int, encoding int) 
 			}
 		}
 		wquery[qidx[iend]] = i8(`\0`)
-		i = int(msg.len)
+		i = i32(msg.len)
 		append_pq_exp_buffer(msg, unsafe { &i8(&c'LINE %d: '[0]) }, loc_line)
 		if beg_trunc {
 			append_pq_exp_buffer_str(msg, c'...')
@@ -1288,9 +1288,9 @@ pub fn report_error_position(msg PQExpBuffer, query &i8, loc int, encoding int) 
 
 @[export: 'pqGetNegotiateProtocolVersion3']
 @[markused]
-pub fn pq_get_negotiate_protocol_version3(conn &PGconn) int {
-	their_version := 0
-	num := 0
+pub fn pq_get_negotiate_protocol_version3(conn &PGconn) i32 {
+	their_version := i32(0)
+	num := i32(0)
 	if pq_get_int(&their_version, usize(4), conn) != 0 {
 		unsafe {
 			goto eof
@@ -1338,7 +1338,7 @@ pub fn pq_get_negotiate_protocol_version3(conn &PGconn) int {
 		}
 	}
 	conn.pversion = ProtocolVersion(their_version)
-	for i := 0; i < num; i++ {
+	for i := i32(0); i < num; i++ {
 		if pq_gets(&conn.workBuffer, conn) {
 			unsafe {
 				goto eof
@@ -1365,7 +1365,7 @@ pub fn pq_get_negotiate_protocol_version3(conn &PGconn) int {
 }
 
 @[markused]
-pub fn get_parameter_status(conn &PGconn) int {
+pub fn get_parameter_status(conn &PGconn) i32 {
 	value_buf := PQExpBufferData{}
 	if pq_gets(&conn.workBuffer, conn) {
 		return -1
@@ -1384,8 +1384,8 @@ pub fn get_parameter_status(conn &PGconn) int {
 }
 
 @[markused]
-pub fn get_backend_key_data(conn &PGconn, msg_length int) int {
-	cancel_key_len := 0
+pub fn get_backend_key_data(conn &PGconn, msg_length i32) i32 {
+	cancel_key_len := i32(0)
 	if conn.be_cancel_key {
 		C.c2v_free(voidptr(conn.be_cancel_key))
 		conn.be_cancel_key = (voidptr(0))
@@ -1426,11 +1426,11 @@ pub fn get_backend_key_data(conn &PGconn, msg_length int) int {
 }
 
 @[markused]
-pub fn get_notify(conn &PGconn) int {
-	be_pid := 0
+pub fn get_notify(conn &PGconn) i32 {
+	be_pid := i32(0)
 	svname := &i8(0)
-	nmlen := 0
-	extralen := 0
+	nmlen := i32(0)
+	extralen := i32(0)
 	new_notify := &PGnotify(0)
 	if pq_get_int(&be_pid, usize(4), conn) {
 		return -1
@@ -1448,8 +1448,8 @@ pub fn get_notify(conn &PGconn) int {
 		C.c2v_free(voidptr(svname))
 		return -1
 	}
-	nmlen = int(C.c2v_strlen(svname))
-	extralen = int(C.c2v_strlen(conn.workBuffer.data))
+	nmlen = i32(C.c2v_strlen(svname))
+	extralen = i32(C.c2v_strlen(conn.workBuffer.data))
 	new_notify = &PGnotify(C.c2v_malloc(sizeof(PGnotify) + u64(nmlen) + u64(extralen) + u64(2)))
 	if isnil(new_notify) {
 		C.c2v_free(voidptr(svname))
@@ -1474,10 +1474,10 @@ pub fn get_notify(conn &PGconn) int {
 }
 
 @[markused]
-pub fn get_copy_start(conn &PGconn, copytype ExecStatusType) int {
+pub fn get_copy_start(conn &PGconn, copytype ExecStatusType) i32 {
 	result := &PGresult(0)
-	nfields := 0
-	i := 0
+	nfields := i32(0)
+	i := i32(0)
 	result = pq_make_empty_pg_result(conn, copytype)
 	if isnil(result) {
 		unsafe {
@@ -1489,7 +1489,7 @@ pub fn get_copy_start(conn &PGconn, copytype ExecStatusType) int {
 			goto failure
 		}
 	}
-	result.binary = int(conn.copy_is_binary)
+	result.binary = i32(conn.copy_is_binary)
 	if pq_get_int(&result.numAttributes, usize(2), conn) {
 		unsafe {
 			goto failure
@@ -1505,7 +1505,7 @@ pub fn get_copy_start(conn &PGconn, copytype ExecStatusType) int {
 		}
 		for {
 			vstart := voidptr(result.attDescs)
-			val := 0
+			val := i32(0)
 			len := (u64(nfields) * sizeof(PGresAttDesc))
 			if ((usize(vstart)) & (sizeof(i64) - u64(1))) == u64(0) && (len & (sizeof(i64) - u64(1))) == u64(0) && val == 0 && len <= Size(1024) && 1024 != 0 {
 				start := &i64(vstart)
@@ -1521,13 +1521,13 @@ pub fn get_copy_start(conn &PGconn, copytype ExecStatusType) int {
 		}
 	}
 	for i = 0; i < nfields; i++ {
-		format := 0
+		format := i32(0)
 		if pq_get_int(&format, usize(2), conn) {
 			unsafe {
 				goto failure
 			}
 		}
-		format = int((Int16(format)))
+		format = i32((Int16(format)))
 		result.attDescs[i].format = format
 	}
 	conn.result = result
@@ -1538,19 +1538,19 @@ pub fn get_copy_start(conn &PGconn, copytype ExecStatusType) int {
 }
 
 @[markused]
-pub fn get_ready_for_query(conn &PGconn) int {
+pub fn get_ready_for_query(conn &PGconn) i32 {
 	xact_status := i8(0)
 	if pq_getc(&xact_status, conn) {
 		return -1
 	}
-	match int(xact_status) {
-		int(`I`) {
+	match i32(xact_status) {
+		i32(`I`) {
 			conn.xactStatus = PGTransactionStatusType.pqtrans_idle
 		}
-		int(`T`) {
+		i32(`T`) {
 			conn.xactStatus = PGTransactionStatusType.pqtrans_intrans
 		}
-		int(`E`) {
+		i32(`E`) {
 			conn.xactStatus = PGTransactionStatusType.pqtrans_inerror
 		}
 		else {
@@ -1562,10 +1562,10 @@ pub fn get_ready_for_query(conn &PGconn) int {
 }
 
 @[markused]
-pub fn get_copy_data_message(conn &PGconn) int {
+pub fn get_copy_data_message(conn &PGconn) i32 {
 	id := i8(0)
-	msg_length := 0
-	avail := 0
+	msg_length := i32(0)
+	avail := i32(0)
 	for {
 		conn.inCursor = conn.inStart
 		if pq_getc(&id, conn) {
@@ -1586,26 +1586,26 @@ pub fn get_copy_data_message(conn &PGconn) int {
 			}
 			return 0
 		}
-		match int(id) {
-			int(`A`) {
+		match i32(id) {
+			i32(`A`) {
 				if get_notify(conn) {
 					return 0
 				}
 			}
-			int(`N`) {
+			i32(`N`) {
 				if pq_get_error_notice3(conn, (0 != 0)) {
 					return 0
 				}
 			}
-			int(`S`) {
+			i32(`S`) {
 				if get_parameter_status(conn) {
 					return 0
 				}
 			}
-			int(`d`) {
+			i32(`d`) {
 				return msg_length
 			}
-			int(`c`) {
+			i32(`c`) {
 				if u32(conn.asyncStatus) == u32(PGAsyncStatusType.pgasync_copy_both) {
 					conn.asyncStatus = PGAsyncStatusType.pgasync_copy_in
 				} else {
@@ -1619,7 +1619,7 @@ pub fn get_copy_data_message(conn &PGconn) int {
 			}
 		}
 
-		if int(conn.error_result) && u32(conn.status) == u32(ConnStatusType.connection_bad) {
+		if i32(conn.error_result) && u32(conn.status) == u32(ConnStatusType.connection_bad) {
 			return -2
 		}
 		pq_parse_done(conn, conn.inCursor)
@@ -1629,8 +1629,8 @@ pub fn get_copy_data_message(conn &PGconn) int {
 
 @[export: 'pqGetCopyData3']
 @[markused]
-pub fn pq_get_copy_data3(conn &PGconn, buffer &&u8, async int) int {
-	msg_length := 0
+pub fn pq_get_copy_data3(conn &PGconn, buffer &&u8, async i32) i32 {
+	msg_length := i32(0)
 	for {
 		msg_length = get_copy_data_message(conn)
 		if msg_length < 0 {
@@ -1664,9 +1664,9 @@ pub fn pq_get_copy_data3(conn &PGconn, buffer &&u8, async int) int {
 
 @[export: 'pqGetline3']
 @[markused]
-pub fn pq_getline3(conn &PGconn, s &i8, maxlen int) int {
-	status := 0
-	if conn.sock == (-1) || (u32(conn.asyncStatus) != u32(PGAsyncStatusType.pgasync_copy_out) && u32(conn.asyncStatus) != u32(PGAsyncStatusType.pgasync_copy_both)) || int(conn.copy_is_binary) {
+pub fn pq_getline3(conn &PGconn, s &i8, maxlen i32) i32 {
+	status := i32(0)
+	if conn.sock == (-1) || (u32(conn.asyncStatus) != u32(PGAsyncStatusType.pgasync_copy_out) && u32(conn.asyncStatus) != u32(PGAsyncStatusType.pgasync_copy_both)) || i32(conn.copy_is_binary) {
 		libpq_append_conn_error(conn, c'PQgetline: not doing text COPY OUT')
 		unsafe { *s = i8(`\0`) }
 		return -1
@@ -1685,7 +1685,7 @@ pub fn pq_getline3(conn &PGconn, s &i8, maxlen int) int {
 		C.c2v_strcpy(s, c'\\.')
 		return 0
 	}
-	if int(s[status - 1]) == i8(`\n`) {
+	if i32(s[status - 1]) == i8(`\n`) {
 		s[status - 1] = i8(`\0`)
 		return 0
 	} else {
@@ -1696,9 +1696,9 @@ pub fn pq_getline3(conn &PGconn, s &i8, maxlen int) int {
 
 @[export: 'pqGetlineAsync3']
 @[markused]
-pub fn pq_getline_async3(conn &PGconn, buffer &i8, bufsize int) int {
-	msg_length := 0
-	avail := 0
+pub fn pq_getline_async3(conn &PGconn, buffer &i8, bufsize i32) i32 {
+	msg_length := i32(0)
+	avail := i32(0)
 	if u32(conn.asyncStatus) != u32(PGAsyncStatusType.pgasync_copy_out) && u32(conn.asyncStatus) != u32(PGAsyncStatusType.pgasync_copy_both) {
 		return -1
 	}
@@ -1725,7 +1725,7 @@ pub fn pq_getline_async3(conn &PGconn, buffer &i8, bufsize int) int {
 
 @[export: 'pqEndcopy3']
 @[markused]
-pub fn pq_endcopy3(conn &PGconn) int {
+pub fn pq_endcopy3(conn &PGconn) i32 {
 	result := &PGresult(0)
 	mut __c2v_condition_13 := false
 	mut __c2v_condition_14 := false
@@ -1751,11 +1751,11 @@ pub fn pq_endcopy3(conn &PGconn) int {
 			}
 		}
 	}
-	if pq_flush_vdup1(conn) && int(conn.nonblocking) {
+	if pq_flush_vdup1(conn) && i32(conn.nonblocking) {
 		return 1
 	}
 	conn.asyncStatus = PGAsyncStatusType.pgasync_busy
-	if int(conn.nonblocking) && pq_is_busy(conn) {
+	if i32(conn.nonblocking) && pq_is_busy(conn) {
 		return 1
 	}
 	result = pq_get_result(conn)
@@ -1765,7 +1765,7 @@ pub fn pq_endcopy3(conn &PGconn) int {
 	}
 	if conn.errorMessage.len > usize(0) {
 		sv_last := conn.errorMessage.data[conn.errorMessage.len - usize(1)]
-		if int(sv_last) == i8(`\n`) {
+		if i32(sv_last) == i8(`\n`) {
 			conn.errorMessage.data[conn.errorMessage.len - usize(1)] = i8(`\0`)
 		}
 		pq_internal_notice(&conn.noticeHooks, c'%s', voidptr(conn.errorMessage.data))
@@ -1777,15 +1777,39 @@ pub fn pq_endcopy3(conn &PGconn) int {
 
 @[export: 'pqFunctionCall3']
 @[markused]
-pub fn pq_function_call3(conn &PGconn, fnid Oid, result_buf &int, buf_size int, actual_result_len &int, result_is_int int, args &PQArgBlock, nargs int) &PGresult {
+pub fn pq_function_call3(conn &PGconn, fnid Oid, result_buf &i32, buf_size i32, actual_result_len &i32, result_is_int i32, args &PQArgBlock, nargs i32) &PGresult {
 	need_input := (0 != 0)
 	status := ExecStatusType.pgres_fatal_error
 	id := i8(0)
-	msg_length := 0
-	avail := 0
-	i := 0
+	msg_length := i32(0)
+	avail := i32(0)
+	i := i32(0)
 
-	if pq_put_msg_start(i8(`F`), conn) < 0 || pq_put_int(fnid, usize(4), conn) < 0 || pq_put_int(1, usize(2), conn) < 0 || pq_put_int(1, usize(2), conn) < 0 || pq_put_int(nargs, usize(2), conn) < 0 {
+	mut __c2v_condition_15 := false
+	mut __c2v_condition_16 := false
+	__c2v_condition_16 = pq_put_msg_start(i8(`F`), conn) < 0
+	__c2v_condition_15 = __c2v_condition_16
+	if !__c2v_condition_15 {
+		mut __c2v_condition_17 := false
+		__c2v_condition_17 = pq_put_int(i32(fnid), usize(4), conn) < 0
+		__c2v_condition_15 = __c2v_condition_17
+	}
+	if !__c2v_condition_15 {
+		mut __c2v_condition_18 := false
+		__c2v_condition_18 = pq_put_int(1, usize(2), conn) < 0
+		__c2v_condition_15 = __c2v_condition_18
+	}
+	if !__c2v_condition_15 {
+		mut __c2v_condition_19 := false
+		__c2v_condition_19 = pq_put_int(1, usize(2), conn) < 0
+		__c2v_condition_15 = __c2v_condition_19
+	}
+	if !__c2v_condition_15 {
+		mut __c2v_condition_20 := false
+		__c2v_condition_20 = pq_put_int(nargs, usize(2), conn) < 0
+		__c2v_condition_15 = __c2v_condition_20
+	}
+	if __c2v_condition_15 {
 		return unsafe { nil }
 	}
 	for i = 0; i < nargs; i++ {
@@ -1829,14 +1853,14 @@ pub fn pq_function_call3(conn &PGconn, fnid Oid, result_buf &int, buf_size int, 
 			handle_sync_loss(conn, i8(id), msg_length)
 			break
 		}
-		mut __c2v_condition_15 := false
-		mut __c2v_condition_16 := false
-		__c2v_condition_16 = msg_length > 30000
-		if __c2v_condition_16 {
-			__c2v_condition_16 = !(int(id) == i8(`d`) || int(id) == i8(`D`) || int(id) == i8(`E`) || int(id) == i8(`V`) || int(id) == i8(`N`) || int(id) == i8(`A`) || int(id) == i8(`T`) || int(id) == i8(`t`))
+		mut __c2v_condition_21 := false
+		mut __c2v_condition_22 := false
+		__c2v_condition_22 = msg_length > 30000
+		if __c2v_condition_22 {
+			__c2v_condition_22 = !(i32(id) == i8(`d`) || i32(id) == i8(`D`) || i32(id) == i8(`E`) || i32(id) == i8(`V`) || i32(id) == i8(`N`) || i32(id) == i8(`A`) || i32(id) == i8(`T`) || i32(id) == i8(`t`))
 		}
-		__c2v_condition_15 = __c2v_condition_16
-		if __c2v_condition_15 {
+		__c2v_condition_21 = __c2v_condition_22
+		if __c2v_condition_21 {
 			handle_sync_loss(conn, i8(id), msg_length)
 			break
 		}
@@ -1849,8 +1873,8 @@ pub fn pq_function_call3(conn &PGconn, fnid Oid, result_buf &int, buf_size int, 
 			}
 			continue
 		}
-		match int(id) {
-			int(`V`) {
+		match i32(id) {
+			i32(`V`) {
 				if pq_get_int(actual_result_len, usize(4), conn) {
 					continue
 				}
@@ -1872,28 +1896,28 @@ pub fn pq_function_call3(conn &PGconn, fnid Oid, result_buf &int, buf_size int, 
 				}
 				status = ExecStatusType.pgres_command_ok
 			}
-			int(`E`) {
+			i32(`E`) {
 				if pq_get_error_notice3(conn, (1 != 0)) {
 					continue
 				}
 				status = ExecStatusType.pgres_fatal_error
 			}
-			int(`A`) {
+			i32(`A`) {
 				if get_notify(conn) {
 					continue
 				}
 			}
-			int(`N`) {
+			i32(`N`) {
 				if pq_get_error_notice3(conn, (0 != 0)) {
 					continue
 				}
 			}
-			int(`Z`) {
+			i32(`Z`) {
 				if get_ready_for_query(conn) {
 					continue
 				}
 				pq_parse_done(conn, conn.inStart + 5 + msg_length)
-				if !(usize(conn.result) != usize((voidptr(0))) || int(conn.error_result)) {
+				if !(usize(conn.result) != usize((voidptr(0))) || i32(conn.error_result)) {
 					if u32(status) == u32(ExecStatusType.pgres_command_ok) {
 						conn.result = pq_make_empty_pg_result(conn, status)
 						if isnil(conn.result) {
@@ -1907,20 +1931,20 @@ pub fn pq_function_call3(conn &PGconn, fnid Oid, result_buf &int, buf_size int, 
 				}
 				return pq_prepare_async_result(conn)
 			}
-			int(`S`) {
+			i32(`S`) {
 				if get_parameter_status(conn) {
 					continue
 				}
 			}
 			else {
-				libpq_append_conn_error(conn, c'protocol error: id=0x%x', int(id))
+				libpq_append_conn_error(conn, c'protocol error: id=0x%x', i32(id))
 				pq_save_error_result(conn)
 				conn.inStart += 5 + msg_length
 				return pq_prepare_async_result(conn)
 			}
 		}
 
-		if int(conn.error_result) && u32(conn.status) == u32(ConnStatusType.connection_bad) {
+		if i32(conn.error_result) && u32(conn.status) == u32(ConnStatusType.connection_bad) {
 			return pq_prepare_async_result(conn)
 		}
 		pq_parse_done(conn, conn.inStart + 5 + msg_length)
@@ -1932,14 +1956,14 @@ pub fn pq_function_call3(conn &PGconn, fnid Oid, result_buf &int, buf_size int, 
 
 @[export: 'pqBuildStartupPacket3']
 @[markused]
-pub fn pq_build_startup_packet3(conn &PGconn, packetlen &int, options &PQEnvironmentOption) &i8 {
+pub fn pq_build_startup_packet3(conn &PGconn, packetlen &i32, options &PQEnvironmentOption) &i8 {
 	startpacket := &i8(0)
 	len := usize(0)
 	len = build_startup_packet(conn, (voidptr(0)), options)
 	if len == usize(0) || len > usize(2147483647) {
 		return unsafe { nil }
 	}
-	unsafe { *packetlen = int(len) }
+	unsafe { *packetlen = i32(len) }
 	startpacket = &i8(C.c2v_malloc(u64((unsafe { *packetlen }))))
 	if isnil(startpacket) {
 		return unsafe { nil }
@@ -1959,7 +1983,7 @@ pub fn build_startup_packet(conn &PGconn, packet &i8, options &PQEnvironmentOpti
 		C.c2v_memcpy(voidptr(packet + packet_len), voidptr(&pv), sizeof(ProtocolVersion))
 	}
 	packet_len += sizeof(ProtocolVersion)
-	if !isnil(conn.pguser) && int(conn.pguser[0]) {
+	if !isnil(conn.pguser) && i32(conn.pguser[0]) {
 		for {
 			if packet {
 				C.c2v_strcpy(packet + packet_len, c'user')
@@ -1976,7 +2000,7 @@ pub fn build_startup_packet(conn &PGconn, packet &i8, options &PQEnvironmentOpti
 			break
 		}
 	}
-	if !isnil(conn.dbName) && int(conn.dbName[0]) {
+	if !isnil(conn.dbName) && i32(conn.dbName[0]) {
 		for {
 			if packet {
 				C.c2v_strcpy(packet + packet_len, c'database')
@@ -1993,7 +2017,7 @@ pub fn build_startup_packet(conn &PGconn, packet &i8, options &PQEnvironmentOpti
 			break
 		}
 	}
-	if !isnil(conn.replication) && int(conn.replication[0]) {
+	if !isnil(conn.replication) && i32(conn.replication[0]) {
 		for {
 			if packet {
 				C.c2v_strcpy(packet + packet_len, c'replication')
@@ -2010,7 +2034,7 @@ pub fn build_startup_packet(conn &PGconn, packet &i8, options &PQEnvironmentOpti
 			break
 		}
 	}
-	if !isnil(conn.pgoptions) && int(conn.pgoptions[0]) {
+	if !isnil(conn.pgoptions) && i32(conn.pgoptions[0]) {
 		for {
 			if packet {
 				C.c2v_strcpy(packet + packet_len, c'options')
@@ -2029,7 +2053,7 @@ pub fn build_startup_packet(conn &PGconn, packet &i8, options &PQEnvironmentOpti
 	}
 	if conn.send_appname {
 		val = if conn.appname { conn.appname } else { conn.fbappname }
-		if !isnil(val) && int(val[0]) {
+		if !isnil(val) && i32(val[0]) {
 			for {
 				if packet {
 					C.c2v_strcpy(packet + packet_len, c'application_name')
@@ -2047,7 +2071,7 @@ pub fn build_startup_packet(conn &PGconn, packet &i8, options &PQEnvironmentOpti
 			}
 		}
 	}
-	if !isnil(conn.client_encoding_initial) && int(conn.client_encoding_initial[0]) {
+	if !isnil(conn.client_encoding_initial) && i32(conn.client_encoding_initial[0]) {
 		for {
 			if packet {
 				C.c2v_strcpy(packet + packet_len, c'client_encoding')

@@ -1,7 +1,7 @@
 @[translated]
 module libpq
 
-pub fn c2v_fn_stat(a0 &i8, a1 &C.stat) int {
+pub fn c2v_fn_stat(a0 &i8, a1 &C.stat) i32 {
 	return C.c2v_stat(a0, a1)
 }
 
@@ -27,13 +27,13 @@ pub mut:
 
 @[markused]
 pub fn libpq_fe_connect_is_unixsock_path(path &i8) bool {
-	return (int(path[false]) == i8(`/`)) || int(path[false]) == i8(`@`)
+	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
 }
 
 pub struct PromptInterruptContext {
 pub mut:
 	jmpbuf   voidptr
-	enabled  &int
+	enabled  &i32
 	canceled bool
 }
 
@@ -73,14 +73,14 @@ pub fn libpq_fe_connect_surrogate_pair_to_codepoint(first Pg_wchar, second Pg_wc
 
 @[markused]
 pub fn libpq_fe_connect_utf8_to_unicode(c &u8) Pg_wchar {
-	if (int((unsafe { *c })) & 128) == 0 {
+	if (i32((unsafe { *c })) & 128) == 0 {
 		return Pg_wchar(c[0])
-	} else if (int((unsafe { *c })) & 224) == 192 {
-		return Pg_wchar((((int(c[0]) & 31) << 6) | (int(c[1]) & 63)))
-	} else if (int((unsafe { *c })) & 240) == 224 {
-		return Pg_wchar((((int(c[0]) & 15) << 12) | ((int(c[1]) & 63) << 6) | (int(c[2]) & 63)))
-	} else if (int((unsafe { *c })) & 248) == 240 {
-		return Pg_wchar((((int(c[0]) & 7) << 18) | ((int(c[1]) & 63) << 12) | ((int(c[2]) & 63) << 6) | (int(c[3]) & 63)))
+	} else if (i32((unsafe { *c })) & 224) == 192 {
+		return Pg_wchar((((i32(c[0]) & 31) << 6) | (i32(c[1]) & 63)))
+	} else if (i32((unsafe { *c })) & 240) == 224 {
+		return Pg_wchar((((i32(c[0]) & 15) << 12) | ((i32(c[1]) & 63) << 6) | (i32(c[2]) & 63)))
+	} else if (i32((unsafe { *c })) & 248) == 240 {
+		return Pg_wchar((((i32(c[0]) & 7) << 18) | ((i32(c[1]) & 63) << 12) | ((i32(c[2]) & 63) << 6) | (i32(c[3]) & 63)))
 	} else {
 		return u32(4294967295)
 	}
@@ -107,7 +107,7 @@ pub fn libpq_fe_connect_unicode_to_utf8(c Pg_wchar, utf8string &u8) &u8 {
 }
 
 @[markused]
-pub fn libpq_fe_connect_unicode_utf8len(c Pg_wchar) int {
+pub fn libpq_fe_connect_unicode_utf8len(c Pg_wchar) i32 {
 	if c <= Pg_wchar(127) {
 		return 1
 	} else if c <= Pg_wchar(2047) {
@@ -127,7 +127,7 @@ pub mut:
 	val      &i8
 	label    &i8
 	dispchar &i8
-	dispsize int
+	dispsize i32
 	connofs  i64
 }
 
@@ -221,7 +221,7 @@ pub fn pq_drop_server_data(conn &PGconn) {
 
 @[export: 'PQconnectdbParams']
 @[markused]
-pub fn pq_connectdb_params(keywords &&u8, values &&u8, expand_dbname int) &PGconn {
+pub fn pq_connectdb_params(keywords &&u8, values &&u8, expand_dbname i32) &PGconn {
 	conn := pq_connect_start_params(keywords, values, expand_dbname)
 	if !isnil(conn) && u32(conn.status) != u32(ConnStatusType.connection_bad) {
 		pq_connect_db_complete(conn)
@@ -231,7 +231,7 @@ pub fn pq_connectdb_params(keywords &&u8, values &&u8, expand_dbname int) &PGcon
 
 @[export: 'PQpingParams']
 @[markused]
-pub fn pq_ping_params(keywords &&u8, values &&u8, expand_dbname int) PGPing {
+pub fn pq_ping_params(keywords &&u8, values &&u8, expand_dbname i32) PGPing {
 	conn := pq_connect_start_params(keywords, values, expand_dbname)
 	ret := PGPing{}
 	ret = internal_ping(conn)
@@ -261,7 +261,7 @@ pub fn pq_ping(conninfo &i8) PGPing {
 
 @[export: 'PQconnectStartParams']
 @[markused]
-pub fn pq_connect_start_params(keywords &&u8, values &&u8, expand_dbname int) &PGconn {
+pub fn pq_connect_start_params(keywords &&u8, values &&u8, expand_dbname i32) &PGconn {
 	conn := &PGconn(0)
 	conn_options := &PQconninfoOption(0)
 	conn = pq_make_empty_pg_conn()
@@ -368,11 +368,11 @@ pub fn connect_options1(conn &PGconn, conninfo &i8) bool {
 }
 
 @[markused]
-pub fn count_comma_separated_elems(input &i8) int {
-	n := 0
+pub fn count_comma_separated_elems(input &i8) i32 {
+	n := i32(0)
 	n = 1
-	for ; int((unsafe { *input })) != i8(`\0`); input = unsafe { input + 1 } {
-		if int((unsafe { *input })) == i8(`,`) {
+	for ; i32((unsafe { *input })) != i8(`\0`); input = unsafe { input + 1 } {
+		if i32((unsafe { *input })) == i8(`,`) {
 			n++
 		}
 	}
@@ -386,10 +386,10 @@ pub fn parse_comma_separated_list(startptr &&u8, more &bool) &i8 {
 	e := &i8(0)
 	len := usize(0)
 	e = s
-	for int((unsafe { *e })) != i8(`\0`) && int((unsafe { *e })) != i8(`,`) {
+	for i32((unsafe { *e })) != i8(`\0`) && i32((unsafe { *e })) != i8(`,`) {
 		c2v_pointer_prefix(voidptr(&e), e, isize(1))
 	}
-	unsafe { *more = ((int(*e) == i8(`,`)) != 0) }
+	unsafe { *more = ((i32(*e) == i8(`,`)) != 0) }
 	len = usize(i64((isize(e) - isize(s)) / isize(sizeof(i8))))
 	p = &i8(C.c2v_malloc(sizeof(i8) * (len + usize(1))))
 	if p {
@@ -405,8 +405,8 @@ pub fn libpq_prng_init(conn &PGconn) {
 	rseed := Uint64(0)
 	tval := C.timeval{}
 
-	if (if int(pg_strong_random(voidptr(&conn.prng_state), sizeof(Pg_prng_state))) {
-		int(pg_prng_seed_check(&conn.prng_state))
+	if (if i32(pg_strong_random(voidptr(&conn.prng_state), sizeof(Pg_prng_state))) {
+		i32(pg_prng_seed_check(&conn.prng_state))
 	} else {
 		0
 	}) {
@@ -419,21 +419,21 @@ pub fn libpq_prng_init(conn &PGconn) {
 
 @[markused]
 pub fn fill_allowed_sasl_mechs(conn &PGconn) {
-	for i := 0; u64(i) < 2; i++ {
+	for i := i32(0); u64(i) < 2; i++ {
 		conn.allowed_sasl_mechs[i] = libpq_fe_connect_supported_sasl_mechs[i]
 	}
 }
 
 @[markused]
 pub fn clear_allowed_sasl_mechs(conn &PGconn) {
-	for i := 0; u64(i) < 2; i++ {
+	for i := i32(0); u64(i) < 2; i++ {
 		conn.allowed_sasl_mechs[i] = (voidptr(0))
 	}
 }
 
 @[markused]
-pub fn index_of_allowed_sasl_mech(conn &PGconn, mech &Pg_fe_sasl_mech) int {
-	for i := 0; u64(i) < 2; i++ {
+pub fn index_of_allowed_sasl_mech(conn &PGconn, mech &Pg_fe_sasl_mech) i32 {
+	for i := i32(0); u64(i) < 2; i++ {
 		if usize(conn.allowed_sasl_mechs[i]) == usize(mech) {
 			return i
 		}
@@ -444,11 +444,11 @@ pub fn index_of_allowed_sasl_mech(conn &PGconn, mech &Pg_fe_sasl_mech) int {
 @[export: 'pqConnectOptions2']
 @[markused]
 pub fn pq_connect_options2(conn &PGconn) bool {
-	i := 0
+	i := i32(0)
 	conn.whichhost = 0
-	if !isnil(conn.pghostaddr) && int(conn.pghostaddr[0]) != i8(`\0`) {
+	if !isnil(conn.pghostaddr) && i32(conn.pghostaddr[0]) != i8(`\0`) {
 		conn.nconnhost = count_comma_separated_elems(conn.pghostaddr)
-	} else if !isnil(conn.pghost) && int(conn.pghost[0]) != i8(`\0`) {
+	} else if !isnil(conn.pghost) && i32(conn.pghost[0]) != i8(`\0`) {
 		conn.nconnhost = count_comma_separated_elems(conn.pghost)
 	} else {
 		conn.nconnhost = 1
@@ -459,10 +459,10 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 			goto oom_error
 		}
 	}
-	if usize(conn.pghostaddr) != usize((voidptr(0))) && int(conn.pghostaddr[0]) != i8(`\0`) {
+	if usize(conn.pghostaddr) != usize((voidptr(0))) && i32(conn.pghostaddr[0]) != i8(`\0`) {
 		s := conn.pghostaddr
 		more := (1 != 0)
-		for i = 0; i < conn.nconnhost && int(more); i++ {
+		for i = 0; i < conn.nconnhost && i32(more); i++ {
 			conn.connhost[i].hostaddr = parse_comma_separated_list(&&u8(&&i8(c2v_address_of(&s))), &more)
 			if usize(conn.connhost[i].hostaddr) == usize((voidptr(0))) {
 				unsafe {
@@ -471,10 +471,10 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 			}
 		}
 	}
-	if usize(conn.pghost) != usize((voidptr(0))) && int(conn.pghost[0]) != i8(`\0`) {
+	if usize(conn.pghost) != usize((voidptr(0))) && i32(conn.pghost[0]) != i8(`\0`) {
 		s := conn.pghost
 		more := (1 != 0)
-		for i = 0; i < conn.nconnhost && int(more); i++ {
+		for i = 0; i < conn.nconnhost && i32(more); i++ {
 			conn.connhost[i].host = parse_comma_separated_list(&&u8(&&i8(c2v_address_of(&s))), &more)
 			if usize(conn.connhost[i].host) == usize((voidptr(0))) {
 				unsafe {
@@ -482,7 +482,7 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 				}
 			}
 		}
-		if int(more) || i != conn.nconnhost {
+		if i32(more) || i != conn.nconnhost {
 			conn.status = ConnStatusType.connection_bad
 			libpq_append_conn_error(conn, c'could not match %d host names to %d hostaddr values', count_comma_separated_elems(conn.pghost), conn.nconnhost)
 			return false != 0
@@ -490,9 +490,9 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 	}
 	for i = 0; i < conn.nconnhost; i++ {
 		ch := unsafe { conn.connhost + i }
-		if usize(ch.hostaddr) != usize((voidptr(0))) && int(ch.hostaddr[0]) != i8(`\0`) {
+		if usize(ch.hostaddr) != usize((voidptr(0))) && i32(ch.hostaddr[0]) != i8(`\0`) {
 			ch.type_ = Pg_conn_host_type.cht_host_address
-		} else if usize(ch.host) != usize((voidptr(0))) && int(ch.host[0]) != i8(`\0`) {
+		} else if usize(ch.host) != usize((voidptr(0))) && i32(ch.host[0]) != i8(`\0`) {
 			ch.type_ = Pg_conn_host_type.cht_host_name
 			if libpq_fe_connect_is_unixsock_path(ch.host) {
 				ch.type_ = Pg_conn_host_type.cht_unix_socket
@@ -513,10 +513,10 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 			}
 		}
 	}
-	if usize(conn.pgport) != usize((voidptr(0))) && int(conn.pgport[0]) != i8(`\0`) {
+	if usize(conn.pgport) != usize((voidptr(0))) && i32(conn.pgport[0]) != i8(`\0`) {
 		s := conn.pgport
 		more := (1 != 0)
-		for i = 0; i < conn.nconnhost && int(more); i++ {
+		for i = 0; i < conn.nconnhost && i32(more); i++ {
 			conn.connhost[i].port = parse_comma_separated_list(&&u8(&&i8(c2v_address_of(&s))), &more)
 			if usize(conn.connhost[i].port) == usize((voidptr(0))) {
 				unsafe {
@@ -533,13 +533,13 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 					}
 				}
 			}
-		} else if int(more) || i != conn.nconnhost {
+		} else if i32(more) || i != conn.nconnhost {
 			conn.status = ConnStatusType.connection_bad
 			libpq_append_conn_error(conn, c'could not match %d port numbers to %d hosts', count_comma_separated_elems(conn.pgport), conn.nconnhost)
 			return false != 0
 		}
 	}
-	if usize(conn.pguser) == usize((voidptr(0))) || int(conn.pguser[0]) == i8(`\0`) {
+	if usize(conn.pguser) == usize((voidptr(0))) || i32(conn.pguser[0]) == i8(`\0`) {
 		C.c2v_free(voidptr(conn.pguser))
 		conn.pguser = pg_fe_getauthname(&conn.errorMessage)
 		if isnil(conn.pguser) {
@@ -547,7 +547,7 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 			return false != 0
 		}
 	}
-	if usize(conn.dbName) == usize((voidptr(0))) || int(conn.dbName[0]) == i8(`\0`) {
+	if usize(conn.dbName) == usize((voidptr(0))) || i32(conn.dbName[0]) == i8(`\0`) {
 		C.c2v_free(voidptr(conn.dbName))
 		conn.dbName = C.c2v_strdup(conn.pguser)
 		if isnil(conn.dbName) {
@@ -556,10 +556,10 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 			}
 		}
 	}
-	if usize(conn.pgpass) == usize((voidptr(0))) || int(conn.pgpass[0]) == i8(`\0`) {
-		if usize(conn.pgpassfile) == usize((voidptr(0))) || int(conn.pgpassfile[0]) == i8(`\0`) {
+	if usize(conn.pgpass) == usize((voidptr(0))) || i32(conn.pgpass[0]) == i8(`\0`) {
+		if usize(conn.pgpassfile) == usize((voidptr(0))) || i32(conn.pgpassfile[0]) == i8(`\0`) {
 			homedir := [1024]i8{}
-			if pq_get_home_directory(unsafe { &i8(&homedir[0]) }, int(sizeof([1024]i8))) {
+			if pq_get_home_directory(unsafe { &i8(&homedir[0]) }, i32(sizeof([1024]i8))) {
 				C.c2v_free(voidptr(conn.pgpassfile))
 				conn.pgpassfile = &i8(C.c2v_malloc(u64(1024)))
 				if isnil(conn.pgpassfile) {
@@ -570,17 +570,17 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 				pg_snprintf(conn.pgpassfile, usize(1024), c'%s/%s', unsafe { voidptr(&homedir[0]) }, voidptr(c'.pgpass'))
 			}
 		}
-		if usize(conn.pgpassfile) != usize((voidptr(0))) && int(conn.pgpassfile[0]) != i8(`\0`) {
+		if usize(conn.pgpassfile) != usize((voidptr(0))) && i32(conn.pgpassfile[0]) != i8(`\0`) {
 			for i = 0; i < conn.nconnhost; i++ {
 				pwhost := conn.connhost[i].host
-				if usize(pwhost) == usize((voidptr(0))) || int(pwhost[0]) == i8(`\0`) {
+				if usize(pwhost) == usize((voidptr(0))) || i32(pwhost[0]) == i8(`\0`) {
 					pwhost = conn.connhost[i].hostaddr
 				}
 				conn.connhost[i].password = password_from_file(pwhost, conn.connhost[i].port, conn.dbName, conn.pguser, conn.pgpassfile)
 			}
 		}
 	}
-	if !isnil(conn.require_auth) && int(conn.require_auth[0]) {
+	if !isnil(conn.require_auth) && i32(conn.require_auth[0]) {
 		s := conn.require_auth
 		first := false
 		more := false
@@ -603,7 +603,7 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 				}
 			}
 			method = part
-			if int((unsafe { *method })) == i8(`!`) {
+			if i32((unsafe { *method })) == i8(`!`) {
 				if first {
 					conn.auth_required = (0 != 0)
 					conn.allowed_auth_methods = Uint32(-1)
@@ -719,9 +719,9 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 				break
 			}
 		}
-		if !negated && int(allowed) {
+		if !negated && i32(allowed) {
 			conn.allowed_auth_methods |= sasl_bits
-		} else if int(negated) && !allowed {
+		} else if i32(negated) && !allowed {
 			conn.allowed_auth_methods &= ~sasl_bits
 		}
 	}
@@ -769,10 +769,10 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 			libpq_append_conn_error(conn, c'invalid %s value: "%s"', voidptr(c'sslmode'), voidptr(conn.sslmode))
 			return false != 0
 		}
-		match int(conn.sslmode[0]) {
-			int(`a`), int(`p`) {
+		match i32(conn.sslmode[0]) {
+			i32(`a`), i32(`p`) {
 			}
-			int(`r`), int(`v`) {
+			i32(`r`), i32(`v`) {
 				conn.status = ConnStatusType.connection_bad
 				libpq_append_conn_error(conn, c'%s value "%s" invalid when SSL support is not compiled in', voidptr(c'sslmode'), voidptr(conn.sslmode))
 				return false != 0
@@ -793,12 +793,12 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 			libpq_append_conn_error(conn, c'invalid %s value: "%s"', voidptr(c'sslnegotiation'), voidptr(conn.sslnegotiation))
 			return false != 0
 		}
-		if int(conn.sslnegotiation[0]) != i8(`p`) {
+		if i32(conn.sslnegotiation[0]) != i8(`p`) {
 			conn.status = ConnStatusType.connection_bad
 			libpq_append_conn_error(conn, c'%s value "%s" invalid when SSL support is not compiled in', voidptr(c'sslnegotiation'), voidptr(conn.sslnegotiation))
 			return false != 0
 		}
-		if int(conn.sslnegotiation[0]) == i8(`d`) && int(conn.sslmode[0]) != i8(`r`) && int(conn.sslmode[0]) != i8(`v`) {
+		if i32(conn.sslnegotiation[0]) == i8(`d`) && i32(conn.sslmode[0]) != i8(`r`) && i32(conn.sslmode[0]) != i8(`v`) {
 			conn.status = ConnStatusType.connection_bad
 			libpq_append_conn_error(conn, c'weak sslmode "%s" may not be used with sslnegotiation=direct (use "require", "verify-ca", or "verify-full")', voidptr(conn.sslmode))
 			return false != 0
@@ -891,15 +891,15 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 		conn.target_server_type = PGTargetServerType.server_type_any
 	}
 	if conn.scram_client_key {
-		len := 0
-		len = pg_b64_dec_len(int(C.c2v_strlen(conn.scram_client_key)))
+		len := i32(0)
+		len = pg_b64_dec_len(i32(C.c2v_strlen(conn.scram_client_key)))
 		conn.scram_client_key_binary = C.c2v_malloc(u64(len))
 		if isnil(conn.scram_client_key_binary) {
 			unsafe {
 				goto oom_error
 			}
 		}
-		len = pg_b64_decode(conn.scram_client_key, int(C.c2v_strlen(conn.scram_client_key)), conn.scram_client_key_binary, len)
+		len = pg_b64_decode(conn.scram_client_key, i32(C.c2v_strlen(conn.scram_client_key)), conn.scram_client_key_binary, len)
 		if len < 0 {
 			libpq_append_conn_error(conn, c'invalid SCRAM client key')
 			return false != 0
@@ -911,15 +911,15 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 		conn.scram_client_key_len = usize(len)
 	}
 	if conn.scram_server_key {
-		len := 0
-		len = pg_b64_dec_len(int(C.c2v_strlen(conn.scram_server_key)))
+		len := i32(0)
+		len = pg_b64_dec_len(i32(C.c2v_strlen(conn.scram_server_key)))
 		conn.scram_server_key_binary = C.c2v_malloc(u64(len))
 		if isnil(conn.scram_server_key_binary) {
 			unsafe {
 				goto oom_error
 			}
 		}
-		len = pg_b64_decode(conn.scram_server_key, int(C.c2v_strlen(conn.scram_server_key)), conn.scram_server_key_binary, len)
+		len = pg_b64_decode(conn.scram_server_key, i32(C.c2v_strlen(conn.scram_server_key)), conn.scram_server_key_binary, len)
 		if len < 0 {
 			libpq_append_conn_error(conn, c'invalid SCRAM server key')
 			return false != 0
@@ -946,7 +946,7 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 	if u32(conn.load_balance_type) == u32(PGLoadBalanceType.load_balance_random) {
 		libpq_prng_init(conn)
 		for i = 1; i < conn.nconnhost; i++ {
-			j := int(pg_prng_uint64_range(&conn.prng_state, Uint64(0), Uint64(i)))
+			j := i32(pg_prng_uint64_range(&conn.prng_state, Uint64(0), Uint64(i)))
 			temp := conn.connhost[j]
 			conn.connhost[j] = conn.connhost[i]
 			conn.connhost[i] = temp
@@ -1022,7 +1022,7 @@ pub fn pq_setdb_login(pghost &i8, pgport &i8, pgoptions &i8, pgtty &i8, db_name 
 	if usize(conn) == usize((voidptr(0))) {
 		return unsafe { nil }
 	}
-	if !isnil(db_name) && int(recognized_connection_string(db_name)) {
+	if !isnil(db_name) && i32(recognized_connection_string(db_name)) {
 		if !connect_options1(conn, db_name) {
 			return conn
 		}
@@ -1030,7 +1030,7 @@ pub fn pq_setdb_login(pghost &i8, pgport &i8, pgoptions &i8, pgtty &i8, db_name 
 		if !connect_options1(conn, c'') {
 			return conn
 		}
-		if !isnil(db_name) && int(db_name[0]) != i8(`\0`) {
+		if !isnil(db_name) && i32(db_name[0]) != i8(`\0`) {
 			C.c2v_free(voidptr(conn.dbName))
 			conn.dbName = C.c2v_strdup(db_name)
 			if isnil(conn.dbName) {
@@ -1040,7 +1040,7 @@ pub fn pq_setdb_login(pghost &i8, pgport &i8, pgoptions &i8, pgtty &i8, db_name 
 			}
 		}
 	}
-	if !isnil(pghost) && int(pghost[0]) != i8(`\0`) {
+	if !isnil(pghost) && i32(pghost[0]) != i8(`\0`) {
 		C.c2v_free(voidptr(conn.pghost))
 		conn.pghost = C.c2v_strdup(pghost)
 		if isnil(conn.pghost) {
@@ -1049,7 +1049,7 @@ pub fn pq_setdb_login(pghost &i8, pgport &i8, pgoptions &i8, pgtty &i8, db_name 
 			}
 		}
 	}
-	if !isnil(pgport) && int(pgport[0]) != i8(`\0`) {
+	if !isnil(pgport) && i32(pgport[0]) != i8(`\0`) {
 		C.c2v_free(voidptr(conn.pgport))
 		conn.pgport = C.c2v_strdup(pgport)
 		if isnil(conn.pgport) {
@@ -1058,7 +1058,7 @@ pub fn pq_setdb_login(pghost &i8, pgport &i8, pgoptions &i8, pgtty &i8, db_name 
 			}
 		}
 	}
-	if !isnil(pgoptions) && int(pgoptions[0]) != i8(`\0`) {
+	if !isnil(pgoptions) && i32(pgoptions[0]) != i8(`\0`) {
 		C.c2v_free(voidptr(conn.pgoptions))
 		conn.pgoptions = C.c2v_strdup(pgoptions)
 		if isnil(conn.pgoptions) {
@@ -1067,7 +1067,7 @@ pub fn pq_setdb_login(pghost &i8, pgport &i8, pgoptions &i8, pgtty &i8, db_name 
 			}
 		}
 	}
-	if !isnil(login) && int(login[0]) != i8(`\0`) {
+	if !isnil(login) && i32(login[0]) != i8(`\0`) {
 		C.c2v_free(voidptr(conn.pguser))
 		conn.pguser = C.c2v_strdup(login)
 		if isnil(conn.pguser) {
@@ -1076,7 +1076,7 @@ pub fn pq_setdb_login(pghost &i8, pgport &i8, pgoptions &i8, pgtty &i8, db_name 
 			}
 		}
 	}
-	if !isnil(pwd) && int(pwd[0]) != i8(`\0`) {
+	if !isnil(pwd) && i32(pwd[0]) != i8(`\0`) {
 		C.c2v_free(voidptr(conn.pgpass))
 		conn.pgpass = C.c2v_strdup(pwd)
 		if isnil(conn.pgpass) {
@@ -1099,8 +1099,8 @@ pub fn pq_setdb_login(pghost &i8, pgport &i8, pgoptions &i8, pgtty &i8, db_name 
 }
 
 @[markused]
-pub fn connect_no_delay(conn &PGconn) int {
-	on := 1
+pub fn connect_no_delay(conn &PGconn) i32 {
+	on := i32(1)
 	if C.c2v_setsockopt(conn.sock, 6, 1, voidptr(&i8(c2v_address_of(&on))), u32(sizeof(on))) < 0 {
 		sebuf := [256]i8{}
 		libpq_append_conn_error(conn, c'could not set socket to TCP no delay mode: %s', voidptr(pg_strerror_r((unsafe { *C.c2v___error() }), unsafe { &i8(&sebuf[0]) }, sizeof([256]i8))))
@@ -1110,13 +1110,13 @@ pub fn connect_no_delay(conn &PGconn) int {
 }
 
 @[markused]
-pub fn get_hostaddr(conn &PGconn, host_addr &i8, host_addr_len int) {
+pub fn get_hostaddr(conn &PGconn, host_addr &i8, host_addr_len i32) {
 	addr := &conn.raddr.addr
-	if int(addr.ss_family) == 2 {
+	if i32(addr.ss_family) == 2 {
 		if usize(pg_inet_net_ntop(2, voidptr(&(&C.sockaddr_in(voidptr(addr))).sin_addr.s_addr), 32, host_addr, usize(host_addr_len))) == usize((voidptr(0))) {
 			host_addr[0] = i8(`\0`)
 		}
-	} else if int(addr.ss_family) == 30 {
+	} else if i32(addr.ss_family) == 30 {
 		if usize(pg_inet_net_ntop(30, voidptr(&(&C.sockaddr_in6(voidptr(addr))).sin6_addr.__u6_addr.__u6_addr8), 128, host_addr, usize(host_addr_len))) == usize((voidptr(0))) {
 			host_addr[0] = i8(`\0`)
 		}
@@ -1127,9 +1127,9 @@ pub fn get_hostaddr(conn &PGconn, host_addr &i8, host_addr_len int) {
 
 @[markused]
 pub fn emit_host_identity_info(conn &PGconn, host_addr &i8) {
-	if int(conn.raddr.addr.ss_family) == 1 {
+	if i32(conn.raddr.addr.ss_family) == 1 {
 		service := [1025]i8{}
-		pg_getnameinfo_all(&conn.raddr.addr, int(conn.raddr.salen), (voidptr(0)), 0, unsafe { &i8(&service[0]) }, int(sizeof([1025]i8)), 8)
+		pg_getnameinfo_all(&conn.raddr.addr, i32(conn.raddr.salen), (voidptr(0)), 0, unsafe { &i8(&service[0]) }, i32(sizeof([1025]i8)), 8)
 		append_pq_exp_buffer(&conn.errorMessage, unsafe { &i8(&c'connection to server on socket "%s" failed: '[0]) }, unsafe { voidptr(&service[0]) })
 	} else {
 		displayed_host := &i8(0)
@@ -1140,10 +1140,10 @@ pub fn emit_host_identity_info(conn &PGconn, host_addr &i8) {
 			displayed_host = conn.connhost[conn.whichhost].host
 		}
 		displayed_port = conn.connhost[conn.whichhost].port
-		if usize(displayed_port) == usize((voidptr(0))) || int(displayed_port[0]) == i8(`\0`) {
+		if usize(displayed_port) == usize((voidptr(0))) || i32(displayed_port[0]) == i8(`\0`) {
 			displayed_port = c'5432'
 		}
-		if u32(conn.connhost[conn.whichhost].type_) != u32(Pg_conn_host_type.cht_host_address) && int(host_addr[0]) && C.c2v_strcmp(displayed_host, host_addr) != 0 {
+		if u32(conn.connhost[conn.whichhost].type_) != u32(Pg_conn_host_type.cht_host_address) && i32(host_addr[0]) && C.c2v_strcmp(displayed_host, host_addr) != 0 {
 			append_pq_exp_buffer(&conn.errorMessage, unsafe { &i8(&c'connection to server at "%s" (%s), port %s failed: '[0]) }, voidptr(displayed_host), voidptr(host_addr), voidptr(displayed_port))
 		} else {
 			append_pq_exp_buffer(&conn.errorMessage, unsafe { &i8(&c'connection to server at "%s", port %s failed: '[0]) }, voidptr(displayed_host), voidptr(displayed_port))
@@ -1152,10 +1152,10 @@ pub fn emit_host_identity_info(conn &PGconn, host_addr &i8) {
 }
 
 @[markused]
-pub fn connect_failure_message(conn &PGconn, errorno int) {
+pub fn connect_failure_message(conn &PGconn, errorno i32) {
 	sebuf := [256]i8{}
 	append_pq_exp_buffer(&conn.errorMessage, c'%s\n', voidptr(pg_strerror_r(errorno, unsafe { &i8(&sebuf[0]) }, sizeof([256]i8))))
-	if int(conn.raddr.addr.ss_family) == 1 {
+	if i32(conn.raddr.addr.ss_family) == 1 {
 		libpq_append_conn_error(conn, c'\tIs the server running locally and accepting connections on that socket?')
 	} else {
 		libpq_append_conn_error(conn, c'\tIs the server running on that host and accepting TCP/IP connections?')
@@ -1163,8 +1163,8 @@ pub fn connect_failure_message(conn &PGconn, errorno int) {
 }
 
 @[markused]
-pub fn use_keepalives(conn &PGconn) int {
-	val := 0
+pub fn use_keepalives(conn &PGconn) i32 {
+	val := i32(0)
 	if usize(conn.keepalives) == usize((voidptr(0))) {
 		return 1
 	}
@@ -1175,8 +1175,8 @@ pub fn use_keepalives(conn &PGconn) int {
 }
 
 @[markused]
-pub fn set_keepalives_idle(conn &PGconn) int {
-	idle := 0
+pub fn set_keepalives_idle(conn &PGconn) i32 {
+	idle := i32(0)
 	if usize(conn.keepalives_idle) == usize((voidptr(0))) {
 		return 1
 	}
@@ -1195,8 +1195,8 @@ pub fn set_keepalives_idle(conn &PGconn) int {
 }
 
 @[markused]
-pub fn set_keepalives_interval(conn &PGconn) int {
-	interval := 0
+pub fn set_keepalives_interval(conn &PGconn) i32 {
+	interval := i32(0)
 	if usize(conn.keepalives_interval) == usize((voidptr(0))) {
 		return 1
 	}
@@ -1215,8 +1215,8 @@ pub fn set_keepalives_interval(conn &PGconn) int {
 }
 
 @[markused]
-pub fn set_keepalives_count(conn &PGconn) int {
-	count := 0
+pub fn set_keepalives_count(conn &PGconn) i32 {
+	count := i32(0)
 	if usize(conn.keepalives_count) == usize((voidptr(0))) {
 		return 1
 	}
@@ -1235,8 +1235,8 @@ pub fn set_keepalives_count(conn &PGconn) int {
 }
 
 @[markused]
-pub fn set_tcp_user_timeout(conn &PGconn) int {
-	timeout := 0
+pub fn set_tcp_user_timeout(conn &PGconn) i32 {
+	timeout := i32(0)
 	if usize(conn.pgtcp_user_timeout) == usize((voidptr(0))) {
 		return 1
 	}
@@ -1251,7 +1251,7 @@ pub fn set_tcp_user_timeout(conn &PGconn) int {
 
 @[export: 'pqConnectDBStart']
 @[markused]
-pub fn pq_connect_db_start(conn &PGconn) int {
+pub fn pq_connect_db_start(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
@@ -1290,12 +1290,12 @@ pub fn pq_connect_db_start(conn &PGconn) int {
 
 @[export: 'pqConnectDBComplete']
 @[markused]
-pub fn pq_connect_db_complete(conn &PGconn) int {
+pub fn pq_connect_db_complete(conn &PGconn) i32 {
 	flag := PostgresPollingStatusType.pgres_polling_writing
 	end_time := Pg_usec_time_t(-1)
-	timeout := 0
-	last_whichhost := -2
-	last_whichaddr := -2
+	timeout := i32(0)
+	last_whichhost := i32(-2)
+	last_whichaddr := i32(-2)
 	if usize(conn) == usize((voidptr(0))) || u32(conn.status) == u32(ConnStatusType.connection_bad) {
 		return 0
 	}
@@ -1306,7 +1306,7 @@ pub fn pq_connect_db_complete(conn &PGconn) int {
 		}
 	}
 	for {
-		ret := 0
+		ret := i32(0)
 		if u32(flag) != u32(PostgresPollingStatusType.pgres_polling_ok) && timeout > 0 && (conn.whichhost != last_whichhost || conn.whichaddr != last_whichaddr) {
 			end_time = pq_get_current_time_us_ec() + Pg_usec_time_t(timeout) * Pg_usec_time_t(1000000)
 			last_whichhost = conn.whichhost
@@ -1356,7 +1356,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 	need_new_connection := (0 != 0)
 	res := &PGresult(0)
 	sebuf := [256]i8{}
-	optval := 0
+	optval := i32(0)
 	if usize(conn) == usize((voidptr(0))) {
 		return PostgresPollingStatusType.pgres_polling_failed
 	}
@@ -1404,8 +1404,8 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 		ch := &Pg_conn_host(0)
 		hint := C.addrinfo{}
 		addrlist := &C.addrinfo(0)
-		thisport := 0
-		ret := 0
+		thisport := i32(0)
+		ret := i32(0)
 		portstr := [1024]i8{}
 		if conn.whichhost + 1 < conn.nconnhost {
 			conn.whichhost++
@@ -1423,7 +1423,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 		ch = unsafe { conn.connhost + conn.whichhost }
 		for {
 			vstart := voidptr(c2v_address_of(&hint))
-			val := 0
+			val := i32(0)
 			len := (sizeof(hint))
 			if ((usize(vstart)) & (sizeof(i64) - u64(1))) == u64(0) && (len & (sizeof(i64) - u64(1))) == u64(0) && val == 0 && len <= Size(1024) && 1024 != 0 {
 				start := &i64(vstart)
@@ -1439,7 +1439,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 		}
 		hint.ai_socktype = 1
 		hint.ai_family = 0
-		if usize(ch.port) == usize((voidptr(0))) || int(ch.port[0]) == i8(`\0`) {
+		if usize(ch.port) == usize((voidptr(0))) || i32(ch.port[0]) == i8(`\0`) {
 			thisport = 5432
 		} else {
 			if !pq_parse_int_param(ch.port, &thisport, conn, c'port') {
@@ -1480,7 +1480,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 
 				pg_snprintf(unsafe { &i8(&portstr[0]) }, sizeof([1024]i8), c'%s/.s.PGSQL.%d', voidptr(ch.host), thisport)
 				if C.c2v_strlen(unsafe { &i8(&portstr[0]) }) >= sizeof([104]i8) {
-					libpq_append_conn_error(conn, c'Unix-domain socket path "%s" is too long (maximum %d bytes)', unsafe { voidptr(&portstr[0]) }, int((sizeof([104]i8) - u64(1))))
+					libpq_append_conn_error(conn, c'Unix-domain socket path "%s" is too long (maximum %d bytes)', unsafe { voidptr(&portstr[0]) }, i32((sizeof([104]i8) - u64(1))))
 					unsafe {
 						goto keep_going
 					}
@@ -1504,8 +1504,8 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 			}
 		}
 		if u32(conn.load_balance_type) == u32(PGLoadBalanceType.load_balance_random) {
-			for i := 1; i < conn.naddr; i++ {
-				j := int(pg_prng_uint64_range(&conn.prng_state, Uint64(0), Uint64(i)))
+			for i := i32(1); i < conn.naddr; i++ {
+				j := i32(pg_prng_uint64_range(&conn.prng_state, Uint64(0), Uint64(i)))
 				temp := conn.addr[j]
 				conn.addr[j] = conn.addr[i]
 				conn.addr[i] = temp
@@ -1536,7 +1536,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 	match conn.status {
 		.connection_needed {
 			host_addr := [1025]i8{}
-			sock_type := 0
+			sock_type := i32(0)
 			addr_cur := &AddrInfo(0)
 			if conn.whichaddr == conn.naddr {
 				conn.try_next_host = (1 != 0)
@@ -1599,9 +1599,9 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 				}
 			}
 			if addr_cur.family != 1 {
-				on := 1
+				on := i32(1)
 				usekeepalives := use_keepalives(conn)
-				err := 0
+				err := i32(0)
 				if usekeepalives < 0 {
 					err = 1
 				} else if usekeepalives == 0 {
@@ -1665,7 +1665,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 					goto error_return
 				}
 			}
-			if !isnil(conn.requirepeer) && int(conn.requirepeer[0]) && int(conn.raddr.addr.ss_family) == 1 {
+			if !isnil(conn.requirepeer) && i32(conn.requirepeer[0]) && i32(conn.raddr.addr.ss_family) == 1 {
 				remote_username := &i8(0)
 				uid := u32(0)
 				gid := u32(0)
@@ -1703,7 +1703,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 		}
 		.connection_made {
 			startpacket := &i8(0)
-			packetlen := 0
+			packetlen := i32(0)
 			if conn.cancelRequest {
 				if pq_send_cancel_request(conn) != 0 {
 					libpq_append_conn_error(conn, c'could not send cancel packet: %s', voidptr(pg_strerror_r((unsafe { *C.c2v___error() }), unsafe { &i8(&sebuf[0]) }, sizeof([256]i8))))
@@ -1744,17 +1744,17 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 		}
 		.connection_awaiting_response {
 			beresp := i8(0)
-			msg_length := 0
-			avail := 0
+			msg_length := i32(0)
+			avail := i32(0)
 			areq := AuthRequest(0)
-			res_2 := 0
+			res_2 := i32(0)
 			async := false
 			conn.inCursor = conn.inStart
 			if pq_getc(&beresp, conn) {
 				return PostgresPollingStatusType.pgres_polling_reading
 			}
-			if int(beresp) != i8(`R`) && int(beresp) != i8(`E`) && int(beresp) != i8(`v`) {
-				libpq_append_conn_error(conn, c'expected authentication request from server, but received %c', int(beresp))
+			if i32(beresp) != i8(`R`) && i32(beresp) != i8(`E`) && i32(beresp) != i8(`v`) {
+				libpq_append_conn_error(conn, c'expected authentication request from server, but received %c', i32(beresp))
 				unsafe {
 					goto error_return
 				}
@@ -1762,19 +1762,19 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 			if pq_get_int(&msg_length, usize(4), conn) {
 				return PostgresPollingStatusType.pgres_polling_reading
 			}
-			if int(beresp) == i8(`R`) && (msg_length < 8 || msg_length > 2000) {
+			if i32(beresp) == i8(`R`) && (msg_length < 8 || msg_length > 2000) {
 				libpq_append_conn_error(conn, c'received invalid authentication request')
 				unsafe {
 					goto error_return
 				}
 			}
-			if int(beresp) == i8(`v`) && (msg_length < 8 || msg_length > 2000) {
+			if i32(beresp) == i8(`v`) && (msg_length < 8 || msg_length > 2000) {
 				libpq_append_conn_error(conn, c'received invalid protocol negotiation message')
 				unsafe {
 					goto error_return
 				}
 			}
-			if int(beresp) == i8(`E`) && (msg_length < 8 || msg_length > 30000) {
+			if i32(beresp) == i8(`E`) && (msg_length < 8 || msg_length > 30000) {
 				conn.inCursor = conn.inStart + 1
 				if pq_gets_append(&conn.errorMessage, conn) {
 					avail = conn.inEnd - conn.inCursor
@@ -1787,7 +1787,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 					return PostgresPollingStatusType.pgres_polling_reading
 				}
 				pq_parse_done(conn, conn.inCursor)
-				if conn.errorMessage.len == usize(0) || int(conn.errorMessage.data[conn.errorMessage.len - usize(1)]) != i8(`\n`) {
+				if conn.errorMessage.len == usize(0) || i32(conn.errorMessage.data[conn.errorMessage.len - usize(1)]) != i8(`\n`) {
 					append_pq_exp_buffer_char(&conn.errorMessage, i8(`\n`))
 				}
 				unsafe {
@@ -1804,7 +1804,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 				}
 				return PostgresPollingStatusType.pgres_polling_reading
 			}
-			if int(beresp) == i8(`E`) {
+			if i32(beresp) == i8(`E`) {
 				if pq_get_error_notice3(conn, (1 != 0)) {
 					libpq_append_conn_error(conn, c'received invalid error message')
 					unsafe {
@@ -1832,7 +1832,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 					}
 					break
 				}
-			} else if int(beresp) == i8(`v`) {
+			} else if i32(beresp) == i8(`v`) {
 				if conn.pversion_negotiated {
 					libpq_append_conn_error(conn, c'received duplicate protocol negotiation message')
 					unsafe {
@@ -1851,7 +1851,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 				}
 			}
 			conn.auth_req_received = (1 != 0)
-			if pq_get_int(&int(c2v_address_of(&areq)), usize(4), conn) {
+			if pq_get_int(&i32(c2v_address_of(&areq)), usize(4), conn) {
 				libpq_append_conn_error(conn, c'received invalid authentication request')
 				unsafe {
 					goto error_return
@@ -1859,7 +1859,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 			}
 			msg_length -= 4
 			res_2 = pg_fe_sendauth(areq, msg_length, conn, &async)
-			if int(async) && (res_2 == 0) {
+			if i32(async) && (res_2 == 0) {
 				conn.status = ConnStatusType.connection_authenticating
 				unsafe {
 					goto keep_going
@@ -1867,7 +1867,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 			}
 			conn.inStart = conn.inCursor
 			if res_2 != 0 {
-				if usize(conn.sasl) == usize(&pg_oauth_mech) && int(conn.oauth_want_retry) {
+				if usize(conn.sasl) == usize(&pg_oauth_mech) && i32(conn.oauth_want_retry) {
 					need_new_connection = (1 != 0)
 					unsafe {
 						goto keep_going
@@ -1934,7 +1934,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 			if res {
 				if u32(res.resultStatus) != u32(ExecStatusType.pgres_fatal_error) {
 					libpq_append_conn_error(conn, c'unexpected message from server during startup')
-				} else if int(conn.send_appname) && (!isnil(conn.appname) || !isnil(conn.fbappname)) {
+				} else if i32(conn.send_appname) && (!isnil(conn.appname) || !isnil(conn.fbappname)) {
 					sqlstate := &i8(0)
 					sqlstate = pq_result_error_field(res, `C`)
 					if !isnil(sqlstate) && C.c2v_strcmp(sqlstate, c'42704') == 0 {
@@ -1946,7 +1946,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 						}
 					}
 				}
-				if conn.errorMessage.len <= usize(0) || int(conn.errorMessage.data[conn.errorMessage.len - usize(1)]) != i8(`\n`) {
+				if conn.errorMessage.len <= usize(0) || i32(conn.errorMessage.data[conn.errorMessage.len - usize(1)]) != i8(`\n`) {
 					append_pq_exp_buffer_char(&conn.errorMessage, i8(`\n`))
 				}
 				pq_clear(res)
@@ -1974,7 +1974,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 				}
 				read_only_server = ((u32(conn.default_transaction_read_only) == u32(PGTernaryBool.pg_bool_yes) || u32(conn.in_hot_standby) == u32(PGTernaryBool.pg_bool_yes)) != 0)
 				if if (u32(conn.target_server_type) == u32(PGTargetServerType.server_type_read_write)) {
-					int(read_only_server)
+					i32(read_only_server)
 				} else {
 					!read_only_server
 				} {
@@ -2138,9 +2138,9 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 
 @[markused]
 pub fn init_allowed_encryption_methods(conn &PGconn) bool {
-	if int(conn.raddr.addr.ss_family) == 1 {
+	if i32(conn.raddr.addr.ss_family) == 1 {
 		conn.allowed_enc_methods &= ~(4 | 2)
-		if int(conn.gssencmode[0]) == i8(`r`) {
+		if i32(conn.gssencmode[0]) == i8(`r`) {
 			libpq_append_conn_error(conn, c'GSSAPI encryption required but it is not supported over a local socket')
 			conn.allowed_enc_methods = Uint8(0)
 			conn.current_enc_method = Uint8(0)
@@ -2151,7 +2151,7 @@ pub fn init_allowed_encryption_methods(conn &PGconn) bool {
 		return true != 0
 	}
 	conn.allowed_enc_methods = Uint8(0)
-	if (int(conn.sslmode[0]) == i8(`d`) || int(conn.sslmode[0]) == i8(`p`) || int(conn.sslmode[0]) == i8(`a`)) && (int(conn.gssencmode[0]) == i8(`d`) || int(conn.gssencmode[0]) == i8(`p`)) {
+	if (i32(conn.sslmode[0]) == i8(`d`) || i32(conn.sslmode[0]) == i8(`p`) || i32(conn.sslmode[0]) == i8(`a`)) && (i32(conn.gssencmode[0]) == i8(`d`) || i32(conn.gssencmode[0]) == i8(`p`)) {
 		conn.allowed_enc_methods |= 1
 	}
 	return select_next_encryption_method(conn, (0 != 0))
@@ -2159,15 +2159,15 @@ pub fn init_allowed_encryption_methods(conn &PGconn) bool {
 
 @[markused]
 pub fn connection_failed(conn &PGconn) bool {
-	conn.failed_enc_methods |= int(conn.current_enc_method)
+	conn.failed_enc_methods |= i32(conn.current_enc_method)
 	return select_next_encryption_method(conn, (0 != 0))
 }
 
 @[markused]
 pub fn select_next_encryption_method(conn &PGconn, have_valid_connection bool) bool {
-	remaining_methods := 0
-	remaining_methods = int(conn.allowed_enc_methods) & ~int(conn.failed_enc_methods)
-	if int(conn.sslmode[0]) == i8(`a`) {
+	remaining_methods := i32(0)
+	remaining_methods = i32(conn.allowed_enc_methods) & ~i32(conn.failed_enc_methods)
+	if i32(conn.sslmode[0]) == i8(`a`) {
 		for {
 			if (remaining_methods & 1) != 0 {
 				conn.current_enc_method = Uint8(1)
@@ -2183,7 +2183,7 @@ pub fn select_next_encryption_method(conn &PGconn, have_valid_connection bool) b
 		}
 		break
 	}
-	if int(conn.sslmode[0]) != i8(`a`) {
+	if i32(conn.sslmode[0]) != i8(`a`) {
 		for {
 			if (remaining_methods & 1) != 0 {
 				conn.current_enc_method = Uint8(1)
@@ -2229,7 +2229,7 @@ pub fn pq_make_empty_pg_conn() &PGconn {
 	}
 	for {
 		vstart := voidptr(conn)
-		val := 0
+		val := i32(0)
 		len := (sizeof(PGconn))
 		if ((usize(vstart)) & (sizeof(i64) - u64(1))) == u64(0) && (len & (sizeof(i64) - u64(1))) == u64(0) && val == 0 && len <= Size(1024) && 1024 != 0 {
 			start := &i64(vstart)
@@ -2302,7 +2302,7 @@ pub fn pq_make_empty_pg_conn() &PGconn {
 
 @[markused]
 pub fn free_pg_conn(conn &PGconn) {
-	for i := 0; i < conn.nEvents; i++ {
+	for i := i32(0); i < conn.nEvents; i++ {
 		evt := PGEventConnDestroy{}
 		evt.conn = conn
 		conn.events[i].proc(PGEventId(PGEventId.pgevt_conndestroy), voidptr(&evt), voidptr(conn.events[i].passThrough))
@@ -2385,7 +2385,7 @@ pub fn free_pg_conn(conn &PGconn) {
 @[markused]
 pub fn pq_release_conn_hosts(conn &PGconn) {
 	if conn.connhost {
-		for i := 0; i < conn.nconnhost; i++ {
+		for i := i32(0); i < conn.nconnhost; i++ {
 			C.c2v_free(voidptr(conn.connhost[i].host))
 			C.c2v_free(voidptr(conn.connhost[i].hostaddr))
 			C.c2v_free(voidptr(conn.connhost[i].port))
@@ -2400,7 +2400,7 @@ pub fn pq_release_conn_hosts(conn &PGconn) {
 }
 
 @[markused]
-pub fn store_conn_addrinfo(conn &PGconn, addrlist &C.addrinfo) int {
+pub fn store_conn_addrinfo(conn &PGconn, addrlist &C.addrinfo) i32 {
 	ai := addrlist
 	conn.whichaddr = 0
 	conn.naddr = 0
@@ -2414,7 +2414,7 @@ pub fn store_conn_addrinfo(conn &PGconn, addrlist &C.addrinfo) int {
 		return 1
 	}
 	ai = addrlist
-	for i := 0; i < conn.naddr; i++ {
+	for i := i32(0); i < conn.naddr; i++ {
 		conn.addr[i].family = ai.ai_family
 		C.c2v_memcpy(voidptr(&conn.addr[i].addr.addr), voidptr(ai.ai_addr), u64(ai.ai_addrlen))
 		conn.addr[i].addr.salen = ai.ai_addrlen
@@ -2478,7 +2478,7 @@ pub fn pq_reset(conn &PGconn) {
 	if conn {
 		pq_close_pg_conn(conn)
 		if pq_connect_db_start(conn) && pq_connect_db_complete(conn) {
-			i := 0
+			i := i32(0)
 			for i = 0; i < conn.nEvents; i++ {
 				evt := PGEventConnReset{}
 				evt.conn = conn
@@ -2490,7 +2490,7 @@ pub fn pq_reset(conn &PGconn) {
 
 @[export: 'PQresetStart']
 @[markused]
-pub fn pq_reset_start(conn &PGconn) int {
+pub fn pq_reset_start(conn &PGconn) i32 {
 	if conn {
 		pq_close_pg_conn(conn)
 		return pq_connect_db_start(conn)
@@ -2504,7 +2504,7 @@ pub fn pq_reset_poll(conn &PGconn) PostgresPollingStatusType {
 	if conn {
 		status := pq_connect_poll(conn)
 		if u32(status) == u32(PostgresPollingStatusType.pgres_polling_ok) {
-			i := 0
+			i := i32(0)
 			for i = 0; i < conn.nEvents; i++ {
 				evt := PGEventConnReset{}
 				evt.conn = conn
@@ -2518,7 +2518,7 @@ pub fn pq_reset_poll(conn &PGconn) PostgresPollingStatusType {
 
 @[export: 'pqPacketSend']
 @[markused]
-pub fn pq_packet_send(conn &PGconn, pack_type i8, buf voidptr, buf_len usize) int {
+pub fn pq_packet_send(conn &PGconn, pack_type i8, buf voidptr, buf_len usize) i32 {
 	if pq_put_msg_start(i8(pack_type), conn) {
 		return -1
 	}
@@ -2535,12 +2535,12 @@ pub fn pq_packet_send(conn &PGconn, pack_type i8, buf voidptr, buf_len usize) in
 }
 
 @[markused]
-pub fn parse_service_info(options &PQconninfoOption, error_message PQExpBuffer) int {
+pub fn parse_service_info(options &PQconninfoOption, error_message PQExpBuffer) i32 {
 	service := conninfo_getval(options, c'service')
 	service_file := [1024]i8{}
 	env := &i8(0)
 	group_found := (0 != 0)
-	status := 0
+	status := i32(0)
 	stat_buf := C.stat{}
 	if usize(service) == usize((voidptr(0))) {
 		service = C.c2v_getenv(c'PGSERVICE')
@@ -2553,7 +2553,7 @@ pub fn parse_service_info(options &PQconninfoOption, error_message PQExpBuffer) 
 		C.c2v_strlcpy(unsafe { &i8(&service_file[0]) }, env, sizeof([1024]i8))
 	} else {
 		homedir := [1024]i8{}
-		if !pq_get_home_directory(unsafe { &i8(&homedir[0]) }, int(sizeof([1024]i8))) {
+		if !pq_get_home_directory(unsafe { &i8(&homedir[0]) }, i32(sizeof([1024]i8))) {
 			unsafe {
 				goto next_file
 			}
@@ -2566,7 +2566,7 @@ pub fn parse_service_info(options &PQconninfoOption, error_message PQExpBuffer) 
 		}
 	}
 	status = parse_service_file(unsafe { &i8(&service_file[0]) }, service, options, error_message, &group_found)
-	if int(group_found) || status != 0 {
+	if i32(group_found) || status != 0 {
 		return status
 	}
 	next_file:
@@ -2593,10 +2593,10 @@ pub fn parse_service_info(options &PQconninfoOption, error_message PQExpBuffer) 
 }
 
 @[markused]
-pub fn parse_service_file(service_file &i8, service &i8, options &PQconninfoOption, error_message PQExpBuffer, group_found &bool) int {
-	result := 0
-	linenr := 0
-	i := 0
+pub fn parse_service_file(service_file &i8, service &i8, options &PQconninfoOption, error_message PQExpBuffer, group_found &bool) i32 {
+	result := i32(0)
+	linenr := i32(0)
+	i := i32(0)
 
 	f := &C.FILE(0)
 	line := &i8(0)
@@ -2608,11 +2608,11 @@ pub fn parse_service_file(service_file &i8, service &i8, options &PQconninfoOpti
 		return 1
 	}
 	for {
-		line = C.c2v_fgets(&buf[0], int(sizeof([1024]i8)), f)
+		line = C.c2v_fgets(&buf[0], i32(sizeof([1024]i8)), f)
 		if !(usize(line) != usize((voidptr(0)))) {
 			break
 		}
-		len := 0
+		len := i32(0)
 		linenr++
 		if C.c2v_strlen(line) >= sizeof([1024]i8) - u64(1) {
 			libpq_append_error(error_message, c'line %d too long in service file "%s"', linenr, voidptr(service_file))
@@ -2621,23 +2621,23 @@ pub fn parse_service_file(service_file &i8, service &i8, options &PQconninfoOpti
 				goto exit
 			}
 		}
-		len = int(C.c2v_strlen(line))
-		for len > 0 && C.c2v_isspace(int(u8(line[len - 1]))) {
-			line[c2v_prefix_add(unsafe { &len }, -1)] = i8(`\0`)
+		len = i32(C.c2v_strlen(line))
+		for len > 0 && C.c2v_isspace(i32(u8(line[len - 1]))) {
+			line[c2v_prefix_add(unsafe { &len }, i32(-1))] = i8(`\0`)
 		}
-		for int((unsafe { *line })) && C.c2v_isspace(int(u8(line[0]))) {
+		for i32((unsafe { *line })) && C.c2v_isspace(i32(u8(line[0]))) {
 			c2v_pointer_postfix(voidptr(&line), line, isize(1))
 		}
-		if int(line[0]) == i8(`\0`) || int(line[0]) == i8(`#`) {
+		if i32(line[0]) == i8(`\0`) || i32(line[0]) == i8(`#`) {
 			continue
 		}
-		if int(line[0]) == i8(`[`) {
+		if i32(line[0]) == i8(`[`) {
 			if (unsafe { *group_found }) {
 				unsafe {
 					goto exit
 				}
 			}
-			if C.c2v_strncmp(line + 1, service, C.c2v_strlen(service)) == 0 && int(line[C.c2v_strlen(service) + u64(1)]) == i8(`]`) {
+			if C.c2v_strncmp(line + 1, service, C.c2v_strlen(service)) == 0 && i32(line[C.c2v_strlen(service) + u64(1)]) == i8(`]`) {
 				unsafe { *group_found = (1 != 0) }
 			} else {
 				unsafe { *group_found = (0 != 0) }
@@ -2736,7 +2736,7 @@ pub fn conninfo_init(error_message PQExpBuffer) &PQconninfoOption {
 	}
 	for {
 		vstart := voidptr(opt_dest)
-		val := 0
+		val := i32(0)
 		len := (sizeof(PQconninfoOption))
 		if ((usize(vstart)) & (sizeof(i64) - u64(1))) == u64(0) && (len & (sizeof(i64) - u64(1))) == u64(0) && val == 0 && len <= Size(1024) && 1024 != 0 {
 			start := &i64(vstart)
@@ -2762,12 +2762,12 @@ pub fn parse_connection_string(connstr &i8, error_message PQExpBuffer, use_defau
 }
 
 @[markused]
-pub fn uri_prefix_length(connstr &i8) int {
+pub fn uri_prefix_length(connstr &i8) i32 {
 	if C.c2v_strncmp(connstr, unsafe { &i8(&libpq_fe_connect_uri_designator[0]) }, sizeof([14]i8) - u64(1)) == 0 {
-		return int(sizeof([14]i8) - u64(1))
+		return i32(sizeof([14]i8) - u64(1))
 	}
 	if C.c2v_strncmp(connstr, unsafe { &i8(&libpq_fe_connect_short_uri_designator[0]) }, sizeof([12]i8) - u64(1)) == 0 {
-		return int(sizeof([12]i8) - u64(1))
+		return i32(sizeof([12]i8) - u64(1))
 	}
 	return 0
 }
@@ -2797,20 +2797,20 @@ pub fn conninfo_parse(conninfo &i8, error_message PQExpBuffer, use_defaults bool
 	}
 	cp = buf
 	for (unsafe { *cp }) {
-		if C.c2v_isspace(int(u8((unsafe { *cp })))) {
+		if C.c2v_isspace(i32(u8((unsafe { *cp })))) {
 			c2v_pointer_postfix(voidptr(&cp), cp, isize(1))
 			continue
 		}
 		pname = cp
 		for (unsafe { *cp }) {
-			if int((unsafe { *cp })) == i8(`=`) {
+			if i32((unsafe { *cp })) == i8(`=`) {
 				break
 			}
-			if C.c2v_isspace(int(u8((unsafe { *cp })))) {
+			if C.c2v_isspace(i32(u8((unsafe { *cp })))) {
 				mut __c2v_lhs_tmp_4 := unsafe { c2v_pointer_postfix(voidptr(&cp), cp, isize(1)) }
 				unsafe { *__c2v_lhs_tmp_4 = i8(`\0`) }
 				for (unsafe { *cp }) {
-					if !C.c2v_isspace(int(u8((unsafe { *cp })))) {
+					if !C.c2v_isspace(i32(u8((unsafe { *cp })))) {
 						break
 					}
 					c2v_pointer_postfix(voidptr(&cp), cp, isize(1))
@@ -2819,7 +2819,7 @@ pub fn conninfo_parse(conninfo &i8, error_message PQExpBuffer, use_defaults bool
 			}
 			c2v_pointer_postfix(voidptr(&cp), cp, isize(1))
 		}
-		if int((unsafe { *cp })) != i8(`=`) {
+		if i32((unsafe { *cp })) != i8(`=`) {
 			libpq_append_error(error_message, c'missing "=" after "%s" in connection info string', voidptr(pname))
 			pq_conninfo_free(options)
 			C.c2v_free(voidptr(buf))
@@ -2828,23 +2828,23 @@ pub fn conninfo_parse(conninfo &i8, error_message PQExpBuffer, use_defaults bool
 		mut __c2v_lhs_tmp_5 := unsafe { c2v_pointer_postfix(voidptr(&cp), cp, isize(1)) }
 		unsafe { *__c2v_lhs_tmp_5 = i8(`\0`) }
 		for (unsafe { *cp }) {
-			if !C.c2v_isspace(int(u8((unsafe { *cp })))) {
+			if !C.c2v_isspace(i32(u8((unsafe { *cp })))) {
 				break
 			}
 			c2v_pointer_postfix(voidptr(&cp), cp, isize(1))
 		}
 		pval = cp
-		if int((unsafe { *cp })) != i8(`\'`) {
+		if i32((unsafe { *cp })) != i8(`\'`) {
 			cp2 = pval
 			for (unsafe { *cp }) {
-				if C.c2v_isspace(int(u8((unsafe { *cp })))) {
+				if C.c2v_isspace(i32(u8((unsafe { *cp })))) {
 					mut __c2v_lhs_tmp_6 := unsafe { c2v_pointer_postfix(voidptr(&cp), cp, isize(1)) }
 					unsafe { *__c2v_lhs_tmp_6 = i8(`\0`) }
 					break
 				}
-				if int((unsafe { *cp })) == i8(`\\`) {
+				if i32((unsafe { *cp })) == i8(`\\`) {
 					c2v_pointer_postfix(voidptr(&cp), cp, isize(1))
-					if int((unsafe { *cp })) != i8(`\0`) {
+					if i32((unsafe { *cp })) != i8(`\0`) {
 						mut __c2v_lhs_tmp_7 := unsafe { c2v_pointer_postfix(voidptr(&cp2), cp2, isize(1)) }
 						unsafe { *__c2v_lhs_tmp_7 = *c2v_pointer_postfix(voidptr(&cp), cp, isize(1)) }
 					}
@@ -2858,21 +2858,21 @@ pub fn conninfo_parse(conninfo &i8, error_message PQExpBuffer, use_defaults bool
 			cp2 = pval
 			c2v_pointer_postfix(voidptr(&cp), cp, isize(1))
 			for {
-				if int((unsafe { *cp })) == i8(`\0`) {
+				if i32((unsafe { *cp })) == i8(`\0`) {
 					libpq_append_error(error_message, c'unterminated quoted string in connection info string')
 					pq_conninfo_free(options)
 					C.c2v_free(voidptr(buf))
 					return unsafe { nil }
 				}
-				if int((unsafe { *cp })) == i8(`\\`) {
+				if i32((unsafe { *cp })) == i8(`\\`) {
 					c2v_pointer_postfix(voidptr(&cp), cp, isize(1))
-					if int((unsafe { *cp })) != i8(`\0`) {
+					if i32((unsafe { *cp })) != i8(`\0`) {
 						mut __c2v_lhs_tmp_9 := unsafe { c2v_pointer_postfix(voidptr(&cp2), cp2, isize(1)) }
 						unsafe { *__c2v_lhs_tmp_9 = *c2v_pointer_postfix(voidptr(&cp), cp, isize(1)) }
 					}
 					continue
 				}
-				if int((unsafe { *cp })) == i8(`\'`) {
+				if i32((unsafe { *cp })) == i8(`\'`) {
 					unsafe { *cp2 = i8(`\0`) }
 					c2v_pointer_postfix(voidptr(&cp), cp, isize(1))
 					break
@@ -2898,11 +2898,11 @@ pub fn conninfo_parse(conninfo &i8, error_message PQExpBuffer, use_defaults bool
 }
 
 @[markused]
-pub fn conninfo_array_parse(keywords &&u8, values &&u8, error_message PQExpBuffer, use_defaults bool, expand_dbname int) &PQconninfoOption {
+pub fn conninfo_array_parse(keywords &&u8, values &&u8, error_message PQExpBuffer, use_defaults bool, expand_dbname i32) &PQconninfoOption {
 	mut options := &PQconninfoOption(0)
 	dbname_options := unsafe { &PQconninfoOption(nil) }
 	option := &PQconninfoOption(0)
-	i := 0
+	i := i32(0)
 	for expand_dbname && !isnil(keywords[i]) {
 		pname := keywords[i]
 		pvalue := values[i]
@@ -2926,7 +2926,7 @@ pub fn conninfo_array_parse(keywords &&u8, values &&u8, error_message PQExpBuffe
 	for keywords[i] {
 		pname := keywords[i]
 		pvalue := values[i]
-		if usize(pvalue) != usize((voidptr(0))) && int(pvalue[0]) != i8(`\0`) {
+		if usize(pvalue) != usize((voidptr(0))) && i32(pvalue[0]) != i8(`\0`) {
 			for option = options; usize(option.keyword) != usize((voidptr(0))); option = unsafe { option + 1 } {
 				if C.c2v_strcmp(option.keyword, pname) == 0 {
 					break
@@ -2942,7 +2942,7 @@ pub fn conninfo_array_parse(keywords &&u8, values &&u8, error_message PQExpBuffe
 				str_option := &PQconninfoOption(0)
 				for str_option = dbname_options; usize(str_option.keyword) != usize((voidptr(0))); str_option = unsafe { str_option + 1 } {
 					if usize(str_option.val) != usize((voidptr(0))) {
-						k := 0
+						k := i32(0)
 						for k = 0; options[k].keyword; k++ {
 							if C.c2v_strcmp(options[k].keyword, str_option.keyword) == 0 {
 								C.c2v_free(voidptr(options[k].val))
@@ -3015,7 +3015,7 @@ pub fn conninfo_add_defaults(options &PQconninfoOption, error_message PQExpBuffe
 		}
 		if C.c2v_strcmp(option.keyword, c'sslmode') == 0 {
 			requiresslenv := C.c2v_getenv(c'PGREQUIRESSL')
-			if usize(requiresslenv) != usize((voidptr(0))) && int(requiresslenv[0]) == i8(`1`) {
+			if usize(requiresslenv) != usize((voidptr(0))) && i32(requiresslenv[0]) == i8(`1`) {
 				option.val = C.c2v_strdup(c'require')
 				if isnil(option.val) {
 					if error_message {
@@ -3079,7 +3079,7 @@ pub fn conninfo_uri_parse(uri &i8, error_message PQExpBuffer, use_defaults bool)
 
 @[markused]
 pub fn conninfo_uri_parse_options(options &PQconninfoOption, uri &i8, error_message PQExpBuffer) bool {
-	prefix_len := 0
+	prefix_len := i32(0)
 	p := &i8(0)
 	buf := unsafe { &i8(nil) }
 	start := &i8(0)
@@ -3114,29 +3114,29 @@ pub fn conninfo_uri_parse_options(options &PQconninfoOption, uri &i8, error_mess
 	}
 	c2v_pointer_prefix(voidptr(&start), start, isize(prefix_len))
 	p = start
-	for int((unsafe { *p })) && int((unsafe { *p })) != i8(`@`) && int((unsafe { *p })) != i8(`/`) {
+	for i32((unsafe { *p })) && i32((unsafe { *p })) != i8(`@`) && i32((unsafe { *p })) != i8(`/`) {
 		c2v_pointer_prefix(voidptr(&p), p, isize(1))
 	}
-	if int((unsafe { *p })) == i8(`@`) {
+	if i32((unsafe { *p })) == i8(`@`) {
 		user = start
 		p = user
-		for int((unsafe { *p })) != i8(`:`) && int((unsafe { *p })) != i8(`@`) {
+		for i32((unsafe { *p })) != i8(`:`) && i32((unsafe { *p })) != i8(`@`) {
 			c2v_pointer_prefix(voidptr(&p), p, isize(1))
 		}
 		prevchar = unsafe { *p }
 		unsafe { *p = i8(`\0`) }
-		if int((unsafe { *user })) && isnil(conninfo_storeval(options, c'user', user, error_message, (0 != 0), (1 != 0))) {
+		if i32((unsafe { *user })) && isnil(conninfo_storeval(options, c'user', user, error_message, (0 != 0), (1 != 0))) {
 			unsafe {
 				goto cleanup
 			}
 		}
-		if int(prevchar) == i8(`:`) {
+		if i32(prevchar) == i8(`:`) {
 			password := p + 1
-			for int((unsafe { *p })) != i8(`@`) {
+			for i32((unsafe { *p })) != i8(`@`) {
 				c2v_pointer_prefix(voidptr(&p), p, isize(1))
 			}
 			unsafe { *p = i8(`\0`) }
-			if int((unsafe { *password })) && isnil(conninfo_storeval(options, c'password', password, error_message, (0 != 0), (1 != 0))) {
+			if i32((unsafe { *password })) && isnil(conninfo_storeval(options, c'password', password, error_message, (0 != 0), (1 != 0))) {
 				unsafe {
 					goto cleanup
 				}
@@ -3147,9 +3147,9 @@ pub fn conninfo_uri_parse_options(options &PQconninfoOption, uri &i8, error_mess
 		p = start
 	}
 	for {
-		if int((unsafe { *p })) == i8(`[`) {
+		if i32((unsafe { *p })) == i8(`[`) {
 			host = c2v_pointer_prefix(voidptr(&p), p, isize(1))
-			for int((unsafe { *p })) && int((unsafe { *p })) != i8(`]`) {
+			for i32((unsafe { *p })) && i32((unsafe { *p })) != i8(`]`) {
 				c2v_pointer_prefix(voidptr(&p), p, isize(1))
 			}
 			if !(unsafe { *p }) {
@@ -3166,31 +3166,31 @@ pub fn conninfo_uri_parse_options(options &PQconninfoOption, uri &i8, error_mess
 			}
 			mut __c2v_lhs_tmp_11 := unsafe { c2v_pointer_postfix(voidptr(&p), p, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_11 = i8(`\0`) }
-			if int((unsafe { *p })) && int((unsafe { *p })) != i8(`:`) && int((unsafe { *p })) != i8(`/`) && int((unsafe { *p })) != i8(`?`) && int((unsafe { *p })) != i8(`,`) {
-				libpq_append_error(error_message, c'unexpected character "%c" at position %d in URI (expected ":" or "/"): "%s"', int((unsafe { *p })), int((i64((isize(p) - isize(buf)) / isize(sizeof(i8))) + i64(1))), voidptr(uri))
+			if i32((unsafe { *p })) && i32((unsafe { *p })) != i8(`:`) && i32((unsafe { *p })) != i8(`/`) && i32((unsafe { *p })) != i8(`?`) && i32((unsafe { *p })) != i8(`,`) {
+				libpq_append_error(error_message, c'unexpected character "%c" at position %d in URI (expected ":" or "/"): "%s"', i32((unsafe { *p })), i32((i64((isize(p) - isize(buf)) / isize(sizeof(i8))) + i64(1))), voidptr(uri))
 				unsafe {
 					goto cleanup
 				}
 			}
 		} else {
 			host = p
-			for int((unsafe { *p })) && int((unsafe { *p })) != i8(`:`) && int((unsafe { *p })) != i8(`/`) && int((unsafe { *p })) != i8(`?`) && int((unsafe { *p })) != i8(`,`) {
+			for i32((unsafe { *p })) && i32((unsafe { *p })) != i8(`:`) && i32((unsafe { *p })) != i8(`/`) && i32((unsafe { *p })) != i8(`?`) && i32((unsafe { *p })) != i8(`,`) {
 				c2v_pointer_prefix(voidptr(&p), p, isize(1))
 			}
 		}
 		prevchar = unsafe { *p }
 		unsafe { *p = i8(`\0`) }
 		append_pq_exp_buffer_str(&hostbuf, host)
-		if int(prevchar) == i8(`:`) {
+		if i32(prevchar) == i8(`:`) {
 			port := c2v_pointer_prefix(voidptr(&p), p, isize(1))
-			for int((unsafe { *p })) && int((unsafe { *p })) != i8(`/`) && int((unsafe { *p })) != i8(`?`) && int((unsafe { *p })) != i8(`,`) {
+			for i32((unsafe { *p })) && i32((unsafe { *p })) != i8(`/`) && i32((unsafe { *p })) != i8(`?`) && i32((unsafe { *p })) != i8(`,`) {
 				c2v_pointer_prefix(voidptr(&p), p, isize(1))
 			}
 			prevchar = unsafe { *p }
 			unsafe { *p = i8(`\0`) }
 			append_pq_exp_buffer_str(&portbuf, port)
 		}
-		if int(prevchar) != i8(`,`) {
+		if i32(prevchar) != i8(`,`) {
 			break
 		}
 		c2v_pointer_prefix(voidptr(&p), p, isize(1))
@@ -3202,24 +3202,24 @@ pub fn conninfo_uri_parse_options(options &PQconninfoOption, uri &i8, error_mess
 			goto cleanup
 		}
 	}
-	if int(hostbuf.data[0]) && isnil(conninfo_storeval(options, c'host', hostbuf.data, error_message, (0 != 0), (1 != 0))) {
+	if i32(hostbuf.data[0]) && isnil(conninfo_storeval(options, c'host', hostbuf.data, error_message, (0 != 0), (1 != 0))) {
 		unsafe {
 			goto cleanup
 		}
 	}
-	if int(portbuf.data[0]) && isnil(conninfo_storeval(options, c'port', portbuf.data, error_message, (0 != 0), (1 != 0))) {
+	if i32(portbuf.data[0]) && isnil(conninfo_storeval(options, c'port', portbuf.data, error_message, (0 != 0), (1 != 0))) {
 		unsafe {
 			goto cleanup
 		}
 	}
-	if int(prevchar) && int(prevchar) != i8(`?`) {
+	if i32(prevchar) && i32(prevchar) != i8(`?`) {
 		dbname := c2v_pointer_prefix(voidptr(&p), p, isize(1))
-		for int((unsafe { *p })) && int((unsafe { *p })) != i8(`?`) {
+		for i32((unsafe { *p })) && i32((unsafe { *p })) != i8(`?`) {
 			c2v_pointer_prefix(voidptr(&p), p, isize(1))
 		}
 		prevchar = unsafe { *p }
 		unsafe { *p = i8(`\0`) }
-		if int((unsafe { *dbname })) && isnil(conninfo_storeval(options, c'dbname', dbname, error_message, (0 != 0), (1 != 0))) {
+		if i32((unsafe { *dbname })) && isnil(conninfo_storeval(options, c'dbname', dbname, error_message, (0 != 0), (1 != 0))) {
 			unsafe {
 				goto cleanup
 			}
@@ -3248,9 +3248,9 @@ pub fn conninfo_uri_parse_params(params &i8, conn_options &PQconninfoOption, err
 		value := unsafe { &i8(nil) }
 		p := params
 		malloced := (0 != 0)
-		oldmsglen := 0
+		oldmsglen := i32(0)
 		for {
-			if int((unsafe { *p })) == i8(`=`) {
+			if i32((unsafe { *p })) == i8(`=`) {
 				if usize(value) != usize((voidptr(0))) {
 					libpq_append_error(error_message, c'extra key/value separator "=" in URI query parameter: "%s"', voidptr(keyword))
 					return false != 0
@@ -3258,8 +3258,8 @@ pub fn conninfo_uri_parse_params(params &i8, conn_options &PQconninfoOption, err
 				mut __c2v_lhs_tmp_12 := unsafe { c2v_pointer_postfix(voidptr(&p), p, isize(1)) }
 				unsafe { *__c2v_lhs_tmp_12 = i8(`\0`) }
 				value = p
-			} else if int((unsafe { *p })) == i8(`&`) || int((unsafe { *p })) == i8(`\0`) {
-				if int((unsafe { *p })) != i8(`\0`) {
+			} else if i32((unsafe { *p })) == i8(`&`) || i32((unsafe { *p })) == i8(`\0`) {
+				if i32((unsafe { *p })) != i8(`\0`) {
 					mut __c2v_lhs_tmp_13 := unsafe { c2v_pointer_postfix(voidptr(&p), p, isize(1)) }
 					unsafe { *__c2v_lhs_tmp_13 = i8(`\0`) }
 				}
@@ -3289,7 +3289,7 @@ pub fn conninfo_uri_parse_params(params &i8, conn_options &PQconninfoOption, err
 			keyword = c'sslmode'
 			value = c'require'
 		}
-		oldmsglen = int(error_message.len)
+		oldmsglen = i32(error_message.len)
 		if isnil(conninfo_storeval(conn_options, keyword, value, error_message, (1 != 0), (0 != 0))) {
 			if error_message.len == usize(oldmsglen) {
 				libpq_append_error(error_message, c'invalid URI query parameter: "%s"', voidptr(keyword))
@@ -3320,13 +3320,13 @@ pub fn conninfo_uri_decode(str &i8, error_message PQExpBuffer) &i8 {
 		return unsafe { nil }
 	}
 	p = buf
-	for s := q; int((unsafe { *s })) == i8(` `); s = unsafe { s + 1 } {
+	for s := q; i32((unsafe { *s })) == i8(` `); s = unsafe { s + 1 } {
 		c2v_pointer_postfix(voidptr(&q), q, isize(1))
 		continue
 	}
 	for {
-		if int((unsafe { *q })) != i8(`%`) {
-			if int((unsafe { *q })) == i8(` `) || int((unsafe { *q })) == i8(`\0`) {
+		if i32((unsafe { *q })) != i8(`%`) {
+			if i32((unsafe { *q })) == i8(` `) || i32((unsafe { *q })) == i8(`\0`) {
 				unsafe {
 					goto end
 				}
@@ -3334,11 +3334,11 @@ pub fn conninfo_uri_decode(str &i8, error_message PQExpBuffer) &i8 {
 			mut __c2v_lhs_tmp_14 := unsafe { c2v_pointer_postfix(voidptr(&p), p, isize(1)) }
 			unsafe { *__c2v_lhs_tmp_14 = *(c2v_pointer_postfix(voidptr(&q), q, isize(1))) }
 		} else {
-			hi := 0
-			lo := 0
-			c := 0
+			hi := i32(0)
+			lo := i32(0)
+			c := i32(0)
 			c2v_pointer_prefix(voidptr(&q), q, isize(1))
-			if !(int(get_hexdigit(i8((unsafe { *c2v_pointer_postfix(voidptr(&q), q, isize(1)) })), &hi)) && int(get_hexdigit(i8((unsafe { *c2v_pointer_postfix(voidptr(&q), q, isize(1)) })), &lo))) {
+			if !(i32(get_hexdigit(i8((unsafe { *c2v_pointer_postfix(voidptr(&q), q, isize(1)) })), &hi)) && i32(get_hexdigit(i8((unsafe { *c2v_pointer_postfix(voidptr(&q), q, isize(1)) })), &lo))) {
 				libpq_append_error(error_message, c'invalid percent-encoded token: "%s"', voidptr(str))
 				C.c2v_free(voidptr(buf))
 				return unsafe { nil }
@@ -3353,11 +3353,11 @@ pub fn conninfo_uri_decode(str &i8, error_message PQExpBuffer) &i8 {
 			unsafe { *__c2v_lhs_tmp_15 = i8(c) }
 		}
 	}
-	end: for s := q; int((unsafe { *s })) == i8(` `); s = unsafe { s + 1 } {
+	end: for s := q; i32((unsafe { *s })) == i8(` `); s = unsafe { s + 1 } {
 		c2v_pointer_postfix(voidptr(&q), q, isize(1))
 		continue
 	}
-	if int((unsafe { *q })) != i8(`\0`) {
+	if i32((unsafe { *q })) != i8(`\0`) {
 		libpq_append_error(error_message, c'unexpected spaces found in "%s", use percent-encoded spaces (%%20) instead', voidptr(str))
 		C.c2v_free(voidptr(buf))
 		return unsafe { nil }
@@ -3367,13 +3367,13 @@ pub fn conninfo_uri_decode(str &i8, error_message PQExpBuffer) &i8 {
 }
 
 @[markused]
-pub fn get_hexdigit(digit i8, value &int) bool {
-	if i8(`0`) <= int(digit) && int(digit) <= i8(`9`) {
-		unsafe { *value = int(digit) - int(`0`) }
-	} else if i8(`A`) <= int(digit) && int(digit) <= i8(`F`) {
-		unsafe { *value = int(digit) - int(`A`) + 10 }
-	} else if i8(`a`) <= int(digit) && int(digit) <= i8(`f`) {
-		unsafe { *value = int(digit) - int(`a`) + 10 }
+pub fn get_hexdigit(digit i8, value &i32) bool {
+	if i8(`0`) <= i32(digit) && i32(digit) <= i8(`9`) {
+		unsafe { *value = i32(digit) - i32(`0`) }
+	} else if i8(`A`) <= i32(digit) && i32(digit) <= i8(`F`) {
+		unsafe { *value = i32(digit) - i32(`A`) + 10 }
+	} else if i8(`a`) <= i32(digit) && i32(digit) <= i8(`f`) {
+		unsafe { *value = i32(digit) - i32(`a`) + 10 }
 	} else {
 		return false != 0
 	}
@@ -3393,7 +3393,7 @@ pub fn conninfo_storeval(conn_options &PQconninfoOption, keyword &i8, value &i8,
 	value_copy := &i8(0)
 	if C.c2v_strcmp(keyword, c'requiressl') == 0 {
 		keyword = c'sslmode'
-		if int(value[0]) == i8(`1`) {
+		if i32(value[0]) == i8(`1`) {
 			value = c'require'
 		} else {
 			value = c'prefer'
@@ -3520,9 +3520,9 @@ pub fn pq_host(conn &PGconn) &i8 {
 		return unsafe { nil }
 	}
 	if usize(conn.connhost) != usize((voidptr(0))) {
-		if usize(conn.connhost[conn.whichhost].host) != usize((voidptr(0))) && int(conn.connhost[conn.whichhost].host[0]) != i8(`\0`) {
+		if usize(conn.connhost[conn.whichhost].host) != usize((voidptr(0))) && i32(conn.connhost[conn.whichhost].host[0]) != i8(`\0`) {
 			return conn.connhost[conn.whichhost].host
-		} else if usize(conn.connhost[conn.whichhost].hostaddr) != usize((voidptr(0))) && int(conn.connhost[conn.whichhost].hostaddr[0]) != i8(`\0`) {
+		} else if usize(conn.connhost[conn.whichhost].hostaddr) != usize((voidptr(0))) && i32(conn.connhost[conn.whichhost].hostaddr[0]) != i8(`\0`) {
 			return conn.connhost[conn.whichhost].hostaddr
 		}
 	}
@@ -3547,7 +3547,7 @@ pub fn pq_port(conn &PGconn) &i8 {
 	if isnil(conn) {
 		return unsafe { nil }
 	}
-	if usize(conn.connhost) != usize((voidptr(0))) && usize(conn.connhost[conn.whichhost].port) != usize((voidptr(0))) && int(conn.connhost[conn.whichhost].port[0]) != i8(`\0`) {
+	if usize(conn.connhost) != usize((voidptr(0))) && usize(conn.connhost[conn.whichhost].port) != usize((voidptr(0))) && i32(conn.connhost[conn.whichhost].port[0]) != i8(`\0`) {
 		return conn.connhost[conn.whichhost].port
 	}
 	return unsafe { &i8(&c'5432'[0]) }
@@ -3609,31 +3609,31 @@ pub fn pq_parameter_status(conn &PGconn, param_name &i8) &i8 {
 
 @[export: 'PQprotocolVersion']
 @[markused]
-pub fn pq_protocol_version(conn &PGconn) int {
+pub fn pq_protocol_version(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
 	if u32(conn.status) == u32(ConnStatusType.connection_bad) {
 		return 0
 	}
-	return int((conn.pversion >> 16))
+	return i32((conn.pversion >> 16))
 }
 
 @[export: 'PQfullProtocolVersion']
 @[markused]
-pub fn pq_full_protocol_version(conn &PGconn) int {
+pub fn pq_full_protocol_version(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
 	if u32(conn.status) == u32(ConnStatusType.connection_bad) {
 		return 0
 	}
-	return int(((conn.pversion >> 16) * ProtocolVersion(10000) + (conn.pversion & ProtocolVersion(65535))))
+	return i32(((conn.pversion >> 16) * ProtocolVersion(10000) + (conn.pversion & ProtocolVersion(65535))))
 }
 
 @[export: 'PQserverVersion']
 @[markused]
-pub fn pq_server_version(conn &PGconn) int {
+pub fn pq_server_version(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
@@ -3657,7 +3657,7 @@ pub fn pq_error_message(conn &PGconn) &i8 {
 
 @[export: 'PQsocket']
 @[markused]
-pub fn pq_socket(conn &PGconn) int {
+pub fn pq_socket(conn &PGconn) i32 {
 	if isnil(conn) {
 		return -1
 	}
@@ -3669,7 +3669,7 @@ pub fn pq_socket(conn &PGconn) int {
 
 @[export: 'PQbackendPID']
 @[markused]
-pub fn pq_backend_pid(conn &PGconn) int {
+pub fn pq_backend_pid(conn &PGconn) i32 {
 	if isnil(conn) || u32(conn.status) != u32(ConnStatusType.connection_ok) {
 		return 0
 	}
@@ -3687,13 +3687,13 @@ pub fn pq_pipeline_status(conn &PGconn) PGpipelineStatus {
 
 @[export: 'PQconnectionNeedsPassword']
 @[markused]
-pub fn pq_connection_needs_password(conn &PGconn) int {
+pub fn pq_connection_needs_password(conn &PGconn) i32 {
 	password := &i8(0)
 	if isnil(conn) {
 		return 0
 	}
 	password = pq_pass(conn)
-	if int(conn.password_needed) && (usize(password) == usize((voidptr(0))) || int(password[0]) == i8(`\0`)) {
+	if i32(conn.password_needed) && (usize(password) == usize((voidptr(0))) || i32(password[0]) == i8(`\0`)) {
 		return 1
 	} else {
 		return 0
@@ -3702,7 +3702,7 @@ pub fn pq_connection_needs_password(conn &PGconn) int {
 
 @[export: 'PQconnectionUsedPassword']
 @[markused]
-pub fn pq_connection_used_password(conn &PGconn) int {
+pub fn pq_connection_used_password(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
@@ -3715,7 +3715,7 @@ pub fn pq_connection_used_password(conn &PGconn) int {
 
 @[export: 'PQconnectionUsedGSSAPI']
 @[markused]
-pub fn pq_connection_used_gssapi(conn &PGconn) int {
+pub fn pq_connection_used_gssapi(conn &PGconn) i32 {
 	if isnil(conn) {
 		return 0
 	}
@@ -3728,7 +3728,7 @@ pub fn pq_connection_used_gssapi(conn &PGconn) int {
 
 @[export: 'PQclientEncoding']
 @[markused]
-pub fn pq_client_encoding(conn &PGconn) int {
+pub fn pq_client_encoding(conn &PGconn) i32 {
 	if isnil(conn) || u32(conn.status) != u32(ConnStatusType.connection_ok) {
 		return -1
 	}
@@ -3737,7 +3737,7 @@ pub fn pq_client_encoding(conn &PGconn) int {
 
 @[export: 'PQsetClientEncoding']
 @[markused]
-pub fn pq_set_client_encoding(conn &PGconn, encoding &i8) int {
+pub fn pq_set_client_encoding(conn &PGconn, encoding &i8) i32 {
 	qbuf := [128]i8{}
 	if !pq_set_client_encoding_query_inited {
 		c2v_static_init := [i8(115), 101, 116, 32, 99, 108, 105, 101, 110, 116, 95, 101, 110, 99,
@@ -3749,7 +3749,7 @@ pub fn pq_set_client_encoding(conn &PGconn, encoding &i8) int {
 	}
 
 	res := &PGresult(0)
-	status := 0
+	status := i32(0)
 	if isnil(conn) || u32(conn.status) != u32(ConnStatusType.connection_ok) {
 		return -1
 	}
@@ -3856,22 +3856,22 @@ pub fn pwdf_matches_string(buf &i8, token &i8) &i8 {
 	}
 	tbuf = buf
 	ttok = token
-	if int(tbuf[0]) == i8(`*`) && int(tbuf[1]) == i8(`:`) {
+	if i32(tbuf[0]) == i8(`*`) && i32(tbuf[1]) == i8(`:`) {
 		return tbuf + 2
 	}
-	for int((unsafe { *tbuf })) != 0 {
-		if int((unsafe { *tbuf })) == i8(`\\`) && !bslash {
+	for i32((unsafe { *tbuf })) != 0 {
+		if i32((unsafe { *tbuf })) == i8(`\\`) && !bslash {
 			c2v_pointer_postfix(voidptr(&tbuf), tbuf, isize(1))
 			bslash = (1 != 0)
 		}
-		if int((unsafe { *tbuf })) == i8(`:`) && int((unsafe { *ttok })) == 0 && !bslash {
+		if i32((unsafe { *tbuf })) == i8(`:`) && i32((unsafe { *ttok })) == 0 && !bslash {
 			return tbuf + 1
 		}
 		bslash = (0 != 0)
-		if int((unsafe { *ttok })) == 0 {
+		if i32((unsafe { *ttok })) == 0 {
 			return unsafe { nil }
 		}
-		if int((unsafe { *tbuf })) == int((unsafe { *ttok })) {
+		if i32((unsafe { *tbuf })) == i32((unsafe { *ttok })) {
 			c2v_pointer_postfix(voidptr(&tbuf), tbuf, isize(1))
 			c2v_pointer_postfix(voidptr(&ttok), ttok, isize(1))
 		} else {
@@ -3886,20 +3886,20 @@ pub fn password_from_file(hostname &i8, port &i8, dbname &i8, username &i8, pgpa
 	fp := &C.FILE(0)
 	stat_buf := C.stat{}
 	buf := PQExpBufferData{}
-	if usize(dbname) == usize((voidptr(0))) || int(dbname[0]) == i8(`\0`) {
+	if usize(dbname) == usize((voidptr(0))) || i32(dbname[0]) == i8(`\0`) {
 		return unsafe { nil }
 	}
-	if usize(username) == usize((voidptr(0))) || int(username[0]) == i8(`\0`) {
+	if usize(username) == usize((voidptr(0))) || i32(username[0]) == i8(`\0`) {
 		return unsafe { nil }
 	}
-	if usize(hostname) == usize((voidptr(0))) || int(hostname[0]) == i8(`\0`) {
+	if usize(hostname) == usize((voidptr(0))) || i32(hostname[0]) == i8(`\0`) {
 		hostname = c'localhost'
 	} else if libpq_fe_connect_is_unixsock_path(hostname) {
 		if C.c2v_strcmp(hostname, c'/tmp') == 0 {
 			hostname = c'localhost'
 		}
 	}
-	if usize(port) == usize((voidptr(0))) || int(port[0]) == i8(`\0`) {
+	if usize(port) == usize((voidptr(0))) || i32(port[0]) == i8(`\0`) {
 		port = c'5432'
 	}
 	fp = C.c2v_fopen(pgpassfile, c'r')
@@ -3910,12 +3910,12 @@ pub fn password_from_file(hostname &i8, port &i8, dbname &i8, username &i8, pgpa
 		C.c2v_fclose(fp)
 		return unsafe { nil }
 	}
-	if !((int(stat_buf.st_mode) & 61440) == 32768) {
+	if !((i32(stat_buf.st_mode) & 61440) == 32768) {
 		pg_fprintf(C.stderr, unsafe { &i8(&c'WARNING: password file "%s" is not a plain file\n'[0]) }, voidptr(pgpassfile))
 		C.c2v_fclose(fp)
 		return unsafe { nil }
 	}
-	if int(stat_buf.st_mode) & (56 | 7) {
+	if i32(stat_buf.st_mode) & (56 | 7) {
 		pg_fprintf(C.stderr, unsafe { &i8(&c'WARNING: password file "%s" has group or world access; permissions should be u=rw (0600) or less\n'[0]) }, voidptr(pgpassfile))
 		C.c2v_fclose(fp)
 		return unsafe { nil }
@@ -3925,16 +3925,16 @@ pub fn password_from_file(hostname &i8, port &i8, dbname &i8, username &i8, pgpa
 		if !enlarge_pq_exp_buffer(&buf, usize(128)) {
 			break
 		}
-		if usize(C.c2v_fgets(buf.data + buf.len, int(buf.maxlen - buf.len), fp)) == usize((voidptr(0))) {
+		if usize(C.c2v_fgets(buf.data + buf.len, i32(buf.maxlen - buf.len), fp)) == usize((voidptr(0))) {
 			break
 		}
 		buf.len += C.c2v_strlen(buf.data + buf.len)
-		if !(buf.len > usize(0) && int(buf.data[buf.len - usize(1)]) == i8(`\n`)) && !C.c2v_feof(fp) {
+		if !(buf.len > usize(0) && i32(buf.data[buf.len - usize(1)]) == i8(`\n`)) && !C.c2v_feof(fp) {
 			continue
 		}
-		if int(buf.data[0]) != i8(`#`) {
+		if i32(buf.data[0]) != i8(`#`) {
 			t := buf.data
-			len := 0
+			len := i32(0)
 			len = pg_strip_crlf(t)
 			mut __c2v_condition_8 := false
 			mut __c2v_condition_9 := false
@@ -3965,8 +3965,8 @@ pub fn password_from_file(hostname &i8, port &i8, dbname &i8, username &i8, pgpa
 					return unsafe { nil }
 				}
 				p2 = ret
-				for p1 = ret; int((unsafe { *p1 })) != i8(`:`) && int((unsafe { *p1 })) != i8(`\0`); p1 = unsafe { p1 + 1 } {
-					if int((unsafe { *p1 })) == i8(`\\`) && int(p1[1]) != i8(`\0`) {
+				for p1 = ret; i32((unsafe { *p1 })) != i8(`:`) && i32((unsafe { *p1 })) != i8(`\0`); p1 = unsafe { p1 + 1 } {
+					if i32((unsafe { *p1 })) == i8(`\\`) && i32(p1[1]) != i8(`\0`) {
 						c2v_pointer_prefix(voidptr(&p1), p1, isize(1))
 					}
 					unsafe { *p2 = *p1 }
@@ -3986,7 +3986,7 @@ pub fn password_from_file(hostname &i8, port &i8, dbname &i8, username &i8, pgpa
 
 @[markused]
 pub fn pgpassfile_warning(conn &PGconn) {
-	if int(conn.password_needed) && usize(conn.connhost[conn.whichhost].password) != usize((voidptr(0))) && !isnil(conn.result) {
+	if i32(conn.password_needed) && usize(conn.connhost[conn.whichhost].password) != usize((voidptr(0))) && !isnil(conn.result) {
 		sqlstate := pq_result_error_field(conn.result, `C`)
 		if !isnil(sqlstate) && C.c2v_strcmp(sqlstate, c'28P01') == 0 {
 			libpq_append_conn_error(conn, c'password retrieved from file "%s"', voidptr(conn.pgpassfile))
@@ -4024,17 +4024,17 @@ pub fn ssl_verify_protocol_range(min &i8, max &i8) bool {
 
 @[export: 'pqGetHomeDirectory']
 @[markused]
-pub fn pq_get_home_directory(buf &i8, bufsize int) bool {
+pub fn pq_get_home_directory(buf &i8, bufsize i32) bool {
 	home := &i8(0)
 	home = C.c2v_getenv(c'HOME')
-	if !isnil(home) && int(home[0]) {
+	if !isnil(home) && i32(home[0]) {
 		C.c2v_strlcpy(buf, home, u64(bufsize))
 		return true != 0
 	} else {
 		pwbuf := C.passwd{}
 		pw := &C.passwd(0)
 		tmpbuf := [1024]i8{}
-		rc := 0
+		rc := i32(0)
 		rc = C.c2v_getpwuid_r(C.c2v_geteuid(), &pwbuf, unsafe { &i8(&tmpbuf[0]) }, sizeof([1024]i8), &&C.passwd(&&C.passwd(c2v_address_of(&pw))))
 		if rc != 0 || isnil(pw) {
 			return false != 0
@@ -4046,7 +4046,7 @@ pub fn pq_get_home_directory(buf &i8, bufsize int) bool {
 
 @[export: 'pqParseIntParam']
 @[markused]
-pub fn pq_parse_int_param(value &i8, result &int, conn &PGconn, context &i8) bool {
+pub fn pq_parse_int_param(value &i8, result &i32, conn &PGconn, context &i8) bool {
 	end := &i8(0)
 	numval := i64(0)
 
@@ -4056,20 +4056,20 @@ pub fn pq_parse_int_param(value &i8, result &int, conn &PGconn, context &i8) boo
 		unsafe { *c2v_target = 0 }
 	}
 	numval = C.c2v_strtol(value, &&u8(&&i8(c2v_address_of(&end))), 10)
-	if usize(value) == usize(end) || (unsafe { *C.c2v___error() }) != 0 || numval != i64(int(numval)) {
+	if usize(value) == usize(end) || (unsafe { *C.c2v___error() }) != 0 || numval != i64(i32(numval)) {
 		unsafe {
 			goto error
 		}
 	}
-	for int((unsafe { *end })) != i8(`\0`) && C.c2v_isspace(int(u8((unsafe { *end })))) {
+	for i32((unsafe { *end })) != i8(`\0`) && C.c2v_isspace(i32(u8((unsafe { *end })))) {
 		c2v_pointer_postfix(voidptr(&end), end, isize(1))
 	}
-	if int((unsafe { *end })) != i8(`\0`) {
+	if i32((unsafe { *end })) != i8(`\0`) {
 		unsafe {
 			goto error
 		}
 	}
-	unsafe { *result = int(numval) }
+	unsafe { *result = i32(numval) }
 	return true != 0
 	error:
 	libpq_append_conn_error(conn, c'invalid integer value "%s" for connection option "%s"', voidptr(value), voidptr(context))
@@ -4095,7 +4095,7 @@ pub fn pq_parse_protocol_version(value &i8, result &ProtocolVersion, conn &PGcon
 }
 
 @[markused]
-pub fn default_threadlock(acquire int) {
+pub fn default_threadlock(acquire i32) {
 	c2v_gc_register_thread()
 	if !default_threadlock_singlethread_lock_inited {
 		default_threadlock_singlethread_lock = C.pthread_mutex_t{

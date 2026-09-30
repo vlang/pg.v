@@ -4,13 +4,13 @@ module libpq
 @[markused]
 pub fn bytes_to_hex(b &Uint8, s &i8) {
 	static hex := c'0123456789abcdef'
-	q := 0
-	w := 0
+	q := i32(0)
+	w := i32(0)
 
 	q = 0
 	for w = 0; q < 16; q++ {
-		s[w++] = hex[(int(b[q]) >> 4) & 15]
-		s[w++] = hex[int(b[q]) & 15]
+		s[w++] = hex[(i32(b[q]) >> 4) & 15]
+		s[w++] = hex[i32(b[q]) & 15]
 	}
 	s[w] = i8(`\0`)
 }

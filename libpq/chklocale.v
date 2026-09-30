@@ -55,19 +55,19 @@ pub mut:
 	encoding Pg_enc
 }
 
-pub type Mb2wchar_with_len_converter = fn (&u8, &Pg_wchar, int) int
+pub type Mb2wchar_with_len_converter = fn (&u8, &Pg_wchar, i32) i32
 
-pub type Wchar2mb_with_len_converter = fn (&Pg_wchar, &u8, int) int
+pub type Wchar2mb_with_len_converter = fn (&Pg_wchar, &u8, i32) i32
 
-pub type Mblen_converter = fn (&u8) int
+pub type Mblen_converter = fn (&u8) i32
 
-pub type Mbdisplaylen_converter = fn (&u8) int
+pub type Mbdisplaylen_converter = fn (&u8) i32
 
-pub type Mbcharacter_incrementer = fn (&u8, int) bool
+pub type Mbcharacter_incrementer = fn (&u8, i32) bool
 
-pub type Mbchar_verifier = fn (&u8, int) int
+pub type Mbchar_verifier = fn (&u8, i32) i32
 
-pub type Mbstr_verifier = fn (&u8, int) int
+pub type Mbstr_verifier = fn (&u8, i32) i32
 
 pub struct Pg_wchar_tbl {
 pub mut:
@@ -77,7 +77,7 @@ pub mut:
 	dsplen            Mbdisplaylen_converter
 	mbverifychar      Mbchar_verifier
 	mbverifystr       Mbstr_verifier
-	maxmblen          int
+	maxmblen          i32
 }
 
 pub struct Pg_mb_radix_tree {
@@ -148,14 +148,14 @@ pub fn surrogate_pair_to_codepoint(first Pg_wchar, second Pg_wchar) Pg_wchar {
 
 @[markused]
 pub fn utf8_to_unicode(c &u8) Pg_wchar {
-	if (int((unsafe { *c })) & 128) == 0 {
+	if (i32((unsafe { *c })) & 128) == 0 {
 		return Pg_wchar(c[0])
-	} else if (int((unsafe { *c })) & 224) == 192 {
-		return Pg_wchar((((int(c[0]) & 31) << 6) | (int(c[1]) & 63)))
-	} else if (int((unsafe { *c })) & 240) == 224 {
-		return Pg_wchar((((int(c[0]) & 15) << 12) | ((int(c[1]) & 63) << 6) | (int(c[2]) & 63)))
-	} else if (int((unsafe { *c })) & 248) == 240 {
-		return Pg_wchar((((int(c[0]) & 7) << 18) | ((int(c[1]) & 63) << 12) | ((int(c[2]) & 63) << 6) | (int(c[3]) & 63)))
+	} else if (i32((unsafe { *c })) & 224) == 192 {
+		return Pg_wchar((((i32(c[0]) & 31) << 6) | (i32(c[1]) & 63)))
+	} else if (i32((unsafe { *c })) & 240) == 224 {
+		return Pg_wchar((((i32(c[0]) & 15) << 12) | ((i32(c[1]) & 63) << 6) | (i32(c[2]) & 63)))
+	} else if (i32((unsafe { *c })) & 248) == 240 {
+		return Pg_wchar((((i32(c[0]) & 7) << 18) | ((i32(c[1]) & 63) << 12) | ((i32(c[2]) & 63) << 6) | (i32(c[3]) & 63)))
 	} else {
 		return u32(4294967295)
 	}
@@ -182,7 +182,7 @@ pub fn unicode_to_utf8(c Pg_wchar, utf8string &u8) &u8 {
 }
 
 @[markused]
-pub fn unicode_utf8len(c Pg_wchar) int {
+pub fn unicode_utf8len(c Pg_wchar) i32 {
 	if c <= Pg_wchar(127) {
 		return 1
 	} else if c <= Pg_wchar(2047) {
@@ -194,91 +194,91 @@ pub fn unicode_utf8len(c Pg_wchar) int {
 	}
 }
 
-pub fn pg_mb2wchar(from &i8, to &Pg_wchar) int
+pub fn pg_mb2wchar(from &i8, to &Pg_wchar) i32
 
-pub fn pg_mb2wchar_with_len(from &i8, to &Pg_wchar, len int) int
+pub fn pg_mb2wchar_with_len(from &i8, to &Pg_wchar, len i32) i32
 
-pub fn pg_encoding_mb2wchar_with_len(encoding int, from &i8, to &Pg_wchar, len int) int
+pub fn pg_encoding_mb2wchar_with_len(encoding i32, from &i8, to &Pg_wchar, len i32) i32
 
-pub fn pg_wchar2mb(from &Pg_wchar, to &i8) int
+pub fn pg_wchar2mb(from &Pg_wchar, to &i8) i32
 
-pub fn pg_wchar2mb_with_len(from &Pg_wchar, to &i8, len int) int
+pub fn pg_wchar2mb_with_len(from &Pg_wchar, to &i8, len i32) i32
 
-pub fn pg_encoding_wchar2mb_with_len(encoding int, from &Pg_wchar, to &i8, len int) int
+pub fn pg_encoding_wchar2mb_with_len(encoding i32, from &Pg_wchar, to &i8, len i32) i32
 
-pub fn pg_char_and_wchar_strcmp(s1 &i8, s2 &Pg_wchar) int
+pub fn pg_char_and_wchar_strcmp(s1 &i8, s2 &Pg_wchar) i32
 
-pub fn pg_wchar_strncmp(s1 &Pg_wchar, s2 &Pg_wchar, n usize) int
+pub fn pg_wchar_strncmp(s1 &Pg_wchar, s2 &Pg_wchar, n usize) i32
 
-pub fn pg_char_and_wchar_strncmp(s1 &i8, s2 &Pg_wchar, n usize) int
+pub fn pg_char_and_wchar_strncmp(s1 &i8, s2 &Pg_wchar, n usize) i32
 
 pub fn pg_wchar_strlen(str &Pg_wchar) usize
 
-pub fn pg_mblen_cstr(mbstr &i8) int
+pub fn pg_mblen_cstr(mbstr &i8) i32
 
-pub fn pg_mblen_range(mbstr &i8, end &i8) int
+pub fn pg_mblen_range(mbstr &i8, end &i8) i32
 
-pub fn pg_mblen_with_len(mbstr &i8, limit int) int
+pub fn pg_mblen_with_len(mbstr &i8, limit i32) i32
 
-pub fn pg_mblen_unbounded(mbstr &i8) int
+pub fn pg_mblen_unbounded(mbstr &i8) i32
 
-pub fn pg_mblen(mbstr &i8) int
+pub fn pg_mblen(mbstr &i8) i32
 
-pub fn pg_dsplen(mbstr &i8) int
+pub fn pg_dsplen(mbstr &i8) i32
 
-pub fn pg_mbstrlen(mbstr &i8) int
+pub fn pg_mbstrlen(mbstr &i8) i32
 
-pub fn pg_mbstrlen_with_len(mbstr &i8, limit int) int
+pub fn pg_mbstrlen_with_len(mbstr &i8, limit i32) i32
 
-pub fn pg_mbcliplen(mbstr &i8, len int, limit int) int
+pub fn pg_mbcliplen(mbstr &i8, len i32, limit i32) i32
 
-pub fn pg_encoding_mbcliplen(encoding int, mbstr &i8, len int, limit int) int
+pub fn pg_encoding_mbcliplen(encoding i32, mbstr &i8, len i32, limit i32) i32
 
-pub fn pg_mbcharcliplen(mbstr &i8, len int, limit int) int
+pub fn pg_mbcharcliplen(mbstr &i8, len i32, limit i32) i32
 
-pub fn pg_database_encoding_max_length() int
+pub fn pg_database_encoding_max_length() i32
 
 pub fn pg_database_encoding_character_incrementer() Mbcharacter_incrementer
 
 @[c:'PrepareClientEncoding']
-pub fn prepare_client_encoding(encoding int) int
+pub fn prepare_client_encoding(encoding i32) i32
 
 @[c:'SetClientEncoding']
-pub fn set_client_encoding(encoding int) int
+pub fn set_client_encoding(encoding i32) i32
 
 @[c:'InitializeClientEncoding']
 pub fn initialize_client_encoding()
 
-pub fn pg_get_client_encoding() int
+pub fn pg_get_client_encoding() i32
 
 pub fn pg_get_client_encoding_name() &i8
 
 @[c:'SetDatabaseEncoding']
-pub fn set_database_encoding(encoding int)
+pub fn set_database_encoding(encoding i32)
 
 @[c:'GetDatabaseEncoding']
-pub fn get_database_encoding() int
+pub fn get_database_encoding() i32
 
 @[c:'GetDatabaseEncodingName']
 pub fn get_database_encoding_name() &i8
 
 @[c:'SetMessageEncoding']
-pub fn set_message_encoding(encoding int)
+pub fn set_message_encoding(encoding i32)
 
 @[c:'GetMessageEncoding']
-pub fn get_message_encoding() int
+pub fn get_message_encoding() i32
 
-pub fn pg_do_encoding_conversion(src &u8, len int, src_encoding int, dest_encoding int) &u8
+pub fn pg_do_encoding_conversion(src &u8, len i32, src_encoding i32, dest_encoding i32) &u8
 
-pub fn pg_do_encoding_conversion_buf(proc Oid, src_encoding int, dest_encoding int, src &u8, srclen int, dest &u8, destlen int, no_error bool) int
+pub fn pg_do_encoding_conversion_buf(proc Oid, src_encoding i32, dest_encoding i32, src &u8, srclen i32, dest &u8, destlen i32, no_error bool) i32
 
-pub fn pg_client_to_server(s &i8, len int) &i8
+pub fn pg_client_to_server(s &i8, len i32) &i8
 
-pub fn pg_server_to_client(s &i8, len int) &i8
+pub fn pg_server_to_client(s &i8, len i32) &i8
 
-pub fn pg_any_to_server(s &i8, len int, encoding int) &i8
+pub fn pg_any_to_server(s &i8, len i32, encoding i32) &i8
 
-pub fn pg_server_to_any(s &i8, len int, encoding int) &i8
+pub fn pg_server_to_any(s &i8, len i32, encoding i32) &i8
 
 pub fn pg_unicode_to_server(c Pg_wchar, s &u8)
 
@@ -291,28 +291,28 @@ pub fn big_5to_cns(big5 u16, lc &u8) u16
 pub fn cn_sto_big_5(cns u16, lc u8) u16
 
 @[c:'UtfToLocal']
-pub fn utf_to_local(utf &u8, len int, iso &u8, map_ &Pg_mb_radix_tree, cmap &Pg_utf_to_local_combined, cmapsize int, conv_func Utf_local_conversion_func, encoding int, no_error bool) int
+pub fn utf_to_local(utf &u8, len i32, iso &u8, map_ &Pg_mb_radix_tree, cmap &Pg_utf_to_local_combined, cmapsize i32, conv_func Utf_local_conversion_func, encoding i32, no_error bool) i32
 
 @[c:'LocalToUtf']
-pub fn local_to_utf(iso &u8, len int, utf &u8, map_ &Pg_mb_radix_tree, cmap &Pg_local_to_utf_combined, cmapsize int, conv_func Utf_local_conversion_func, encoding int, no_error bool) int
+pub fn local_to_utf(iso &u8, len i32, utf &u8, map_ &Pg_mb_radix_tree, cmap &Pg_local_to_utf_combined, cmapsize i32, conv_func Utf_local_conversion_func, encoding i32, no_error bool) i32
 
-pub fn pg_verifymbstr(mbstr &i8, len int, no_error bool) bool
+pub fn pg_verifymbstr(mbstr &i8, len i32, no_error bool) bool
 
-pub fn pg_verify_mbstr(encoding int, mbstr &i8, len int, no_error bool) bool
+pub fn pg_verify_mbstr(encoding i32, mbstr &i8, len i32, no_error bool) bool
 
-pub fn pg_verify_mbstr_len(encoding int, mbstr &i8, len int, no_error bool) int
+pub fn pg_verify_mbstr_len(encoding i32, mbstr &i8, len i32, no_error bool) i32
 
-pub fn check_encoding_conversion_args(src_encoding int, dest_encoding int, len int, expected_src_encoding int, expected_dest_encoding int)
+pub fn check_encoding_conversion_args(src_encoding i32, dest_encoding i32, len i32, expected_src_encoding i32, expected_dest_encoding i32)
 
-pub fn local2local(l &u8, p &u8, len int, src_encoding int, dest_encoding int, tab &u8, no_error bool) int
+pub fn local2local(l &u8, p &u8, len i32, src_encoding i32, dest_encoding i32, tab &u8, no_error bool) i32
 
-pub fn latin2mic(l &u8, p &u8, len int, lc int, encoding int, no_error bool) int
+pub fn latin2mic(l &u8, p &u8, len i32, lc i32, encoding i32, no_error bool) i32
 
-pub fn mic2latin(mic &u8, p &u8, len int, lc int, encoding int, no_error bool) int
+pub fn mic2latin(mic &u8, p &u8, len i32, lc i32, encoding i32, no_error bool) i32
 
-pub fn latin2mic_with_table(l &u8, p &u8, len int, lc int, encoding int, tab &u8, no_error bool) int
+pub fn latin2mic_with_table(l &u8, p &u8, len i32, lc i32, encoding i32, tab &u8, no_error bool) i32
 
-pub fn mic2latin_with_table(mic &u8, p &u8, len int, lc int, encoding int, tab &u8, no_error bool) int
+pub fn mic2latin_with_table(mic &u8, p &u8, len i32, lc i32, encoding i32, tab &u8, no_error bool) i32
 
 pub struct Encoding_match {
 pub mut:
@@ -322,15 +322,15 @@ pub mut:
 
 @[export: 'pg_get_encoding_from_locale']
 @[markused]
-pub fn pg_get_encoding_from_locale(ctype &i8, write_message bool) int {
+pub fn pg_get_encoding_from_locale(ctype &i8, write_message bool) i32 {
 	sys := &i8(0)
-	i := 0
+	i := i32(0)
 	loc := voidptr(0)
 	if isnil(ctype) {
 		ctype = C.c2v_setlocale(2, (voidptr(0)))
 	}
 	if pg_strcasecmp(ctype, c'C') == 0 || pg_strcasecmp(ctype, c'POSIX') == 0 {
-		return int(Pg_enc.pg_sql_ascii)
+		return i32(Pg_enc.pg_sql_ascii)
 	}
 	loc = C.c2v_newlocale((1 << 1), ctype, voidptr(0))
 	if usize(loc) == usize(voidptr(0)) {
@@ -347,12 +347,12 @@ pub fn pg_get_encoding_from_locale(ctype &i8, write_message bool) int {
 	for i = 0; libpq_chklocale_encoding_match_list[i].system_enc_name; i++ {
 		if pg_strcasecmp(sys, libpq_chklocale_encoding_match_list[i].system_enc_name) == 0 {
 			C.c2v_free(voidptr(sys))
-			return int(libpq_chklocale_encoding_match_list[i].pg_enc_code)
+			return i32(libpq_chklocale_encoding_match_list[i].pg_enc_code)
 		}
 	}
 	if C.c2v_strlen(sys) == u64(0) {
 		C.c2v_free(voidptr(sys))
-		return int(Pg_enc.pg_utf8)
+		return i32(Pg_enc.pg_utf8)
 	}
 	if write_message {
 		pg_fprintf(C.stderr, unsafe { &i8(&c'could not determine encoding for locale "%s": codeset is "%s"'[0]) }, voidptr(ctype), voidptr(sys))

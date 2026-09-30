@@ -7,7 +7,7 @@ pub type PGcancel_fe_cancel = Pg_cancel
 
 @[markused]
 pub fn libpq_fe_cancel_is_unixsock_path(path &i8) bool {
-	return (int(path[false]) == i8(`/`)) || int(path[false]) == i8(`@`)
+	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
 }
 
 pub struct Pg_cancel_conn {
@@ -18,12 +18,12 @@ pub mut:
 pub struct Pg_cancel {
 pub mut:
 	raddr               SockAddr
-	be_pid              int
-	pgtcp_user_timeout  int
-	keepalives          int
-	keepalives_idle     int
-	keepalives_interval int
-	keepalives_count    int
+	be_pid              i32
+	pgtcp_user_timeout  i32
+	keepalives          i32
+	keepalives_idle     i32
+	keepalives_interval i32
+	keepalives_count    i32
 	cancel_pkt_len      Int32
 	cancel_req          [1]i8
 }
@@ -117,7 +117,7 @@ pub fn pq_cancel_create(conn &PGconn) &PGcancelConn_fe_cancel {
 		}
 	}
 	cancel_conn.addr[0].addr = conn.raddr
-	cancel_conn.addr[0].family = int(conn.raddr.addr.ss_family)
+	cancel_conn.addr[0].family = i32(conn.raddr.addr.ss_family)
 	cancel_conn.status = ConnStatusType.connection_allocated
 	return &PGcancelConn_fe_cancel(voidptr(cancel_conn))
 	oom_error:
@@ -128,7 +128,7 @@ pub fn pq_cancel_create(conn &PGconn) &PGcancelConn_fe_cancel {
 
 @[export: 'PQcancelBlocking']
 @[markused]
-pub fn pq_cancel_blocking(cancel_conn &PGcancelConn_fe_cancel) int {
+pub fn pq_cancel_blocking(cancel_conn &PGcancelConn_fe_cancel) i32 {
 	if !pq_cancel_start(cancel_conn) {
 		return 0
 	}
@@ -137,7 +137,7 @@ pub fn pq_cancel_blocking(cancel_conn &PGcancelConn_fe_cancel) int {
 
 @[export: 'PQcancelStart']
 @[markused]
-pub fn pq_cancel_start(cancel_conn &PGcancelConn_fe_cancel) int {
+pub fn pq_cancel_start(cancel_conn &PGcancelConn_fe_cancel) i32 {
 	if isnil(cancel_conn) || u32(cancel_conn.conn.status) == u32(ConnStatusType.connection_bad) {
 		return 0
 	}
@@ -153,7 +153,7 @@ pub fn pq_cancel_start(cancel_conn &PGcancelConn_fe_cancel) int {
 @[markused]
 pub fn pq_cancel_poll(cancel_conn &PGcancelConn_fe_cancel) PostgresPollingStatusType {
 	conn := &cancel_conn.conn
-	n := 0
+	n := i32(0)
 	if u32(conn.status) != u32(ConnStatusType.connection_awaiting_response) {
 		return pq_connect_poll(conn)
 	}
@@ -183,7 +183,7 @@ pub fn pq_cancel_status(cancel_conn &PGcancelConn_fe_cancel) ConnStatusType {
 
 @[export: 'PQcancelSocket']
 @[markused]
-pub fn pq_cancel_socket(cancel_conn &PGcancelConn_fe_cancel) int {
+pub fn pq_cancel_socket(cancel_conn &PGcancelConn_fe_cancel) i32 {
 	return pq_socket(&cancel_conn.conn)
 }
 
@@ -214,7 +214,7 @@ pub fn pq_cancel_finish(cancel_conn &PGcancelConn_fe_cancel) {
 @[markused]
 pub fn pq_get_cancel(conn &PGconn) &PGcancel_fe_cancel {
 	cancel := &PGcancel_fe_cancel(0)
-	cancel_req_len := 0
+	cancel_req_len := i32(0)
 	req := &CancelRequestPacket(0)
 	if isnil(conn) {
 		return unsafe { nil }
@@ -225,7 +225,7 @@ pub fn pq_get_cancel(conn &PGconn) &PGcancel_fe_cancel {
 	if conn.be_cancel_key_len == 0 {
 		return C.c2v_calloc(u64(1), sizeof(PGcancel_fe_cancel))
 	}
-	cancel_req_len = int((u64(usize(__offsetof(CancelRequestPacket, cancelAuthCode)))) + u64(conn.be_cancel_key_len))
+	cancel_req_len = i32((u64(usize(__offsetof(CancelRequestPacket, cancelAuthCode)))) + u64(conn.be_cancel_key_len))
 	cancel = C.c2v_malloc((u64(usize(__offsetof(PGcancel_fe_cancel, cancel_req)))) + u64(cancel_req_len))
 	if usize(cancel) == usize((voidptr(0))) {
 		return unsafe { nil }
@@ -284,7 +284,7 @@ pub fn pq_get_cancel(conn &PGconn) &PGcancel_fe_cancel {
 
 @[export: 'PQsendCancelRequest']
 @[markused]
-pub fn pq_send_cancel_request(cancel_conn &PGconn) int {
+pub fn pq_send_cancel_request(cancel_conn &PGconn) i32 {
 	req := CancelRequestPacket{}
 	if pq_put_msg_start(i8(0), cancel_conn) {
 		return -1
@@ -314,7 +314,7 @@ pub fn pq_free_cancel(cancel &PGcancel_fe_cancel) {
 }
 
 @[markused]
-pub fn optional_setsockopt(fd int, protoid int, optid int, value int) bool {
+pub fn optional_setsockopt(fd i32, protoid i32, optid i32, value i32) bool {
 	if value < 0 {
 		return true != 0
 	}
@@ -326,12 +326,12 @@ pub fn optional_setsockopt(fd int, protoid int, optid int, value int) bool {
 
 @[export: 'PQcancel']
 @[markused]
-pub fn pq_cancel(cancel &PGcancel_fe_cancel, errbuf &i8, errbufsize int) int {
+pub fn pq_cancel(cancel &PGcancel_fe_cancel, errbuf &i8, errbufsize i32) i32 {
 	save_errno := (unsafe { *C.c2v___error() })
-	tmpsock := (-1)
-	maxlen := 0
+	tmpsock := Pgsocket((-1))
+	maxlen := i32(0)
 	recvbuf := i8(0)
-	cancel_pkt_len := 0
+	cancel_pkt_len := i32(0)
 	if isnil(cancel) {
 		C.c2v_strlcpy(errbuf, c'PQcancel() -- no cancel object supplied', u64(errbufsize))
 		{
@@ -348,14 +348,14 @@ pub fn pq_cancel(cancel &PGcancel_fe_cancel, errbuf &i8, errbufsize int) int {
 		}
 		return 0
 	}
-	tmpsock = C.c2v_socket(int(cancel.raddr.addr.ss_family), 1, 0)
+	tmpsock = C.c2v_socket(i32(cancel.raddr.addr.ss_family), 1, 0)
 	if tmpsock == (-1) {
 		C.c2v_strlcpy(errbuf, c'PQcancel() -- socket() failed: ', u64(errbufsize))
 		unsafe {
 			goto cancel_errReturn
 		}
 	}
-	if int(cancel.raddr.addr.ss_family) != 1 && cancel.keepalives != 0 {
+	if i32(cancel.raddr.addr.ss_family) != 1 && cancel.keepalives != 0 {
 		if !optional_setsockopt(tmpsock, 65535, 8, 1) {
 			C.c2v_strlcpy(errbuf, c'PQcancel() -- setsockopt(SO_KEEPALIVE) failed: ', u64(errbufsize))
 			unsafe {
@@ -375,7 +375,7 @@ pub fn pq_cancel(cancel &PGcancel_fe_cancel, errbuf &i8, errbufsize int) int {
 			goto cancel_errReturn
 		}
 	}
-	cancel_pkt_len = int(c2v_builtin_bswap32(u32(cancel.cancel_pkt_len)))
+	cancel_pkt_len = i32(c2v_builtin_bswap32(u32(cancel.cancel_pkt_len)))
 	retry4:
 	if C.c2v_send(tmpsock, voidptr(&i8(voidptr(&cancel.cancel_pkt_len))), usize(cancel_pkt_len), 0) != isize(cancel_pkt_len) {
 		if (unsafe { *C.c2v___error() }) == 4 {
@@ -403,7 +403,7 @@ pub fn pq_cancel(cancel &PGcancel_fe_cancel, errbuf &i8, errbufsize int) int {
 	}
 	return 1
 	cancel_errReturn:
-	maxlen = int(u64(errbufsize) - C.c2v_strlen(errbuf) - u64(2))
+	maxlen = i32(u64(errbufsize) - C.c2v_strlen(errbuf) - u64(2))
 	if maxlen >= 0 {
 		val := (unsafe { *C.c2v___error() })
 		buf := [32]i8{}
@@ -412,7 +412,7 @@ pub fn pq_cancel(cancel &PGcancel_fe_cancel, errbuf &i8, errbufsize int) int {
 		unsafe { *bufp = i8(`\0`) }
 		for {
 			mut __c2v_lhs_tmp_0 := unsafe { c2v_pointer_prefix(voidptr(&bufp), bufp, isize(-1)) }
-			unsafe { *__c2v_lhs_tmp_0 = i8((val % 10) + int(`0`)) }
+			unsafe { *__c2v_lhs_tmp_0 = i8((val % 10) + i32(`0`)) }
 			val /= 10
 			if !(val > 0) {
 				break
@@ -435,8 +435,8 @@ pub fn pq_cancel(cancel &PGcancel_fe_cancel, errbuf &i8, errbufsize int) int {
 
 @[export: 'PQrequestCancel']
 @[markused]
-pub fn pq_request_cancel(conn &PGconn) int {
-	r := 0
+pub fn pq_request_cancel(conn &PGconn) i32 {
+	r := i32(0)
 	cancel := &PGcancel_fe_cancel(0)
 	if isnil(conn) {
 		return 0
@@ -449,7 +449,7 @@ pub fn pq_request_cancel(conn &PGconn) int {
 	}
 	cancel = pq_get_cancel(conn)
 	if cancel {
-		r = pq_cancel(cancel, conn.errorMessage.data, int(conn.errorMessage.maxlen))
+		r = pq_cancel(cancel, conn.errorMessage.data, i32(conn.errorMessage.maxlen))
 		pq_free_cancel(cancel)
 	} else {
 		C.c2v_strlcpy(conn.errorMessage.data, c'out of memory', conn.errorMessage.maxlen)

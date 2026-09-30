@@ -158,11 +158,11 @@ __global pg_scram_mech = Pg_fe_sasl_mech{
 	free_: scram_free
 }
 @[markused; weak]
-__global pq_auth_data_hook = C2vFn_666e2028504761757468446174612c20265047636f6e6e2c20766f69647074722920696e74(voidptr(pq_default_auth_data_hook))
+__global pq_auth_data_hook = C2vFn_666e2028504761757468446174612c20265047636f6e6e2c20766f69647074722920693332(voidptr(pq_default_auth_data_hook))
 @[weak]
 __global libpq_fe_connect_supported_sasl_mechs = [&pg_scram_mech, &pg_oauth_mech]!
 @[markused; weak]
-__global pg_g_threadlock = C2vFn_666e2028696e7429(voidptr(default_threadlock))
+__global pg_g_threadlock = C2vFn_666e202869333229(voidptr(default_threadlock))
 @[weak]
 __global pq_set_client_encoding_query [28]i8
 @[weak]
@@ -179,11 +179,11 @@ __global pgres_status = [c'PGRES_EMPTY_QUERY', c'PGRES_COMMAND_OK', c'PGRES_TUPL
 @[weak]
 __global libpq_fe_exec_oom_result = PGresult{
 	resultStatus: ExecStatusType.pgres_fatal_error
-	client_encoding: int(Pg_enc.pg_sql_ascii)
+	client_encoding: i32(Pg_enc.pg_sql_ascii)
 	errMsg: c'out of memory\n'
 }
 @[weak]
-__global libpq_fe_exec_static_client_encoding = int(Pg_enc.pg_sql_ascii)
+__global libpq_fe_exec_static_client_encoding = i32(Pg_enc.pg_sql_ascii)
 @[weak]
 __global libpq_fe_exec_static_std_strings = bool((0 != 0))
 @[weak]
@@ -37340,16 +37340,16 @@ __global pg_global_prng_state Pg_prng_state
 __global libpq_pqexpbuffer_oom_buffer_ptr = unsafe { &libpq_pqexpbuffer_oom_buffer[0] }
 
 @[c: 'GC_thread_is_registered']
-fn C.c2v_GC_thread_is_registered() int
+fn C.c2v_GC_thread_is_registered() i32
 
 @[c: 'GC_allow_register_threads']
 fn C.c2v_GC_allow_register_threads()
 
 @[c: 'pthread_key_create']
-fn C.c2v_pthread_key_create(voidptr, voidptr) int
+fn C.c2v_pthread_key_create(voidptr, voidptr) i32
 
 @[c: 'pthread_setspecific']
-fn C.c2v_pthread_setspecific(usize, voidptr) int
+fn C.c2v_pthread_setspecific(usize, voidptr) i32
 
 __global c2v_gc_thread_key = u64(0)
 
@@ -37425,67 +37425,67 @@ pub fn c2v_pointer_prefix[T](storage voidptr, pointer &T, delta isize) &T {
 }
 
 @[c: '__error']
-fn C.c2v___error() &int
+fn C.c2v___error() &i32
 
 @[c: '__inline_isnand']
-fn C.c2v___inline_isnand(f64) int
+fn C.c2v___inline_isnand(f64) i32
 
 @[c: '__inline_isnanf']
-fn C.c2v___inline_isnanf(f32) int
+fn C.c2v___inline_isnanf(f32) i32
 
 @[c: '__inline_isnanl']
-fn C.c2v___inline_isnanl(f64) int
+fn C.c2v___inline_isnanl(f64) i32
 
 @[c: '__sigbits']
-fn C.c2v___sigbits(int) u32
+fn C.c2v___sigbits(i32) u32
 
 @[c: 'abs']
-fn C.c2v_abs(int) int
+fn C.c2v_abs(i32) i32
 
 @[c: 'atoi']
-fn C.c2v_atoi(&i8) int
+fn C.c2v_atoi(&i8) i32
 
 @[c: 'bsearch']
-fn C.c2v_bsearch(voidptr, voidptr, usize, usize, fn (voidptr, voidptr) int) voidptr
+fn C.c2v_bsearch(voidptr, voidptr, usize, usize, fn (voidptr, voidptr) i32) voidptr
 
 @[c: 'calloc']
 fn C.c2v_calloc(usize, usize) voidptr
 
 @[c: 'close']
-fn C.c2v_close(int) int
+fn C.c2v_close(i32) i32
 
 @[c: 'connect']
-fn C.c2v_connect(int, &C.sockaddr, u32) int
+fn C.c2v_connect(i32, &C.sockaddr, u32) i32
 
 @[c: 'fclose']
-fn C.c2v_fclose(&C.FILE) int
+fn C.c2v_fclose(&C.FILE) i32
 
 @[c: 'fcntl']
-fn C.c2v_fcntl(int, int, ...voidptr) int
+fn C.c2v_fcntl(i32, i32, ...voidptr) i32
 
 @[c: 'feof']
-fn C.c2v_feof(&C.FILE) int
+fn C.c2v_feof(&C.FILE) i32
 
 @[c: 'ferror']
-fn C.c2v_ferror(&C.FILE) int
+fn C.c2v_ferror(&C.FILE) i32
 
 @[c: 'fflush']
-fn C.c2v_fflush(&C.FILE) int
+fn C.c2v_fflush(&C.FILE) i32
 
 @[c: 'fgets']
-fn C.c2v_fgets(&i8, int, &C.FILE) &i8
+fn C.c2v_fgets(&i8, i32, &C.FILE) &i8
 
 @[c: 'fileno']
-fn C.c2v_fileno(&C.FILE) int
+fn C.c2v_fileno(&C.FILE) i32
 
 @[c: 'fopen']
 fn C.c2v_fopen(&i8, &i8) &C.FILE
 
 @[c: 'fputc']
-fn C.c2v_fputc(int, &C.FILE) int
+fn C.c2v_fputc(i32, &C.FILE) i32
 
 @[c: 'fputs']
-fn C.c2v_fputs(&i8, &C.FILE) int
+fn C.c2v_fputs(&i8, &C.FILE) i32
 
 @[c: 'free']
 fn C.c2v_free(voidptr)
@@ -37494,19 +37494,19 @@ fn C.c2v_free(voidptr)
 fn C.c2v_freeaddrinfo(&C.addrinfo)
 
 @[c: 'freelocale']
-fn C.c2v_freelocale(voidptr) int
+fn C.c2v_freelocale(voidptr) i32
 
 @[c: 'fstat']
-fn C.c2v_fstat(int, &C.stat) int
+fn C.c2v_fstat(i32, &C.stat) i32
 
 @[c: 'fwrite']
 fn C.c2v_fwrite(voidptr, usize, usize, &C.FILE) u64
 
 @[c: 'gai_strerror']
-fn C.c2v_gai_strerror(int) &i8
+fn C.c2v_gai_strerror(i32) &i8
 
 @[c: 'getaddrinfo']
-fn C.c2v_getaddrinfo(&i8, &i8, &C.addrinfo, &&C.addrinfo) int
+fn C.c2v_getaddrinfo(&i8, &i8, &C.addrinfo, &&C.addrinfo) i32
 
 @[c: 'getenv']
 fn C.c2v_getenv(&i8) &i8
@@ -37515,55 +37515,55 @@ fn C.c2v_getenv(&i8) &i8
 fn C.c2v_geteuid() u32
 
 @[c: 'getnameinfo']
-fn C.c2v_getnameinfo(&C.sockaddr, u32, &i8, u32, &i8, u32, int) int
+fn C.c2v_getnameinfo(&C.sockaddr, u32, &i8, u32, &i8, u32, i32) i32
 
 @[c: 'getpeereid']
-fn C.c2v_getpeereid(int, &u32, &u32) int
+fn C.c2v_getpeereid(i32, &u32, &u32) i32
 
 @[c: 'getpid']
-fn C.c2v_getpid() int
+fn C.c2v_getpid() i32
 
 @[c: 'getpwuid_r']
-fn C.c2v_getpwuid_r(u32, &C.passwd, &i8, usize, &&C.passwd) int
+fn C.c2v_getpwuid_r(u32, &C.passwd, &i8, usize, &&C.passwd) i32
 
 @[c: 'getsockname']
-fn C.c2v_getsockname(int, &C.sockaddr, &u32) int
+fn C.c2v_getsockname(i32, &C.sockaddr, &u32) i32
 
 @[c: 'getsockopt']
-fn C.c2v_getsockopt(int, int, int, voidptr, &u32) int
+fn C.c2v_getsockopt(i32, i32, i32, voidptr, &u32) i32
 
 @[c: 'gettimeofday']
-fn C.c2v_gettimeofday(&C.timeval, voidptr) int
+fn C.c2v_gettimeofday(&C.timeval, voidptr) i32
 
 @[c: 'ioctl']
-fn C.c2v_ioctl(int, u64, ...voidptr) int
+fn C.c2v_ioctl(i32, u64, ...voidptr) i32
 
 @[c: 'isalnum']
-fn C.c2v_isalnum(int) int
+fn C.c2v_isalnum(i32) i32
 
 @[c: 'isatty']
-fn C.c2v_isatty(int) int
+fn C.c2v_isatty(i32) i32
 
 @[c: 'isdigit']
-fn C.c2v_isdigit(int) int
+fn C.c2v_isdigit(i32) i32
 
 @[c: 'islower']
-fn C.c2v_islower(int) int
+fn C.c2v_islower(i32) i32
 
 @[c: 'isprint']
-fn C.c2v_isprint(int) int
+fn C.c2v_isprint(i32) i32
 
 @[c: 'isspace']
-fn C.c2v_isspace(int) int
+fn C.c2v_isspace(i32) i32
 
 @[c: 'isupper']
-fn C.c2v_isupper(int) int
+fn C.c2v_isupper(i32) i32
 
 @[c: 'labs']
 fn C.c2v_labs(i64) i64
 
 @[c: 'ldexp']
-fn C.c2v_ldexp(f64, int) f64
+fn C.c2v_ldexp(f64, i32) f64
 
 @[c: 'localtime_r']
 fn C.c2v_localtime_r(&i64, &C.tm) &C.tm
@@ -37575,10 +37575,10 @@ fn C.c2v_log(f64) f64
 fn C.c2v_malloc(usize) voidptr
 
 @[c: 'memchr']
-fn C.c2v_memchr(voidptr, int, usize) voidptr
+fn C.c2v_memchr(voidptr, i32, usize) voidptr
 
 @[c: 'memcmp']
-fn C.c2v_memcmp(voidptr, voidptr, usize) int
+fn C.c2v_memcmp(voidptr, voidptr, usize) i32
 
 @[c: 'memcpy']
 fn C.c2v_memcpy(voidptr, voidptr, usize) voidptr
@@ -37587,97 +37587,97 @@ fn C.c2v_memcpy(voidptr, voidptr, usize) voidptr
 fn C.c2v_memmove(voidptr, voidptr, usize) voidptr
 
 @[c: 'memset']
-fn C.c2v_memset(voidptr, int, usize) voidptr
+fn C.c2v_memset(voidptr, i32, usize) voidptr
 
 @[c: 'memset_s']
-fn C.c2v_memset_s(voidptr, u64, int, u64) int
+fn C.c2v_memset_s(voidptr, u64, i32, u64) i32
 
 @[c: 'newlocale']
-fn C.c2v_newlocale(int, &i8, voidptr) voidptr
+fn C.c2v_newlocale(i32, &i8, voidptr) voidptr
 
 @[c: 'nl_langinfo_l']
-fn C.c2v_nl_langinfo_l(int, voidptr) &i8
+fn C.c2v_nl_langinfo_l(i32, voidptr) &i8
 
 @[c: 'open']
-fn C.c2v_open(&i8, int, ...voidptr) int
+fn C.c2v_open(&i8, i32, ...voidptr) i32
 
 @[c: 'pclose']
-fn C.c2v_pclose(&C.FILE) int
+fn C.c2v_pclose(&C.FILE) i32
 
 @[c: 'poll']
-fn C.c2v_poll(&C.pollfd, u32, int) int
+fn C.c2v_poll(&C.pollfd, u32, i32) i32
 
 @[c: 'popen']
 fn C.c2v_popen(&i8, &i8) &C.FILE
 
 @[c: 'pthread_mutex_lock']
-fn C.c2v_pthread_mutex_lock(&C.pthread_mutex_t) int
+fn C.c2v_pthread_mutex_lock(&C.pthread_mutex_t) i32
 
 @[c: 'pthread_mutex_unlock']
-fn C.c2v_pthread_mutex_unlock(&C.pthread_mutex_t) int
+fn C.c2v_pthread_mutex_unlock(&C.pthread_mutex_t) i32
 
 @[c: 'pthread_sigmask']
-fn C.c2v_pthread_sigmask(int, &u32, &u32) int
+fn C.c2v_pthread_sigmask(i32, &u32, &u32) i32
 
 @[c: 'putc']
-fn C.c2v_putc(int, &C.FILE) int
+fn C.c2v_putc(i32, &C.FILE) i32
 
 @[c: 'read']
-fn C.c2v_read(int, voidptr, usize) isize
+fn C.c2v_read(i32, voidptr, usize) isize
 
 @[c: 'realloc']
 fn C.c2v_realloc(voidptr, usize) voidptr
 
 @[c: 'recv']
-fn C.c2v_recv(int, voidptr, usize, int) isize
+fn C.c2v_recv(i32, voidptr, usize, i32) isize
 
 @[c: 'send']
-fn C.c2v_send(int, voidptr, usize, int) isize
+fn C.c2v_send(i32, voidptr, usize, i32) isize
 
 @[c: 'setlocale']
-fn C.c2v_setlocale(int, &i8) &i8
+fn C.c2v_setlocale(i32, &i8) &i8
 
 @[c: 'setsockopt']
-fn C.c2v_setsockopt(int, int, int, voidptr, u32) int
+fn C.c2v_setsockopt(i32, i32, i32, voidptr, u32) i32
 
 @[c: 'sigaction']
-fn C.c2v_sigaction(int, &C.sigaction, &C.sigaction) int
+fn C.c2v_sigaction(i32, &C.sigaction, &C.sigaction) i32
 
 @[c: 'sigpending']
-fn C.c2v_sigpending(&u32) int
+fn C.c2v_sigpending(&u32) i32
 
 @[c: 'sigwait']
-fn C.c2v_sigwait(&u32, &int) int
+fn C.c2v_sigwait(&u32, &i32) i32
 
 @[c: 'sin']
 fn C.c2v_sin(f64) f64
 
 @[c: 'snprintf']
-fn C.c2v_snprintf(&i8, usize, &i8, ...voidptr) int
+fn C.c2v_snprintf(&i8, usize, &i8, ...voidptr) i32
 
 @[c: 'socket']
-fn C.c2v_socket(int, int, int) int
+fn C.c2v_socket(i32, i32, i32) i32
 
 @[c: 'sqrt']
 fn C.c2v_sqrt(f64) f64
 
 @[c: 'sscanf']
-fn C.c2v_sscanf(&i8, &i8, ...voidptr) int
+fn C.c2v_sscanf(&i8, &i8, ...voidptr) i32
 
 @[c: 'stat']
-fn C.c2v_stat(&i8, &C.stat) int
+fn C.c2v_stat(&i8, &C.stat) i32
 
 @[c: 'strcat']
 fn C.c2v_strcat(&i8, &i8) &i8
 
 @[c: 'strchr']
-fn C.c2v_strchr(&i8, int) &i8
+fn C.c2v_strchr(&i8, i32) &i8
 
 @[c: 'strchrnul']
-fn C.c2v_strchrnul(&i8, int) &i8
+fn C.c2v_strchrnul(&i8, i32) &i8
 
 @[c: 'strcmp']
-fn C.c2v_strcmp(&i8, &i8) int
+fn C.c2v_strcmp(&i8, &i8) i32
 
 @[c: 'strcpy']
 fn C.c2v_strcpy(&i8, &i8) &i8
@@ -37686,7 +37686,7 @@ fn C.c2v_strcpy(&i8, &i8) &i8
 fn C.c2v_strdup(&i8) &i8
 
 @[c: 'strerror_r']
-fn C.c2v_strerror_r(int, &i8, usize) int
+fn C.c2v_strerror_r(i32, &i8, usize) i32
 
 @[c: 'strftime']
 fn C.c2v_strftime(&i8, usize, &i8, &C.tm) usize
@@ -37704,7 +37704,7 @@ fn C.c2v_strlen(&i8) u64
 fn C.c2v_strncat(&i8, &i8, usize) &i8
 
 @[c: 'strncmp']
-fn C.c2v_strncmp(&i8, &i8, usize) int
+fn C.c2v_strncmp(&i8, &i8, usize) i32
 
 @[c: 'strnlen']
 fn C.c2v_strnlen(&i8, usize) usize
@@ -37713,7 +37713,7 @@ fn C.c2v_strnlen(&i8, usize) usize
 fn C.c2v_strpbrk(&i8, &i8) &i8
 
 @[c: 'strrchr']
-fn C.c2v_strrchr(&i8, int) &i8
+fn C.c2v_strrchr(&i8, i32) &i8
 
 @[c: 'strspn']
 fn C.c2v_strspn(&i8, &i8) u64
@@ -37722,21 +37722,21 @@ fn C.c2v_strspn(&i8, &i8) u64
 fn C.c2v_strstr(&i8, &i8) &i8
 
 @[c: 'strtol']
-fn C.c2v_strtol(&i8, &&u8, int) i64
+fn C.c2v_strtol(&i8, &&u8, i32) i64
 
 @[c: 'strtoul']
-fn C.c2v_strtoul(&i8, &&u8, int) u64
+fn C.c2v_strtoul(&i8, &&u8, i32) u64
 
 @[c: 'timingsafe_bcmp']
-fn C.c2v_timingsafe_bcmp(voidptr, voidptr, usize) int
+fn C.c2v_timingsafe_bcmp(voidptr, voidptr, usize) i32
 
 @[c: 'tolower']
-fn C.c2v_tolower(int) int
+fn C.c2v_tolower(i32) i32
 
 @[c: 'toupper']
-fn C.c2v_toupper(int) int
+fn C.c2v_toupper(i32) i32
 
 @[c: 'write']
-fn C.c2v_write(int, voidptr, usize) isize
+fn C.c2v_write(i32, voidptr, usize) isize
 
-pub type C2vFn_666e2028504761757468446174612c20265047636f6e6e2c20766f69647074722920696e74 = fn (PGauthData, &PGconn, voidptr) int
+pub type C2vFn_666e2028504761757468446174612c20265047636f6e6e2c20766f69647074722920693332 = fn (PGauthData, &PGconn, voidptr) i32

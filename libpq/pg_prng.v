@@ -2,22 +2,22 @@
 module libpq
 
 @[markused]
-pub fn libpq_pg_prng_pg_leftmost_one_pos32(word Uint32) int {
+pub fn libpq_pg_prng_pg_leftmost_one_pos32(word Uint32) i32 {
 	return 31 - C.c2v___builtin_clz(word)
 }
 
 @[markused]
-pub fn libpq_pg_prng_pg_leftmost_one_pos64(word Uint64) int {
+pub fn libpq_pg_prng_pg_leftmost_one_pos64(word Uint64) i32 {
 	return 63 - C.c2v___builtin_clzl(u64(word))
 }
 
 @[markused]
-pub fn libpq_pg_prng_pg_rightmost_one_pos32(word Uint32) int {
+pub fn libpq_pg_prng_pg_rightmost_one_pos32(word Uint32) i32 {
 	return C.c2v___builtin_ctz(word)
 }
 
 @[markused]
-pub fn libpq_pg_prng_pg_rightmost_one_pos64(word Uint64) int {
+pub fn libpq_pg_prng_pg_rightmost_one_pos64(word Uint64) i32 {
 	return C.c2v___builtin_ctzl(u64(word))
 }
 
@@ -66,8 +66,8 @@ pub fn libpq_pg_prng_pg_ceil_log2_64(num Uint64) Uint64 {
 }
 
 @[markused]
-pub fn libpq_pg_prng_pg_popcount(buf &i8, bytes int) Uint64 {
-	threshold := 8
+pub fn libpq_pg_prng_pg_popcount(buf &i8, bytes i32) Uint64 {
+	threshold := i32(8)
 	if bytes < threshold {
 		popcnt := Uint64(0)
 		for bytes-- {
@@ -79,12 +79,12 @@ pub fn libpq_pg_prng_pg_popcount(buf &i8, bytes int) Uint64 {
 }
 
 @[markused]
-pub fn libpq_pg_prng_pg_popcount_masked(buf &i8, bytes int, mask Bits8) Uint64 {
-	threshold := 8
+pub fn libpq_pg_prng_pg_popcount_masked(buf &i8, bytes i32, mask Bits8) Uint64 {
+	threshold := i32(8)
 	if bytes < threshold {
 		popcnt := Uint64(0)
 		for bytes-- {
-			popcnt += Uint64(pg_number_of_ones[int(u8((unsafe { *c2v_pointer_postfix(voidptr(&buf), buf, isize(1)) }))) & int(mask)])
+			popcnt += Uint64(pg_number_of_ones[i32(u8((unsafe { *c2v_pointer_postfix(voidptr(&buf), buf, isize(1)) }))) & i32(mask)])
 		}
 		return popcnt
 	}
@@ -92,17 +92,17 @@ pub fn libpq_pg_prng_pg_popcount_masked(buf &i8, bytes int, mask Bits8) Uint64 {
 }
 
 @[markused]
-pub fn libpq_pg_prng_pg_rotate_right32(word Uint32, n int) Uint32 {
+pub fn libpq_pg_prng_pg_rotate_right32(word Uint32, n i32) Uint32 {
 	return (word >> n) | (word << (32 - n))
 }
 
 @[markused]
-pub fn libpq_pg_prng_pg_rotate_left32(word Uint32, n int) Uint32 {
+pub fn libpq_pg_prng_pg_rotate_left32(word Uint32, n i32) Uint32 {
 	return (word << n) | (word >> (32 - n))
 }
 
 @[markused]
-pub fn rotl(x Uint64, bits int) Uint64 {
+pub fn rotl(x Uint64, bits i32) Uint64 {
 	return (x << bits) | (x >> (64 - bits))
 }
 

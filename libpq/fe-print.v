@@ -25,11 +25,11 @@ pub fn libpq_fe_print_pg_mul_s16_overflow(a Int16, b Int16, result &Int16) bool 
 
 @[markused]
 pub fn libpq_fe_print_pg_neg_s16_overflow(a Int16, result &Int16) bool {
-	if (i64((int(a) == -32768) != 0)) {
+	if (i64((i32(a) == -32768) != 0)) {
 		unsafe { *result = Int16(24301) }
 		return true != 0
 	}
-	unsafe { *result = Int16(-int(a)) }
+	unsafe { *result = Int16(-i32(a)) }
 	return false != 0
 }
 
@@ -139,8 +139,8 @@ pub fn libpq_fe_print_pg_abs_s64(a Int64) Uint64 {
 
 @[markused]
 pub fn libpq_fe_print_pg_add_u16_overflow(a Uint16, b Uint16, result &Uint16) bool {
-	res := Uint16(int(a) + int(b))
-	if int(res) < int(a) {
+	res := Uint16(i32(a) + i32(b))
+	if i32(res) < i32(a) {
 		unsafe { *result = Uint16(24301) }
 		return true != 0
 	}
@@ -150,11 +150,11 @@ pub fn libpq_fe_print_pg_add_u16_overflow(a Uint16, b Uint16, result &Uint16) bo
 
 @[markused]
 pub fn libpq_fe_print_pg_sub_u16_overflow(a Uint16, b Uint16, result &Uint16) bool {
-	if int(b) > int(a) {
+	if i32(b) > i32(a) {
 		unsafe { *result = Uint16(24301) }
 		return true != 0
 	}
-	unsafe { *result = Uint16(int(a) - int(b)) }
+	unsafe { *result = Uint16(i32(a) - i32(b)) }
 	return false != 0
 }
 
@@ -299,38 +299,38 @@ pub fn libpq_fe_print_pg_mul_size_overflow(a usize, b usize, result &usize) bool
 }
 
 @[markused]
-pub fn libpq_fe_print_pg_cmp_s16(a Int16, b Int16) int {
+pub fn libpq_fe_print_pg_cmp_s16(a Int16, b Int16) i32 {
 	return Int32(a) - Int32(b)
 }
 
 @[markused]
-pub fn libpq_fe_print_pg_cmp_u16(a Uint16, b Uint16) int {
+pub fn libpq_fe_print_pg_cmp_u16(a Uint16, b Uint16) i32 {
 	return Int32(a) - Int32(b)
 }
 
 @[markused]
-pub fn libpq_fe_print_pg_cmp_s32(a Int32, b Int32) int {
-	return int((a > b)) - int((a < b))
+pub fn libpq_fe_print_pg_cmp_s32(a Int32, b Int32) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 @[markused]
-pub fn libpq_fe_print_pg_cmp_u32(a Uint32, b Uint32) int {
-	return int((a > b)) - int((a < b))
+pub fn libpq_fe_print_pg_cmp_u32(a Uint32, b Uint32) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 @[markused]
-pub fn libpq_fe_print_pg_cmp_s64(a Int64, b Int64) int {
-	return int((a > b)) - int((a < b))
+pub fn libpq_fe_print_pg_cmp_s64(a Int64, b Int64) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 @[markused]
-pub fn libpq_fe_print_pg_cmp_u64(a Uint64, b Uint64) int {
-	return int((a > b)) - int((a < b))
+pub fn libpq_fe_print_pg_cmp_u64(a Uint64, b Uint64) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 @[markused]
-pub fn libpq_fe_print_pg_cmp_size(a usize, b usize) int {
-	return int((a > b)) - int((a < b))
+pub fn libpq_fe_print_pg_cmp_size(a usize, b usize) i32 {
+	return i32((a > b)) - i32((a < b))
 }
 
 pub type PGcancelConn_fe_print = Pg_cancel_conn
@@ -339,28 +339,28 @@ pub type PGcancel_fe_print = Pg_cancel
 
 @[markused]
 pub fn libpq_fe_print_is_unixsock_path(path &i8) bool {
-	return (int(path[false]) == i8(`/`)) || int(path[false]) == i8(`@`)
+	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
 }
 
 @[export: 'PQprint']
 @[markused]
 pub fn pq_print(fout &C.FILE, res &PGresult, po &PQprintOpt) {
-	n_fields := 0
+	n_fields := i32(0)
 	n_fields = pq_nfields(res)
 	if n_fields > 0 {
-		i := 0
-		j := 0
+		i := i32(0)
+		j := i32(0)
 
-		n_tups := 0
-		field_max := unsafe { &int(nil) }
+		n_tups := i32(0)
+		field_max := unsafe { &i32(nil) }
 		field_not_num := unsafe { &u8(nil) }
 		border := unsafe { &i8(nil) }
 		fields := unsafe { &&u8(nil) }
 		field_names := unsafe { &&u8(nil) }
-		field_max_len := 0
-		num_field_name := 0
-		fs_len := int(C.c2v_strlen(po.fieldSep))
-		total_line_length := 0
+		field_max_len := i32(0)
+		num_field_name := i32(0)
+		fs_len := i32(C.c2v_strlen(po.fieldSep))
+		total_line_length := i32(0)
 		use_pipe := (0 != 0)
 		pagerenv := &i8(0)
 		osigset := u32(0)
@@ -376,7 +376,7 @@ pub fn pq_print(fout &C.FILE, res &PGresult, po &PQprintOpt) {
 		n_tups = pq_ntuples(res)
 		field_names = &&u8(C.c2v_calloc(u64(n_fields), sizeof(voidptr)))
 		field_not_num = &u8(C.c2v_calloc(u64(n_fields), u64(1)))
-		field_max = &int(C.c2v_calloc(u64(n_fields), sizeof(int)))
+		field_max = &i32(C.c2v_calloc(u64(n_fields), sizeof(i32)))
 		if isnil(field_names) || isnil(field_not_num) || isnil(field_max) {
 			pg_fprintf(C.stderr, unsafe { &i8(&c'out of memory\n'[0]) })
 			unsafe {
@@ -386,14 +386,14 @@ pub fn pq_print(fout &C.FILE, res &PGresult, po &PQprintOpt) {
 		for num_field_name = 0; !isnil(po.fieldName) && !isnil(po.fieldName[num_field_name]); num_field_name++ {
 		}
 		for j = 0; j < n_fields; j++ {
-			len := 0
-			s := if (j < num_field_name && int(po.fieldName[j][0])) {
+			len := i32(0)
+			s := if (j < num_field_name && i32(po.fieldName[j][0])) {
 				po.fieldName[j]
 			} else {
 				pq_fname(res, j)
 			}
 			field_names[j] = s
-			len = int(if s { C.c2v_strlen(s) } else { u64(0) })
+			len = i32(if s { C.c2v_strlen(s) } else { u64(0) })
 			field_max[j] = len
 			len += fs_len
 			if len > field_max_len {
@@ -405,19 +405,19 @@ pub fn pq_print(fout &C.FILE, res &PGresult, po &PQprintOpt) {
 		if usize(fout) == usize((voidptr(0))) {
 			fout = C.stdout
 		}
-		if int(po.pager) && usize(fout) == usize(C.stdout) && C.c2v_isatty(C.c2v_fileno(C.stdin)) && C.c2v_isatty(C.c2v_fileno(C.stdout)) {
+		if i32(po.pager) && usize(fout) == usize(C.stdout) && C.c2v_isatty(C.c2v_fileno(C.stdin)) && C.c2v_isatty(C.c2v_fileno(C.stdout)) {
 			mut __c2v_condition_0 := false
 			mut __c2v_condition_1 := false
 			__c2v_condition_1 = C.c2v_ioctl(C.c2v_fileno(C.stdout), (u64(u32(1073741824)) | ((sizeof(C.winsize) & u64(8191)) << 16) | u64((`t` << 8)) | u64(104)), &screen_size) == -1
 			__c2v_condition_0 = __c2v_condition_1
 			if !__c2v_condition_0 {
 				mut __c2v_condition_2 := false
-				__c2v_condition_2 = int(screen_size.ws_col) == 0
+				__c2v_condition_2 = i32(screen_size.ws_col) == 0
 				__c2v_condition_0 = __c2v_condition_2
 			}
 			if !__c2v_condition_0 {
 				mut __c2v_condition_3 := false
-				__c2v_condition_3 = int(screen_size.ws_row) == 0
+				__c2v_condition_3 = i32(screen_size.ws_row) == 0
 				__c2v_condition_0 = __c2v_condition_3
 			}
 			if __c2v_condition_0 {
@@ -435,7 +435,7 @@ pub fn pq_print(fout &C.FILE, res &PGresult, po &PQprintOpt) {
 				__c2v_condition_5 = !po.html3
 			}
 			if __c2v_condition_5 {
-				__c2v_condition_5 = ((int(po.expanded) && n_tups * (n_fields + 1) >= int(screen_size.ws_row)) || (!po.expanded && n_tups * (total_line_length / int(screen_size.ws_col) + 1) * (1 + int((int(po.standard) != 0))) >= int(screen_size.ws_row) - int((int(po.header) != 0)) * (total_line_length / int(screen_size.ws_col) + 1) * 2 - int((int(po.header) != 0)) * 2))
+				__c2v_condition_5 = ((i32(po.expanded) && n_tups * (n_fields + 1) >= i32(screen_size.ws_row)) || (!po.expanded && n_tups * (total_line_length / i32(screen_size.ws_col) + 1) * (1 + i32((i32(po.standard) != 0))) >= i32(screen_size.ws_row) - i32((i32(po.header) != 0)) * (total_line_length / i32(screen_size.ws_col) + 1) * 2 - i32((i32(po.header) != 0)) * 2))
 			}
 			__c2v_condition_4 = __c2v_condition_5
 			if __c2v_condition_4 {
@@ -451,7 +451,7 @@ pub fn pq_print(fout &C.FILE, res &PGresult, po &PQprintOpt) {
 				}
 			}
 		}
-		if !po.expanded && (int(po.align) || int(po.html3)) {
+		if !po.expanded && (i32(po.align) || i32(po.html3)) {
 			fields = &&u8(C.c2v_calloc(usize(n_tups) + usize(1), u64(n_fields) * sizeof(voidptr)))
 			if isnil(fields) {
 				pg_fprintf(C.stderr, unsafe { &i8(&c'out of memory\n'[0]) })
@@ -459,7 +459,7 @@ pub fn pq_print(fout &C.FILE, res &PGresult, po &PQprintOpt) {
 					goto exit
 				}
 			}
-		} else if int(po.header) && !po.html3 {
+		} else if i32(po.header) && !po.html3 {
 			if po.expanded {
 				if po.align {
 					pg_fprintf(fout, unsafe { &i8(&c'%-*s%s Value\n'[0]) }, field_max_len - fs_len, voidptr(unsafe { &c'Field'[0] }), voidptr(po.fieldSep))
@@ -467,7 +467,7 @@ pub fn pq_print(fout &C.FILE, res &PGresult, po &PQprintOpt) {
 					pg_fprintf(fout, unsafe { &i8(&c'%s%sValue\n'[0]) }, voidptr(unsafe { &c'Field'[0] }), voidptr(po.fieldSep))
 				}
 			} else {
-				len := 0
+				len := i32(0)
 				for j = 0; j < n_fields; j++ {
 					s := field_names[j]
 					C.c2v_fputs(s, fout)
@@ -484,7 +484,7 @@ pub fn pq_print(fout &C.FILE, res &PGresult, po &PQprintOpt) {
 				C.c2v_fputc(`\n`, fout)
 			}
 		}
-		if int(po.expanded) && int(po.html3) {
+		if i32(po.expanded) && i32(po.html3) {
 			if po.caption {
 				pg_fprintf(fout, c'<center><h2>%s</h2></center>\n', voidptr(po.caption))
 			} else {
@@ -510,11 +510,11 @@ pub fn pq_print(fout &C.FILE, res &PGresult, po &PQprintOpt) {
 					}
 				}
 			}
-			if int(po.html3) && int(po.expanded) {
+			if i32(po.html3) && i32(po.expanded) {
 				C.c2v_fputs(c'</table>\n', fout)
 			}
 		}
-		if !po.expanded && (int(po.align) || int(po.html3)) {
+		if !po.expanded && (i32(po.align) || i32(po.html3)) {
 			if po.html3 {
 				if po.header {
 					if po.caption {
@@ -545,14 +545,14 @@ pub fn pq_print(fout &C.FILE, res &PGresult, po &PQprintOpt) {
 				output_row(fout, po, n_fields, fields, field_not_num, field_max, border, i)
 			}
 		}
-		if int(po.header) && !po.html3 {
+		if i32(po.header) && !po.html3 {
 			pg_fprintf(fout, c'(%d row%s)\n\n', pq_ntuples(res), voidptr(if (pq_ntuples(res) == 1) {
 				c''
 			} else {
 				c's'
 			}))
 		}
-		if int(po.html3) && !po.expanded {
+		if i32(po.html3) && !po.expanded {
 			C.c2v_fputs(c'</table>\n', fout)
 		}
 		exit:
@@ -577,16 +577,16 @@ pub fn pq_print(fout &C.FILE, res &PGresult, po &PQprintOpt) {
 }
 
 @[markused]
-pub fn do_field(po &PQprintOpt, res &PGresult, i int, j int, fs_len int, fields &&u8, n_fields int, field_names &&u8, field_not_num &u8, field_max &int, field_max_len int, fout &C.FILE) bool {
+pub fn do_field(po &PQprintOpt, res &PGresult, i i32, j i32, fs_len i32, fields &&u8, n_fields i32, field_names &&u8, field_not_num &u8, field_max &i32, field_max_len i32, fout &C.FILE) bool {
 	pval := &i8(0)
 	p := &i8(0)
 
-	plen := 0
+	plen := i32(0)
 	skipit := false
 	plen = pq_getlength(res, i, j)
 	pval = pq_getvalue(res, i, j)
 	if plen < 1 || isnil(pval) || !(unsafe { *pval }) {
-		if int(po.align) || int(po.expanded) {
+		if i32(po.align) || i32(po.expanded) {
 			skipit = (1 != 0)
 		} else {
 			skipit = (0 != 0)
@@ -598,20 +598,20 @@ pub fn do_field(po &PQprintOpt, res &PGresult, i int, j int, fs_len int, fields 
 		skipit = (0 != 0)
 	}
 	if !skipit {
-		if int(po.align) && !field_not_num[j] {
+		if i32(po.align) && !field_not_num[j] {
 			ch := i8(`0`)
 			for p = pval; (unsafe { *p }); p = unsafe { p + pq_mblen_bounded(p, res.client_encoding) } {
 				ch = unsafe { *p }
-				if !((int(ch) >= i8(`0`) && int(ch) <= i8(`9`)) || int(ch) == i8(`.`) || int(ch) == i8(`E`) || int(ch) == i8(`e`) || int(ch) == i8(` `) || int(ch) == i8(`-`)) {
+				if !((i32(ch) >= i8(`0`) && i32(ch) <= i8(`9`)) || i32(ch) == i8(`.`) || i32(ch) == i8(`E`) || i32(ch) == i8(`e`) || i32(ch) == i8(` `) || i32(ch) == i8(`-`)) {
 					field_not_num[j] = u8(1)
 					break
 				}
 			}
-			if int((unsafe { *pval })) == i8(`E`) || int((unsafe { *pval })) == i8(`e`) || !(int(ch) >= i8(`0`) && int(ch) <= i8(`9`)) {
+			if i32((unsafe { *pval })) == i8(`E`) || i32((unsafe { *pval })) == i8(`e`) || !(i32(ch) >= i8(`0`) && i32(ch) <= i8(`9`)) {
 				field_not_num[j] = u8(1)
 			}
 		}
-		if !po.expanded && (int(po.align) || int(po.html3)) {
+		if !po.expanded && (i32(po.align) || i32(po.html3)) {
 			if plen > field_max[j] {
 				field_max[j] = plen
 			}
@@ -624,7 +624,7 @@ pub fn do_field(po &PQprintOpt, res &PGresult, i int, j int, fs_len int, fields 
 		} else {
 			if po.expanded {
 				if po.html3 {
-					pg_fprintf(fout, c'<tr><td align="left"><b>%s</b></td><td align="%s">%s</td></tr>\n', voidptr(field_names[j]), voidptr(if int(field_not_num[j]) {
+					pg_fprintf(fout, c'<tr><td align="left"><b>%s</b></td><td align="%s">%s</td></tr>\n', voidptr(field_names[j]), voidptr(if i32(field_not_num[j]) {
 						c'left'
 					} else {
 						c'right'
@@ -653,28 +653,28 @@ pub fn do_field(po &PQprintOpt, res &PGresult, i int, j int, fs_len int, fields 
 }
 
 @[markused]
-pub fn do_header(fout &C.FILE, po &PQprintOpt, n_fields int, field_max &int, field_names &&u8, field_not_num &u8, fs_len int, res &PGresult) &i8 {
-	j := 0
+pub fn do_header(fout &C.FILE, po &PQprintOpt, n_fields i32, field_max &i32, field_names &&u8, field_not_num &u8, fs_len i32, res &PGresult) &i8 {
+	j := i32(0)
 	border := unsafe { &i8(nil) }
 	if po.html3 {
 		C.c2v_fputs(c'<tr>', fout)
 	} else {
 		tot := usize(0)
-		n := 0
+		n := i32(0)
 		p := unsafe { &i8(nil) }
 		for ; n < n_fields; n++ {
 			mut __c2v_condition_6 := false
 			mut __c2v_condition_7 := false
-			__c2v_condition_7 = int(libpq_fe_print_pg_add_size_overflow(tot, usize(field_max[n]), &tot))
+			__c2v_condition_7 = i32(libpq_fe_print_pg_add_size_overflow(tot, usize(field_max[n]), &tot))
 			__c2v_condition_6 = __c2v_condition_7
 			if !__c2v_condition_6 {
 				mut __c2v_condition_8 := false
-				__c2v_condition_8 = int(libpq_fe_print_pg_add_size_overflow(tot, usize(fs_len), &tot))
+				__c2v_condition_8 = i32(libpq_fe_print_pg_add_size_overflow(tot, usize(fs_len), &tot))
 				__c2v_condition_6 = __c2v_condition_8
 			}
 			if !__c2v_condition_6 {
 				mut __c2v_condition_9 := false
-				__c2v_condition_9 = (int(po.standard) && int(libpq_fe_print_pg_add_size_overflow(tot, usize(2), &tot)))
+				__c2v_condition_9 = (i32(po.standard) && i32(libpq_fe_print_pg_add_size_overflow(tot, usize(2), &tot)))
 				__c2v_condition_6 = __c2v_condition_9
 			}
 			if __c2v_condition_6 {
@@ -686,16 +686,16 @@ pub fn do_header(fout &C.FILE, po &PQprintOpt, n_fields int, field_max &int, fie
 		if po.standard {
 			mut __c2v_condition_10 := false
 			mut __c2v_condition_11 := false
-			__c2v_condition_11 = int(libpq_fe_print_pg_add_size_overflow(tot, usize(fs_len), &tot))
+			__c2v_condition_11 = i32(libpq_fe_print_pg_add_size_overflow(tot, usize(fs_len), &tot))
 			__c2v_condition_10 = __c2v_condition_11
 			if !__c2v_condition_10 {
 				mut __c2v_condition_12 := false
-				__c2v_condition_12 = int(libpq_fe_print_pg_add_size_overflow(tot, usize(fs_len), &tot))
+				__c2v_condition_12 = i32(libpq_fe_print_pg_add_size_overflow(tot, usize(fs_len), &tot))
 				__c2v_condition_10 = __c2v_condition_12
 			}
 			if !__c2v_condition_10 {
 				mut __c2v_condition_13 := false
-				__c2v_condition_13 = int(libpq_fe_print_pg_add_size_overflow(tot, usize(2), &tot))
+				__c2v_condition_13 = i32(libpq_fe_print_pg_add_size_overflow(tot, usize(2), &tot))
 				__c2v_condition_10 = __c2v_condition_13
 			}
 			if __c2v_condition_10 {
@@ -723,13 +723,13 @@ pub fn do_header(fout &C.FILE, po &PQprintOpt, n_fields int, field_max &int, fie
 			}
 		}
 		for j = 0; j < n_fields; j++ {
-			len := 0
-			len = field_max[j] + (if int(po.standard) { 2 } else { 0 })
+			len := i32(0)
+			len = field_max[j] + (if i32(po.standard) { 2 } else { 0 })
 			for len-- {
 				mut __c2v_lhs_tmp_1 := unsafe { c2v_pointer_postfix(voidptr(&p), p, isize(1)) }
 				unsafe { *__c2v_lhs_tmp_1 = i8(`-`) }
 			}
-			if int(po.standard) || (j + 1) < n_fields {
+			if i32(po.standard) || (j + 1) < n_fields {
 				fs := po.fieldSep
 				for (unsafe { *c2v_pointer_postfix(voidptr(&fs), fs, isize(1)) }) {
 					mut __c2v_lhs_tmp_2 := unsafe { c2v_pointer_postfix(voidptr(&p), p, isize(1)) }
@@ -748,22 +748,22 @@ pub fn do_header(fout &C.FILE, po &PQprintOpt, n_fields int, field_max &int, fie
 	for j = 0; j < n_fields; j++ {
 		s := pq_fname(res, j)
 		if po.html3 {
-			pg_fprintf(fout, c'<th align="%s">%s</th>', voidptr(if int(field_not_num[j]) {
+			pg_fprintf(fout, c'<th align="%s">%s</th>', voidptr(if i32(field_not_num[j]) {
 				c'left'
 			} else {
 				c'right'
 			}), voidptr(field_names[j]))
 		} else {
-			n := int(C.c2v_strlen(s))
+			n := i32(C.c2v_strlen(s))
 			if n > field_max[j] {
 				field_max[j] = n
 			}
 			if po.standard {
-				pg_fprintf(fout, unsafe { if int(field_not_num[j]) { c' %-*s ' } else { c' %*s ' } }, field_max[j], voidptr(s))
+				pg_fprintf(fout, unsafe { if i32(field_not_num[j]) { c' %-*s ' } else { c' %*s ' } }, field_max[j], voidptr(s))
 			} else {
-				pg_fprintf(fout, unsafe { if int(field_not_num[j]) { c'%-*s' } else { c'%*s' } }, field_max[j], voidptr(s))
+				pg_fprintf(fout, unsafe { if i32(field_not_num[j]) { c'%-*s' } else { c'%*s' } }, field_max[j], voidptr(s))
 			}
-			if int(po.standard) || (j + 1) < n_fields {
+			if i32(po.standard) || (j + 1) < n_fields {
 				C.c2v_fputs(po.fieldSep, fout)
 			}
 		}
@@ -780,8 +780,8 @@ pub fn do_header(fout &C.FILE, po &PQprintOpt, n_fields int, field_max &int, fie
 }
 
 @[markused]
-pub fn output_row(fout &C.FILE, po &PQprintOpt, n_fields int, fields &&u8, field_not_num &u8, field_max &int, border &i8, row_index int) {
-	field_index := 0
+pub fn output_row(fout &C.FILE, po &PQprintOpt, n_fields i32, fields &&u8, field_not_num &u8, field_max &i32, border &i8, row_index i32) {
+	field_index := i32(0)
 	if po.html3 {
 		C.c2v_fputs(c'<tr>', fout)
 	} else if po.standard {
@@ -790,20 +790,20 @@ pub fn output_row(fout &C.FILE, po &PQprintOpt, n_fields int, fields &&u8, field
 	for field_index = 0; field_index < n_fields; field_index++ {
 		p := fields[row_index * n_fields + field_index]
 		if po.html3 {
-			pg_fprintf(fout, c'<td align="%s">%s</td>', voidptr(if int(field_not_num[field_index]) {
+			pg_fprintf(fout, c'<td align="%s">%s</td>', voidptr(if i32(field_not_num[field_index]) {
 				c'left'
 			} else {
 				c'right'
 			}), voidptr(if p { p } else { c'' }))
 		} else {
 			pg_fprintf(fout, unsafe {
-				if int(field_not_num[field_index]) {
-					if int(po.standard) { c' %-*s ' } else { c'%-*s' }
+				if i32(field_not_num[field_index]) {
+					if i32(po.standard) { c' %-*s ' } else { c'%-*s' }
 				} else {
-					if int(po.standard) { c' %*s ' } else { c'%*s' }
+					if i32(po.standard) { c' %*s ' } else { c'%*s' }
 				}
 			}, field_max[field_index], voidptr(if p { p } else { c'' }))
-			if int(po.standard) || field_index + 1 < n_fields {
+			if i32(po.standard) || field_index + 1 < n_fields {
 				C.c2v_fputs(po.fieldSep, fout)
 			}
 		}
@@ -818,13 +818,13 @@ pub fn output_row(fout &C.FILE, po &PQprintOpt, n_fields int, fields &&u8, field
 
 @[export: 'PQdisplayTuples']
 @[markused]
-pub fn pq_display_tuples(res &PGresult, fp &C.FILE, fill_align int, field_sep &i8, print_header int, quiet int) {
-	i := 0
-	j := 0
+pub fn pq_display_tuples(res &PGresult, fp &C.FILE, fill_align i32, field_sep &i8, print_header i32, quiet i32) {
+	i := i32(0)
+	j := i32(0)
 
-	n_fields := 0
-	n_tuples := 0
-	f_length := unsafe { &int(nil) }
+	n_fields := i32(0)
+	n_tuples := i32(0)
+	f_length := unsafe { &i32(nil) }
 	if usize(field_sep) == usize((voidptr(0))) {
 		field_sep = c' '
 	}
@@ -834,13 +834,13 @@ pub fn pq_display_tuples(res &PGresult, fp &C.FILE, fill_align int, field_sep &i
 		fp = C.stdout
 	}
 	if fill_align {
-		f_length = &int(C.c2v_malloc(u64(n_fields) * sizeof(int)))
+		f_length = &i32(C.c2v_malloc(u64(n_fields) * sizeof(i32)))
 		if isnil(f_length) {
 			pg_fprintf(C.stderr, unsafe { &i8(&c'out of memory\n'[0]) })
 			return
 		}
 		for j = 0; j < n_fields; j++ {
-			f_length[j] = int(C.c2v_strlen(pq_fname(res, j)))
+			f_length[j] = i32(C.c2v_strlen(pq_fname(res, j)))
 			for i = 0; i < n_tuples; i++ {
 				flen := pq_getlength(res, i, j)
 				if flen > f_length[j] {
@@ -853,7 +853,7 @@ pub fn pq_display_tuples(res &PGresult, fp &C.FILE, fill_align int, field_sep &i
 		for i = 0; i < n_fields; i++ {
 			C.c2v_fputs(pq_fname(res, i), fp)
 			if fill_align {
-				fill(int(C.c2v_strlen(pq_fname(res, i))), f_length[i], i8(` `), fp)
+				fill(i32(C.c2v_strlen(pq_fname(res, i))), f_length[i], i8(` `), fp)
 			}
 			C.c2v_fputs(field_sep, fp)
 		}
@@ -870,7 +870,7 @@ pub fn pq_display_tuples(res &PGresult, fp &C.FILE, fill_align int, field_sep &i
 		for j = 0; j < n_fields; j++ {
 			pg_fprintf(fp, c'%s', voidptr(pq_getvalue(res, i, j)))
 			if fill_align {
-				fill(int(C.c2v_strlen(pq_getvalue(res, i, j))), f_length[j], i8(` `), fp)
+				fill(i32(C.c2v_strlen(pq_getvalue(res, i, j))), f_length[j], i8(` `), fp)
 			}
 			C.c2v_fputs(field_sep, fp)
 		}
@@ -889,11 +889,11 @@ pub fn pq_display_tuples(res &PGresult, fp &C.FILE, fill_align int, field_sep &i
 
 @[export: 'PQprintTuples']
 @[markused]
-pub fn pq_print_tuples(res &PGresult, fout &C.FILE, print_att_names int, terse_output int, col_width int) {
-	n_fields := 0
-	n_tups := 0
-	i := 0
-	j := 0
+pub fn pq_print_tuples(res &PGresult, fout &C.FILE, print_att_names i32, terse_output i32, col_width i32) {
+	n_fields := i32(0)
+	n_tups := i32(0)
+	i := i32(0)
+	j := i32(0)
 
 	format_string := [80]i8{}
 	tborder := unsafe { &i8(nil) }
@@ -906,7 +906,7 @@ pub fn pq_print_tuples(res &PGresult, fout &C.FILE, print_att_names int, terse_o
 	}
 	if n_fields > 0 {
 		if !terse_output {
-			width := 0
+			width := i32(0)
 			width = n_fields * 14
 			tborder = &i8(C.c2v_malloc(u64(width + 1)))
 			if isnil(tborder) {
@@ -955,10 +955,10 @@ pub fn pq_print_tuples(res &PGresult, fout &C.FILE, print_att_names int, terse_o
 }
 
 @[markused]
-pub fn fill(length int, max int, filler i8, fp &C.FILE) {
-	count := 0
+pub fn fill(length i32, max i32, filler i8, fp &C.FILE) {
+	count := i32(0)
 	count = max - length
 	for count-- >= 0 {
-		C.c2v_putc(int(filler), fp)
+		C.c2v_putc(i32(filler), fp)
 	}
 }

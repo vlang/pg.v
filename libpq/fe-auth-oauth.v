@@ -54,15 +54,15 @@ pub struct JsonLexContext {
 pub mut:
 	input                 &i8
 	input_length          usize
-	input_encoding        int
+	input_encoding        i32
 	token_start           &i8
 	token_terminator      &i8
 	prev_token_terminator &i8
 	incremental           bool
 	token_type            JsonTokenType
-	lex_level             int
+	lex_level             i32
 	flags                 Bits32
-	line_number           int
+	line_number           i32
 	line_start            &i8
 	pstack                &JsonParserStack
 	inc_state             &JsonIncrementalState
@@ -186,7 +186,7 @@ pub type PGcancel = C.Pg_cancel
 pub struct PGnotify {
 pub mut:
 	relname &i8
-	be_pid  int
+	be_pid  i32
 	extra   &i8
 	next    &PGnotify
 }
@@ -221,19 +221,19 @@ pub mut:
 	val      &i8
 	label    &i8
 	dispchar &i8
-	dispsize int
+	dispsize i32
 }
 
 pub union PQArgBlock_u {
 pub mut:
-	ptr     &int
-	integer int
+	ptr     &i32
+	integer i32
 }
 
 pub struct PQArgBlock {
 pub mut:
-	len   int
-	isint int
+	len   i32
+	isint i32
 	u     PQArgBlock_u
 }
 
@@ -241,36 +241,36 @@ pub struct PGresAttDesc {
 pub mut:
 	name      &i8
 	tableid   Oid
-	columnid  int
-	format    int
+	columnid  i32
+	format    i32
 	typid     Oid
-	typlen    int
-	atttypmod int
+	typlen    i32
+	atttypmod i32
 }
 
-pub type Pgthreadlock_t = fn (int)
+pub type Pgthreadlock_t = fn (i32)
 
 pub struct PGpromptOAuthDevice {
 pub mut:
 	verification_uri          &i8
 	user_code                 &i8
 	verification_uri_complete &i8
-	expires_in                int
+	expires_in                i32
 }
 
 pub struct PGoauthBearerRequest {
 pub mut:
 	openid_configuration &i8
 	scope                &i8
-	async                fn (&PGconn, &PGoauthBearerRequest, &int) PostgresPollingStatusType
+	async                fn (&PGconn, &PGoauthBearerRequest, &i32) PostgresPollingStatusType
 	cleanup              fn (&PGconn, &PGoauthBearerRequest)
 	token                &i8
 	user                 voidptr
 }
 
-pub type PQauthDataHook_type = fn (PGauthData, &PGconn, voidptr) int
+pub type PQauthDataHook_type = fn (PGauthData, &PGconn, voidptr) i32
 
-pub type PQsslKeyPassHook_OpenSSL_type = fn (&i8, int, &PGconn) int
+pub type PQsslKeyPassHook_OpenSSL_type = fn (&i8, i32, &PGconn) i32
 
 pub enum PGEventId {
 	pgevt_register
@@ -313,7 +313,7 @@ pub mut:
 	result &PGresult
 }
 
-pub type PGEventProc = fn (PGEventId, voidptr, voidptr) int
+pub type PGEventProc = fn (PGEventId, voidptr, voidptr) i32
 
 pub struct SockAddr {
 pub mut:
@@ -323,13 +323,13 @@ pub mut:
 
 pub struct AddrInfo {
 pub mut:
-	family int
+	family i32
 	addr   SockAddr
 }
 
 @[markused]
 pub fn is_unixsock_path(path &i8) bool {
-	return (int(path[false]) == i8(`/`)) || int(path[false]) == i8(`@`)
+	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
 }
 
 pub type ProtocolVersion = u32
@@ -357,7 +357,7 @@ pub enum SASLStatus {
 pub struct Pg_fe_sasl_mech {
 pub mut:
 	init          fn (&PGconn, &i8, &i8) voidptr
-	exchange      fn (voidptr, bool, &i8, int, &&u8, &int) SASLStatus
+	exchange      fn (voidptr, bool, &i8, i32, &&u8, &i32) SASLStatus
 	channel_bound fn (voidptr) bool
 	free_         fn (voidptr)
 }
@@ -392,7 +392,7 @@ pub mut:
 
 pub struct PGresAttValue {
 pub mut:
-	len   int
+	len   i32
 	value &i8
 }
 
@@ -422,27 +422,27 @@ pub mut:
 
 pub struct Pg_result {
 pub mut:
-	ntups           int
-	numAttributes   int
+	ntups           i32
+	numAttributes   i32
 	attDescs        &PGresAttDesc
 	tuples          &&PGresAttValue
-	tupArrSize      int
-	numParameters   int
+	tupArrSize      i32
+	numParameters   i32
 	paramDescs      &PGresParamDesc
 	resultStatus    ExecStatusType
 	cmdStatus       [64]i8
-	binary          int
+	binary          i32
 	noticeHooks     PGNoticeHooks
 	events          &PGEvent
-	nEvents         int
-	client_encoding int
+	nEvents         i32
+	client_encoding i32
 	errMsg          &i8
 	errFields       &PGMessageField
 	errQuery        &i8
 	null_field      [1]i8
 	curBlock        &PGresult_data
-	curOffset       int
-	spaceLeft       int
+	curOffset       i32
+	spaceLeft       i32
 	memorySize      usize
 }
 
@@ -510,7 +510,7 @@ pub mut:
 
 pub struct PGdataValue {
 pub mut:
-	len   int
+	len   i32
 	value &i8
 }
 
@@ -603,11 +603,11 @@ pub mut:
 	oauth_token                   &i8
 	oauth_want_retry              bool
 	pfdebug                       &C.FILE
-	traceFlags                    int
+	traceFlags                    i32
 	noticeHooks                   PGNoticeHooks
 	events                        &PGEvent
-	nEvents                       int
-	eventArraySize                int
+	nEvents                       i32
+	eventArraySize                i32
 	status                        ConnStatusType
 	asyncStatus                   PGAsyncStatusType
 	xactStatus                    PGTransactionStatusType
@@ -617,13 +617,13 @@ pub mut:
 	pipelineStatus                PGpipelineStatus
 	partialResMode                bool
 	singleRowMode                 bool
-	maxChunkSize                  int
+	maxChunkSize                  i32
 	copy_is_binary                i8
-	copy_already_done             int
+	copy_already_done             i32
 	notifyHead                    &PGnotify
 	notifyTail                    &PGnotify
-	nconnhost                     int
-	whichhost                     int
+	nconnhost                     i32
+	whichhost                     i32
 	connhost                      &Pg_conn_host
 	connip                        &i8
 	cmd_queue_head                &PGcmdQueueEntry
@@ -633,7 +633,7 @@ pub mut:
 	laddr                         SockAddr
 	raddr                         SockAddr
 	pversion                      ProtocolVersion
-	sversion                      int
+	sversion                      i32
 	pversion_negotiated           bool
 	auth_req_received             bool
 	password_needed               bool
@@ -654,8 +654,8 @@ pub mut:
 	load_balance_type             PGLoadBalanceType
 	try_next_addr                 bool
 	try_next_host                 bool
-	naddr                         int
-	whichaddr                     int
+	naddr                         i32
+	whichaddr                     i32
 	addr                          &AddrInfo
 	send_appname                  bool
 	scram_client_key_len          usize
@@ -664,11 +664,11 @@ pub mut:
 	scram_server_key_binary       &Uint8
 	min_pversion                  ProtocolVersion
 	max_pversion                  ProtocolVersion
-	be_pid                        int
-	be_cancel_key_len             int
+	be_pid                        i32
+	be_cancel_key_len             i32
 	be_cancel_key                 &Uint8
 	pstatus                       &PgParameterStatus
-	client_encoding               int
+	client_encoding               i32
 	std_strings                   bool
 	default_transaction_read_only PGTernaryBool
 	in_hot_standby                PGTernaryBool
@@ -677,23 +677,23 @@ pub mut:
 	lobjfuncs                     &PGlobjfuncs
 	prng_state                    Pg_prng_state
 	inBuffer                      &i8
-	inBufSize                     int
-	inStart                       int
-	inCursor                      int
-	inEnd                         int
+	inBufSize                     i32
+	inStart                       i32
+	inCursor                      i32
+	inEnd                         i32
 	outBuffer                     &i8
-	outBufSize                    int
-	outCount                      int
-	outMsgStart                   int
-	outMsgEnd                     int
+	outBufSize                    i32
+	outCount                      i32
+	outMsgStart                   i32
+	outMsgEnd                     i32
 	rowBuf                        &PGdataValue
-	rowBufLen                     int
+	rowBufLen                     i32
 	result                        &PGresult
 	error_result                  bool
 	saved_result                  &PGresult
 	sasl                          &Pg_fe_sasl_mech
 	sasl_state                    voidptr
-	scram_sha_256_iterations      int
+	scram_sha_256_iterations      i32
 	allowed_enc_methods           Uint8
 	failed_enc_methods            Uint8
 	current_enc_method            Uint8
@@ -703,7 +703,7 @@ pub mut:
 	ssl_cert_sent                 bool
 	last_read_was_eof             bool
 	errorMessage                  PQExpBufferData
-	errorReported                 int
+	errorReported                 i32
 	workBuffer                    PQExpBufferData
 }
 
@@ -719,7 +719,7 @@ pub fn pgtls_write(conn &PGconn, ptr voidptr, len usize) isize
 
 pub fn pgtls_get_peer_certificate_hash(conn &PGconn, len &usize) &i8
 
-pub fn pgtls_verify_peer_name_matches_certificate_guts(conn &PGconn, names_examined &int, first_name &&u8) int
+pub fn pgtls_verify_peer_name_matches_certificate_guts(conn &PGconn, names_examined &i32, first_name &&u8) i32
 
 pub enum Fe_oauth_step {
 	fe_oauth_init
@@ -758,14 +758,14 @@ pub fn libpq_fe_auth_oauth_surrogate_pair_to_codepoint(first Pg_wchar, second Pg
 
 @[markused]
 pub fn libpq_fe_auth_oauth_utf8_to_unicode(c &u8) Pg_wchar {
-	if (int((unsafe { *c })) & 128) == 0 {
+	if (i32((unsafe { *c })) & 128) == 0 {
 		return Pg_wchar(c[0])
-	} else if (int((unsafe { *c })) & 224) == 192 {
-		return Pg_wchar((((int(c[0]) & 31) << 6) | (int(c[1]) & 63)))
-	} else if (int((unsafe { *c })) & 240) == 224 {
-		return Pg_wchar((((int(c[0]) & 15) << 12) | ((int(c[1]) & 63) << 6) | (int(c[2]) & 63)))
-	} else if (int((unsafe { *c })) & 248) == 240 {
-		return Pg_wchar((((int(c[0]) & 7) << 18) | ((int(c[1]) & 63) << 12) | ((int(c[2]) & 63) << 6) | (int(c[3]) & 63)))
+	} else if (i32((unsafe { *c })) & 224) == 192 {
+		return Pg_wchar((((i32(c[0]) & 31) << 6) | (i32(c[1]) & 63)))
+	} else if (i32((unsafe { *c })) & 240) == 224 {
+		return Pg_wchar((((i32(c[0]) & 15) << 12) | ((i32(c[1]) & 63) << 6) | (i32(c[2]) & 63)))
+	} else if (i32((unsafe { *c })) & 248) == 240 {
+		return Pg_wchar((((i32(c[0]) & 7) << 18) | ((i32(c[1]) & 63) << 12) | ((i32(c[2]) & 63) << 6) | (i32(c[3]) & 63)))
 	} else {
 		return u32(4294967295)
 	}
@@ -792,7 +792,7 @@ pub fn libpq_fe_auth_oauth_unicode_to_utf8(c Pg_wchar, utf8string &u8) &u8 {
 }
 
 @[markused]
-pub fn libpq_fe_auth_oauth_unicode_utf8len(c Pg_wchar) int {
+pub fn libpq_fe_auth_oauth_unicode_utf8len(c Pg_wchar) i32 {
 	if c <= Pg_wchar(127) {
 		return 1
 	} else if c <= Pg_wchar(2047) {
@@ -859,7 +859,7 @@ pub struct Json_ctx {
 pub mut:
 	errmsg            &i8
 	errbuf            PQExpBufferData
-	nested            int
+	nested            i32
 	target_field_name &i8
 	target_field      &&u8
 	status            &i8
@@ -1021,7 +1021,7 @@ pub fn issuer_from_well_known_uri(conn &PGconn, wkuri &i8) &i8 {
 	if pg_strncasecmp(wkuri, c'https://', C.c2v_strlen(c'https://')) == 0 {
 		authority_start = wkuri + C.c2v_strlen(c'https://')
 	}
-	if isnil(authority_start) && int(oauth_unsafe_debugging_enabled()) && pg_strncasecmp(wkuri, c'http://', C.c2v_strlen(c'http://')) == 0 {
+	if isnil(authority_start) && i32(oauth_unsafe_debugging_enabled()) && pg_strncasecmp(wkuri, c'http://', C.c2v_strlen(c'http://')) == 0 {
 		authority_start = wkuri + C.c2v_strlen(c'http://')
 	}
 	if isnil(authority_start) {
@@ -1045,11 +1045,11 @@ pub fn issuer_from_well_known_uri(conn &PGconn, wkuri &i8) &i8 {
 	} else {
 		wk_end = (voidptr(0))
 	}
-	if isnil(wk_end) || (int((unsafe { *wk_end })) != i8(`/`) && int((unsafe { *wk_end })) != i8(`\0`)) {
+	if isnil(wk_end) || (i32((unsafe { *wk_end })) != i8(`/`) && i32((unsafe { *wk_end })) != i8(`\0`)) {
 		libpq_append_conn_error(conn, c'OAuth discovery URI "%s" uses an unsupported .well-known suffix', voidptr(wkuri))
 		return unsafe { nil }
 	}
-	if int((unsafe { *wk_end })) != i8(`\0`) {
+	if i32((unsafe { *wk_end })) != i8(`\0`) {
 		path_start := &i8(0)
 		path_start = C.c2v_strchr(authority_start, `/`)
 
@@ -1071,7 +1071,7 @@ pub fn issuer_from_well_known_uri(conn &PGconn, wkuri &i8) &i8 {
 }
 
 @[markused]
-pub fn handle_oauth_sasl_error(conn &PGconn, msg &i8, msglen int) bool {
+pub fn handle_oauth_sasl_error(conn &PGconn, msg &i8, msglen i32) bool {
 	lex := &JsonLexContext(0)
 	sem := JsonSemAction{}
 
@@ -1085,11 +1085,11 @@ pub fn handle_oauth_sasl_error(conn &PGconn, msg &i8, msglen int) bool {
 		libpq_append_conn_error(conn, c"server's error message contained an embedded NULL, and was discarded")
 		return false != 0
 	}
-	if pg_encoding_verifymbstr(int(Pg_enc.pg_utf8), msg, msglen) != msglen {
+	if pg_encoding_verifymbstr(i32(Pg_enc.pg_utf8), msg, msglen) != msglen {
 		libpq_append_conn_error(conn, c"server's error response is not valid UTF-8")
 		return false != 0
 	}
-	lex = make_json_lex_context_cstring_len((voidptr(0)), msg, usize(msglen), int(Pg_enc.pg_utf8), (1 != 0))
+	lex = make_json_lex_context_cstring_len((voidptr(0)), msg, usize(msglen), i32(Pg_enc.pg_utf8), (1 != 0))
 	set_json_lex_context_owns_tokens(lex, (1 != 0))
 	init_pq_exp_buffer(&ctx.errbuf)
 	sem.semstate = &ctx
@@ -1230,7 +1230,7 @@ pub fn use_builtin_flow(conn &PGconn, state &Fe_oauth_state) bool {
 
 @[markused]
 pub fn setup_token_request(conn &PGconn, state &Fe_oauth_state) bool {
-	res := 0
+	res := i32(0)
 	request := PGoauthBearerRequest{
 		openid_configuration: conn.oauth_discovery_uri
 		scope: conn.oauth_scope
@@ -1312,7 +1312,7 @@ pub fn setup_oauth_parameters(conn &PGconn) bool {
 }
 
 @[markused]
-pub fn oauth_exchange(opaq voidptr, final bool, input &i8, inputlen int, output &&u8, outputlen &int) SASLStatus {
+pub fn oauth_exchange(opaq voidptr, final bool, input &i8, inputlen i32, output &&u8, outputlen &i32) SASLStatus {
 	c2v_gc_register_thread()
 	state := &Fe_oauth_state(opaq)
 	conn := state.conn
@@ -1340,7 +1340,7 @@ pub fn oauth_exchange(opaq voidptr, final bool, input &i8, inputlen int, output 
 			if isnil((unsafe { *output })) {
 				return SASLStatus.sasl_failed
 			}
-			unsafe { *outputlen = int(C.c2v_strlen(*output)) }
+			unsafe { *outputlen = i32(C.c2v_strlen(*output)) }
 			state.step = Fe_oauth_step.fe_oauth_bearer_sent
 			if conn.oauth_token {
 				conn.client_finished_auth = (1 != 0)
@@ -1357,7 +1357,7 @@ pub fn oauth_exchange(opaq voidptr, final bool, input &i8, inputlen int, output 
 				libpq_append_conn_error(conn, c'out of memory')
 				return SASLStatus.sasl_failed
 			}
-			unsafe { *outputlen = int(C.c2v_strlen(*output)) }
+			unsafe { *outputlen = i32(C.c2v_strlen(*output)) }
 			if !handle_oauth_sasl_error(conn, input, inputlen) {
 				return SASLStatus.sasl_failed
 			}
