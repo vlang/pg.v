@@ -303,7 +303,7 @@ pub fn make_json_lex_context_cstring_len(lex_param &JsonLexContext, json &i8, le
 	} else {
 		C.c2v_memset(voidptr(lex), 0, sizeof(JsonLexContext_jsonapi))
 	}
-	lex.errormsg = (voidptr(0))
+	lex.errormsg = unsafe { nil }
 	lex.line_start = json
 	lex.token_terminator = lex.line_start
 	lex.input = lex.token_terminator
@@ -320,10 +320,10 @@ pub fn make_json_lex_context_cstring_len(lex_param &JsonLexContext, json &i8, le
 
 @[markused]
 pub fn allocate_incremental_state(lex &JsonLexContext_jsonapi) bool {
-	pstack := &voidptr(0)
-	prediction := &voidptr(0)
-	fnames := &voidptr(0)
-	fnull := &voidptr(0)
+	pstack := voidptr(0)
+	prediction := voidptr(0)
+	fnames := voidptr(0)
+	fnull := voidptr(0)
 
 	lex.inc_state = C.c2v_calloc(u64(1), sizeof(JsonIncrementalState))
 	pstack = C.c2v_calloc(u64(1), sizeof(JsonParserStack))
@@ -346,7 +346,7 @@ pub fn allocate_incremental_state(lex &JsonLexContext_jsonapi) bool {
 	lex.pstack.fnames = fnames
 	lex.pstack.fnull = fnull
 
-	lex.pstack.fnames[0] = (voidptr(0))
+	lex.pstack.fnames[0] = unsafe { nil }
 	lex.incremental = (1 != 0)
 	return true != 0
 }
@@ -422,7 +422,7 @@ pub fn inc_lex_level(lex &JsonLexContext_jsonapi) bool {
 	}
 	lex.lex_level += 1
 	if lex.incremental {
-		lex.pstack.fnames[lex.lex_level] = (voidptr(0))
+		lex.pstack.fnames[lex.lex_level] = unsafe { nil }
 	}
 	return true != 0
 }
@@ -752,7 +752,7 @@ pub fn pg_parse_json_incremental(lex_param &JsonLexContext, sem &JsonSemAction, 
 					}
 					.json_sem_scalar_init {
 						sfunc := sem.scalar
-						pstack.scalar_val = (voidptr(0))
+						pstack.scalar_val = unsafe { nil }
 						if sfunc != (voidptr(0)) {
 							if u32(tok) == u32(JsonTokenType.json_token_string) {
 								if lex.need_escapes {
@@ -780,7 +780,7 @@ pub fn pg_parse_json_incremental(lex_param &JsonLexContext, sem &JsonSemAction, 
 							if lex.flags & Bits32((1 << 2)) {
 								C.c2v_free(voidptr(pstack.scalar_val))
 							}
-							pstack.scalar_val = (voidptr(0))
+							pstack.scalar_val = unsafe { nil }
 							if u32(result) != u32(JsonParseErrorType.json_success) {
 								return result
 							}
@@ -1254,7 +1254,7 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 		partial_result = json_lex(voidptr(&dummy_lex))
 		lex.token_type = dummy_lex.token_type
 		lex.line_number = dummy_lex.line_number
-		lex.prev_token_terminator = (voidptr(0))
+		lex.prev_token_terminator = unsafe { nil }
 		lex.token_start = dummy_lex.token_start
 		lex.token_terminator = dummy_lex.token_terminator
 		if u32(partial_result) == u32(JsonParseErrorType.json_success) {
@@ -1273,7 +1273,7 @@ pub fn json_lex(lex_param &JsonLexContext) JsonParseErrorType {
 	}
 	lex.token_start = s
 	if usize(s) >= usize(end) {
-		lex.token_start = (voidptr(0))
+		lex.token_start = unsafe { nil }
 		lex.prev_token_terminator = lex.token_terminator
 		lex.token_terminator = s
 		lex.token_type = JsonTokenType.json_token_end

@@ -44,7 +44,7 @@ pub fn pq_register_event_proc(conn &PGconn, proc PGEventProc, name &i8, pass_thr
 		return 0
 	}
 	conn.events[conn.nEvents].passThrough = pass_through
-	conn.events[conn.nEvents].data = (voidptr(0))
+	conn.events[conn.nEvents].data = unsafe { nil }
 	conn.events[conn.nEvents].resultInitialized = (0 != 0)
 	conn.nEvents++
 	regevt.conn = conn

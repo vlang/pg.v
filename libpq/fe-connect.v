@@ -19,6 +19,8 @@ pub fn c2v_assign[T](target &T, value T) T {
 	return value
 }
 
+pub type C2vFn_666e2028265047636f6e6e29 = fn (&PGconn)
+
 pub struct Timespec {
 pub mut:
 	tv_sec  i64
@@ -146,19 +148,19 @@ pub fn pq_drop_connection(conn &PGconn, flush_input bool) {
 	}
 	conn.outCount = 0
 	pq_free_command_queue(conn.cmd_queue_head)
-	conn.cmd_queue_tail = (voidptr(0))
+	conn.cmd_queue_tail = unsafe { nil }
 	conn.cmd_queue_head = conn.cmd_queue_tail
 	pq_free_command_queue(conn.cmd_queue_recycle)
-	conn.cmd_queue_recycle = (voidptr(0))
+	conn.cmd_queue_recycle = unsafe { nil }
 	if conn.cleanup_async_auth {
 		conn.cleanup_async_auth(conn)
-		conn.cleanup_async_auth = (voidptr(0))
+		conn.cleanup_async_auth = C2vFn_666e2028265047636f6e6e29(voidptr(0))
 	}
-	conn.async_auth = (voidptr(0))
+	conn.async_auth = C2vFn_666e2028265047636f6e6e2920506f737467726573506f6c6c696e6753746174757354797065(voidptr(0))
 	conn.altsock = (-1)
 	if conn.sasl_state {
 		conn.sasl.free_(voidptr(conn.sasl_state))
-		conn.sasl_state = (voidptr(0))
+		conn.sasl_state = unsafe { nil }
 	}
 }
 
@@ -182,7 +184,7 @@ pub fn pq_drop_server_data(conn &PGconn) {
 		notify = notify.next
 		C.c2v_free(voidptr(prev))
 	}
-	conn.notifyTail = (voidptr(0))
+	conn.notifyTail = unsafe { nil }
 	conn.notifyHead = conn.notifyTail
 	pstatus = conn.pstatus
 	for usize(pstatus) != usize((voidptr(0))) {
@@ -190,7 +192,7 @@ pub fn pq_drop_server_data(conn &PGconn) {
 		pstatus = pstatus.next
 		C.c2v_free(voidptr(prev))
 	}
-	conn.pstatus = (voidptr(0))
+	conn.pstatus = unsafe { nil }
 	conn.client_encoding = Pg_enc.pg_sql_ascii
 	conn.std_strings = (0 != 0)
 	conn.default_transaction_read_only = PGTernaryBool.pg_bool_unknown
@@ -198,7 +200,7 @@ pub fn pq_drop_server_data(conn &PGconn) {
 	conn.scram_sha_256_iterations = 4096
 	conn.sversion = 0
 	C.c2v_free(voidptr(conn.lobjfuncs))
-	conn.lobjfuncs = (voidptr(0))
+	conn.lobjfuncs = unsafe { nil }
 	conn.last_sqlstate[0] = i8(`\0`)
 	conn.pversion_negotiated = (0 != 0)
 	conn.auth_req_received = (0 != 0)
@@ -207,13 +209,13 @@ pub fn pq_drop_server_data(conn &PGconn) {
 	conn.gssapi_used = (0 != 0)
 	conn.write_failed = (0 != 0)
 	C.c2v_free(voidptr(conn.write_err_msg))
-	conn.write_err_msg = (voidptr(0))
+	conn.write_err_msg = unsafe { nil }
 	conn.oauth_want_retry = (0 != 0)
 	if !conn.cancelRequest {
 		conn.be_pid = 0
 		if usize(conn.be_cancel_key) != usize((voidptr(0))) {
 			C.c2v_free(voidptr(conn.be_cancel_key))
-			conn.be_cancel_key = (voidptr(0))
+			conn.be_cancel_key = unsafe { nil }
 		}
 		conn.be_cancel_key_len = 0
 	}
@@ -427,7 +429,7 @@ pub fn fill_allowed_sasl_mechs(conn &PGconn) {
 @[markused]
 pub fn clear_allowed_sasl_mechs(conn &PGconn) {
 	for i := i32(0); u64(i) < 2; i++ {
-		conn.allowed_sasl_mechs[i] = (voidptr(0))
+		conn.allowed_sasl_mechs[i] = unsafe { nil }
 	}
 }
 
@@ -668,7 +670,7 @@ pub fn pq_connect_options2(conn &PGconn) bool {
 							goto duplicate
 						}
 					}
-					conn.allowed_sasl_mechs[i] = (voidptr(0))
+					conn.allowed_sasl_mechs[i] = unsafe { nil }
 				} else {
 					i = index_of_allowed_sasl_mech(conn, mech)
 					if i >= 0 {
@@ -1007,7 +1009,7 @@ pub fn pq_conndefaults() &PQconninfoOption {
 	if usize(conn_options) != usize((voidptr(0))) {
 		if !conninfo_add_defaults(conn_options, (voidptr(0))) {
 			pq_conninfo_free(conn_options)
-			conn_options = (voidptr(0))
+			conn_options = unsafe { nil }
 		}
 	}
 	term_pq_exp_buffer(&error_buf)
@@ -1117,7 +1119,7 @@ pub fn get_hostaddr(conn &PGconn, host_addr &i8, host_addr_len i32) {
 			host_addr[0] = i8(`\0`)
 		}
 	} else if i32(addr.ss_family) == 30 {
-		if usize(pg_inet_net_ntop(30, voidptr(&(&C.sockaddr_in6(voidptr(addr))).sin6_addr.__u6_addr.__u6_addr8), 128, host_addr, usize(host_addr_len))) == usize((voidptr(0))) {
+		if usize(pg_inet_net_ntop(30, voidptr(unsafe { &(&C.sockaddr_in6(voidptr(addr))).sin6_addr.__u6_addr.__u6_addr8 }), 128, host_addr, usize(host_addr_len))) == usize((voidptr(0))) {
 			host_addr[0] = i8(`\0`)
 		}
 	} else {
@@ -1553,7 +1555,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 			}
 			if usize(conn.connip) != usize((voidptr(0))) {
 				C.c2v_free(voidptr(conn.connip))
-				conn.connip = (voidptr(0))
+				conn.connip = unsafe { nil }
 			}
 			get_hostaddr(conn, unsafe { &i8(&host_addr[0]) }, 1025)
 			if host_addr[0] {
@@ -1906,7 +1908,7 @@ pub fn pq_connect_poll(conn &PGconn) PostgresPollingStatusType {
 			}
 			if u32(status) == u32(PostgresPollingStatusType.pgres_polling_ok) {
 				conn.cleanup_async_auth(conn)
-				conn.cleanup_async_auth = (voidptr(0))
+				conn.cleanup_async_auth = C2vFn_666e2028265047636f6e6e29(voidptr(0))
 				if conn.altsock != (-1) {
 					libpq_append_conn_error(conn, c'internal error: async cleanup did not release polling socket')
 					unsafe {
@@ -2260,7 +2262,7 @@ pub fn pq_make_empty_pg_conn() &PGconn {
 	conn.show_context = PGContextVisibility.pqshow_context_errors
 	conn.sock = (-1)
 	conn.altsock = (-1)
-	conn.pfdebug = (voidptr(0))
+	conn.pfdebug = unsafe { nil }
 	conn.inBufSize = 16 * 1024
 	conn.inBuffer = &i8(C.c2v_malloc(u64(conn.inBufSize)))
 	conn.outBufSize = 16 * 1024
@@ -2295,7 +2297,7 @@ pub fn pq_make_empty_pg_conn() &PGconn {
 	}
 	if __c2v_condition_2 {
 		free_pg_conn(conn)
-		conn = (voidptr(0))
+		conn = unsafe { nil }
 	}
 	return conn
 }
@@ -2395,7 +2397,7 @@ pub fn pq_release_conn_hosts(conn &PGconn) {
 			}
 		}
 		C.c2v_free(voidptr(conn.connhost))
-		conn.connhost = (voidptr(0))
+		conn.connhost = unsafe { nil }
 	}
 }
 
@@ -2427,7 +2429,7 @@ pub fn store_conn_addrinfo(conn &PGconn, addrlist &C.addrinfo) i32 {
 pub fn release_conn_addrinfo(conn &PGconn) {
 	if conn.addr {
 		C.c2v_free(voidptr(conn.addr))
-		conn.addr = (voidptr(0))
+		conn.addr = unsafe { nil }
 	}
 }
 
@@ -2704,7 +2706,7 @@ pub fn pq_conninfo_parse(conninfo &i8, errmsg &&u8) &PQconninfoOption {
 	error_buf := PQExpBufferData{}
 	conn_options := &PQconninfoOption(0)
 	if errmsg {
-		unsafe { *errmsg = (voidptr(0)) }
+		unsafe { *errmsg = nil }
 	}
 	init_pq_exp_buffer(&error_buf)
 	if (error_buf.maxlen == usize(0)) {
@@ -2959,7 +2961,7 @@ pub fn conninfo_array_parse(keywords &&u8, values &&u8, error_message PQExpBuffe
 					}
 				}
 				pq_conninfo_free(dbname_options)
-				dbname_options = (voidptr(0))
+				dbname_options = unsafe { nil }
 			} else {
 				C.c2v_free(voidptr(option.val))
 				option.val = C.c2v_strdup(pvalue)

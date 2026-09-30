@@ -20,7 +20,7 @@ pub fn bytes_to_hex(b &Uint8, s &i8) {
 pub fn pg_md5_hash(buff voidptr, len usize, hexsum &i8, errstr &&u8) bool {
 	sum := [16]Uint8{}
 	ctx := &Pg_cryptohash_ctx(0)
-	unsafe { *errstr = (voidptr(0)) }
+	unsafe { *errstr = nil }
 	ctx = pg_cryptohash_create(Pg_cryptohash_type.pg_md5)
 	if usize(ctx) == usize((voidptr(0))) {
 		unsafe { *errstr = pg_cryptohash_error((voidptr(0))) }
@@ -40,7 +40,7 @@ pub fn pg_md5_hash(buff voidptr, len usize, hexsum &i8, errstr &&u8) bool {
 @[markused]
 pub fn pg_md5_binary(buff voidptr, len usize, outbuf &Uint8, errstr &&u8) bool {
 	ctx := &Pg_cryptohash_ctx(0)
-	unsafe { *errstr = (voidptr(0)) }
+	unsafe { *errstr = nil }
 	ctx = pg_cryptohash_create(Pg_cryptohash_type.pg_md5)
 	if usize(ctx) == usize((voidptr(0))) {
 		unsafe { *errstr = pg_cryptohash_error((voidptr(0))) }

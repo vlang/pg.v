@@ -53,7 +53,7 @@ pub fn pg_vsnprintf(str &i8, count usize, fmt &i8, args C.va_list) i32 {
 	target.bufptr = str
 	target.bufstart = target.bufptr
 	target.bufend = str + count - 1
-	target.stream = (voidptr(0))
+	target.stream = unsafe { nil }
 	target.nchars = 0
 	target.failed = (0 != 0)
 	dopr(&target, fmt, args)
@@ -82,8 +82,8 @@ pub fn pg_vsprintf(str &i8, fmt &i8, args C.va_list) i32 {
 	target := PrintfTarget{}
 	target.bufptr = str
 	target.bufstart = target.bufptr
-	target.bufend = (voidptr(0))
-	target.stream = (voidptr(0))
+	target.bufend = unsafe { nil }
+	target.stream = unsafe { nil }
 	target.nchars = 0
 	target.failed = (0 != 0)
 	dopr(&target, fmt, args)
@@ -894,7 +894,7 @@ pub fn pg_strfromd(str &i8, count usize, precision i32, value f64) i32 {
 	target.bufptr = str
 	target.bufstart = target.bufptr
 	target.bufend = str + count - 1
-	target.stream = (voidptr(0))
+	target.stream = unsafe { nil }
 	target.nchars = 0
 	target.failed = (0 != 0)
 	if precision < 1 {

@@ -271,7 +271,7 @@ pub fn pq_get_cancel(conn &PGconn) &PGcancel_fe_cancel {
 			}
 		}
 	}
-	req = &CancelRequestPacket(voidptr(&cancel.cancel_req))
+	req = &CancelRequestPacket(voidptr(unsafe { &cancel.cancel_req }))
 	req.cancelRequestCode = MsgType(c2v_builtin_bswap32(u32(((1234 << 16) | 5678))))
 	req.backendPID = c2v_builtin_bswap32(u32(conn.be_pid))
 	C.c2v_memcpy(req.cancelAuthCode, voidptr(conn.be_cancel_key), u64(conn.be_cancel_key_len))

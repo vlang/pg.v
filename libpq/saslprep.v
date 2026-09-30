@@ -141,7 +141,7 @@ pub fn pg_saslprep(input &i8, output &&u8) Pg_saslprep_rc {
 	contains_rand_al_cat := false
 	p := &u8(0)
 	wp := &Pg_wchar(0)
-	unsafe { *output = (voidptr(0)) }
+	unsafe { *output = nil }
 	if pg_is_ascii(input) {
 		unsafe { *output = C.c2v_strdup(input) }
 		if isnil((unsafe { *output })) {

@@ -13,6 +13,10 @@ fn C.c2v_va_end(C.va_list)
 @[c: 'va_copy']
 fn C.c2v_va_copy(C.va_list, C.va_list)
 
+pub type C2vFn_666e2028766f69647074722c20265047726573756c7429 = fn (voidptr, &PGresult)
+
+pub type C2vFn_666e2028766f69647074722c2026693829 = fn (voidptr, &i8)
+
 @[markused]
 pub fn pg_sub_s16_overflow(a Int16, b Int16, result &Int16) bool {
 	res := Int32(a) - Int32(b)
@@ -432,21 +436,21 @@ pub fn pq_make_empty_pg_result(conn &PGconn, status ExecStatusType) &PGresult {
 	}
 	result.ntups = 0
 	result.numAttributes = 0
-	result.attDescs = (voidptr(0))
-	result.tuples = (voidptr(0))
+	result.attDescs = unsafe { nil }
+	result.tuples = unsafe { nil }
 	result.tupArrSize = 0
 	result.numParameters = 0
-	result.paramDescs = (voidptr(0))
+	result.paramDescs = unsafe { nil }
 	result.resultStatus = status
 	result.cmdStatus[0] = i8(`\0`)
 	result.binary = 0
-	result.events = (voidptr(0))
+	result.events = unsafe { nil }
 	result.nEvents = 0
-	result.errMsg = (voidptr(0))
-	result.errFields = (voidptr(0))
-	result.errQuery = (voidptr(0))
+	result.errMsg = unsafe { nil }
+	result.errFields = unsafe { nil }
+	result.errQuery = unsafe { nil }
 	result.null_field[0] = i8(`\0`)
-	result.curBlock = (voidptr(0))
+	result.curBlock = unsafe { nil }
 	result.curOffset = 0
 	result.spaceLeft = 0
 	result.memorySize = sizeof(PGresult)
@@ -470,10 +474,10 @@ pub fn pq_make_empty_pg_result(conn &PGconn, status ExecStatusType) &PGresult {
 			result.nEvents = conn.nEvents
 		}
 	} else {
-		result.noticeHooks.noticeRec = (voidptr(0))
-		result.noticeHooks.noticeRecArg = (voidptr(0))
-		result.noticeHooks.noticeProc = (voidptr(0))
-		result.noticeHooks.noticeProcArg = (voidptr(0))
+		result.noticeHooks.noticeRec = C2vFn_666e2028766f69647074722c20265047726573756c7429(voidptr(0))
+		result.noticeHooks.noticeRecArg = unsafe { nil }
+		result.noticeHooks.noticeProc = C2vFn_666e2028766f69647074722c2026693829(voidptr(0))
+		result.noticeHooks.noticeProcArg = unsafe { nil }
 		result.client_encoding = Pg_enc.pg_sql_ascii
 	}
 	return result
@@ -588,7 +592,7 @@ pub fn dup_events(events &PGEvent, count i32, mem_size &usize) &PGEvent {
 	for i = 0; i < count; i++ {
 		new_events[i].proc = events[i].proc
 		new_events[i].passThrough = events[i].passThrough
-		new_events[i].data = (voidptr(0))
+		new_events[i].data = unsafe { nil }
 		new_events[i].resultInitialized = (0 != 0)
 		new_events[i].name = C.c2v_strdup(events[i].name)
 		if isnil(new_events[i].name) {
@@ -730,7 +734,7 @@ pub fn pq_result_alloc_vdup0(res &PGresult, n_bytes usize, is_binary bool) voidp
 			block.next = res.curBlock.next
 			res.curBlock.next = block
 		} else {
-			block.next = (voidptr(0))
+			block.next = unsafe { nil }
 			res.curBlock = block
 			res.spaceLeft = 0
 		}
@@ -793,7 +797,7 @@ pub fn pq_set_result_error(res &PGresult, error_message PQExpBuffer, offset i32)
 	if !(usize(voidptr(error_message)) == usize(voidptr((voidptr(0)))) || error_message.maxlen == usize(0)) {
 		msg = pq_result_strdup(res, error_message.data + offset)
 	} else {
-		msg = (voidptr(0))
+		msg = unsafe { nil }
 	}
 	if msg {
 		res.errMsg = msg
@@ -831,11 +835,11 @@ pub fn pq_clear(res &PGresult) {
 		C.c2v_free(voidptr(block))
 	}
 	C.c2v_free(voidptr(res.tuples))
-	res.attDescs = (voidptr(0))
-	res.tuples = (voidptr(0))
-	res.paramDescs = (voidptr(0))
-	res.errFields = (voidptr(0))
-	res.events = (voidptr(0))
+	res.attDescs = unsafe { nil }
+	res.tuples = unsafe { nil }
+	res.paramDescs = unsafe { nil }
+	res.errFields = unsafe { nil }
+	res.events = unsafe { nil }
 	res.nEvents = 0
 	C.c2v_free(voidptr(res))
 }
@@ -844,10 +848,10 @@ pub fn pq_clear(res &PGresult) {
 @[markused]
 pub fn pq_clear_async_result(conn &PGconn) {
 	pq_clear(conn.result)
-	conn.result = (voidptr(0))
+	conn.result = unsafe { nil }
 	conn.error_result = (0 != 0)
 	pq_clear(conn.saved_result)
-	conn.saved_result = (voidptr(0))
+	conn.saved_result = unsafe { nil }
 }
 
 @[export: 'pqSaveErrorResult']
@@ -899,7 +903,7 @@ pub fn pq_prepare_async_result(conn &PGconn) &PGresult {
 	}
 	conn.result = conn.saved_result
 	conn.error_result = (0 != 0)
-	conn.saved_result = (voidptr(0))
+	conn.saved_result = unsafe { nil }
 	return res
 }
 
@@ -1123,8 +1127,8 @@ pub fn pq_alloc_cmd_queue_entry(conn &PGconn) &PGcmdQueueEntry {
 		entry = conn.cmd_queue_recycle
 		conn.cmd_queue_recycle = entry.next
 	}
-	entry.next = (voidptr(0))
-	entry.query = (voidptr(0))
+	entry.next = unsafe { nil }
+	entry.query = unsafe { nil }
 	return entry
 }
 
@@ -1159,7 +1163,7 @@ pub fn pq_recycle_cmd_queue_entry(conn &PGconn, entry &PGcmdQueueEntry) {
 
 	if entry.query {
 		C.c2v_free(voidptr(entry.query))
-		entry.query = (voidptr(0))
+		entry.query = unsafe { nil }
 	}
 	entry.next = conn.cmd_queue_recycle
 	conn.cmd_queue_recycle = entry
@@ -1608,11 +1612,11 @@ pub fn pq_get_result(conn &PGconn) &PGresult {
 	}
 	match conn.asyncStatus {
 		.pgasync_idle {
-			res = (voidptr(0))
+			res = unsafe { nil }
 		}
 		.pgasync_pipeline_idle {
 			pq_pipeline_process_queue(conn)
-			res = (voidptr(0))
+			res = unsafe { nil }
 		}
 		.pgasync_ready {
 			res = pq_prepare_async_result(conn)
@@ -1762,7 +1766,7 @@ pub fn pq_exec_start(conn &PGconn) bool {
 pub fn pq_exec_finish(conn &PGconn) &PGresult {
 	result := &PGresult(0)
 	last_result := &PGresult(0)
-	last_result = (voidptr(0))
+	last_result = unsafe { nil }
 	for {
 		result = pq_get_result(conn)
 		if !(usize(result) != usize((voidptr(0)))) {
@@ -1927,9 +1931,9 @@ pub fn pq_notifies(conn &PGconn) &PGnotify {
 	if event {
 		conn.notifyHead = event.next
 		if isnil(conn.notifyHead) {
-			conn.notifyTail = (voidptr(0))
+			conn.notifyTail = unsafe { nil }
 		}
-		event.next = (voidptr(0))
+		event.next = unsafe { nil }
 	}
 	return event
 }
@@ -1999,7 +2003,7 @@ pub fn pq_put_copy_end(conn &PGconn, errormsg &i8) i32 {
 @[export: 'PQgetCopyData']
 @[markused]
 pub fn pq_get_copy_data(conn &PGconn, buffer &&u8, async i32) i32 {
-	unsafe { *buffer = (voidptr(0)) }
+	unsafe { *buffer = nil }
 	if isnil(conn) {
 		return -2
 	}
@@ -2169,9 +2173,9 @@ pub fn pq_command_queue_advance(conn &PGconn, is_ready_for_query bool, got_sync 
 	prevquery = conn.cmd_queue_head
 	conn.cmd_queue_head = conn.cmd_queue_head.next
 	if usize(conn.cmd_queue_head) == usize((voidptr(0))) {
-		conn.cmd_queue_tail = (voidptr(0))
+		conn.cmd_queue_tail = unsafe { nil }
 	}
-	prevquery.next = (voidptr(0))
+	prevquery.next = unsafe { nil }
 	pq_recycle_cmd_queue_entry(conn, prevquery)
 }
 
@@ -2256,7 +2260,7 @@ pub fn pq_pipeline_sync_internal(conn &PGconn, immediate_flush bool) i32 {
 		return 0
 	}
 	entry.queryclass = PGQueryClass.pgquery_sync
-	entry.query = (voidptr(0))
+	entry.query = unsafe { nil }
 	if pq_put_msg_start(i8(`S`), conn) < 0 || pq_put_msg_end(conn) < 0 {
 		unsafe {
 			goto sendFailed

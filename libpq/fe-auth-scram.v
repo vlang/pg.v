@@ -124,7 +124,7 @@ pub fn scram_exchange(opaq voidptr, final bool, input &i8, inputlen i32, output 
 	state := &Fe_scram_state(opaq)
 	conn := state.conn
 	errstr := unsafe { &i8(nil) }
-	unsafe { *output = (voidptr(0)) }
+	unsafe { *output = nil }
 	unsafe { *outputlen = 0 }
 	if u32(state.state) != u32(Fe_scram_state_enum.fe_scram_init) {
 		if inputlen == 0 {

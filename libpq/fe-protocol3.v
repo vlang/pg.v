@@ -677,7 +677,7 @@ pub fn get_row_descriptions(conn &PGconn, msg_length i32) i32 {
 		result = pq_make_empty_pg_result(conn, ExecStatusType(ExecStatusType.pgres_tuples_ok))
 	}
 	if isnil(result) {
-		errmsg = (voidptr(0))
+		errmsg = unsafe { nil }
 		unsafe {
 			goto advance_and_error
 		}
@@ -692,7 +692,7 @@ pub fn get_row_descriptions(conn &PGconn, msg_length i32) i32 {
 	if nfields > 0 {
 		result.attDescs = &PGresAttDesc(pq_result_alloc_vdup0(result, u64(nfields) * sizeof(PGresAttDesc), (1 != 0)))
 		if isnil(result.attDescs) {
-			errmsg = (voidptr(0))
+			errmsg = unsafe { nil }
 			unsafe {
 				goto advance_and_error
 			}
@@ -767,7 +767,7 @@ pub fn get_row_descriptions(conn &PGconn, msg_length i32) i32 {
 		format = i32((Int16(format)))
 		result.attDescs[i].name = pq_result_strdup(result, conn.workBuffer.data)
 		if isnil(result.attDescs[i].name) {
-			errmsg = (voidptr(0))
+			errmsg = unsafe { nil }
 			unsafe {
 				goto advance_and_error
 			}
@@ -896,7 +896,7 @@ pub fn get_another_tuple(conn &PGconn, msg_length i32) i32 {
 	if nfields > conn.rowBufLen {
 		rowbuf = &PGdataValue(C.c2v_realloc(voidptr(rowbuf), u64(nfields) * sizeof(PGdataValue)))
 		if isnil(rowbuf) {
-			errmsg = (voidptr(0))
+			errmsg = unsafe { nil }
 			unsafe {
 				goto advance_and_error
 			}
@@ -922,7 +922,7 @@ pub fn get_another_tuple(conn &PGconn, msg_length i32) i32 {
 			}
 		}
 	}
-	errmsg = (voidptr(0))
+	errmsg = unsafe { nil }
 	if pq_row_processor(conn, &&u8(&&i8(c2v_address_of(&errmsg)))) {
 		return 0
 	}
@@ -1388,7 +1388,7 @@ pub fn get_backend_key_data(conn &PGconn, msg_length i32) i32 {
 	cancel_key_len := i32(0)
 	if conn.be_cancel_key {
 		C.c2v_free(voidptr(conn.be_cancel_key))
-		conn.be_cancel_key = (voidptr(0))
+		conn.be_cancel_key = unsafe { nil }
 		conn.be_cancel_key_len = 0
 	}
 	if pq_get_int(&conn.be_pid, usize(4), conn) {
@@ -1418,7 +1418,7 @@ pub fn get_backend_key_data(conn &PGconn, msg_length i32) i32 {
 	}
 	if pq_getnchar(voidptr(conn.be_cancel_key), usize(cancel_key_len), conn) {
 		C.c2v_free(voidptr(conn.be_cancel_key))
-		conn.be_cancel_key = (voidptr(0))
+		conn.be_cancel_key = unsafe { nil }
 		return -1
 	}
 	conn.be_cancel_key_len = cancel_key_len
@@ -1462,7 +1462,7 @@ pub fn get_notify(conn &PGconn) i32 {
 	new_notify.extra = new_notify.relname + nmlen + 1
 	C.c2v_strcpy(new_notify.extra, conn.workBuffer.data)
 	new_notify.be_pid = be_pid
-	new_notify.next = (voidptr(0))
+	new_notify.next = unsafe { nil }
 	if conn.notifyTail {
 		conn.notifyTail.next = new_notify
 	} else {

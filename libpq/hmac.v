@@ -30,7 +30,7 @@ pub fn pg_hmac_create(type_ Pg_cryptohash_type) &Pg_hmac_ctx {
 	C.c2v_memset(voidptr(ctx), 0, sizeof(Pg_hmac_ctx))
 	ctx.type_ = type_
 	ctx.error = Pg_hmac_errno.pg_hmac_error_none
-	ctx.errreason = (voidptr(0))
+	ctx.errreason = unsafe { nil }
 	match type_ {
 		.pg_md5 {
 			ctx.digest_size = 16

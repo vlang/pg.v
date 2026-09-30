@@ -10,7 +10,7 @@ pub fn libpq_ip_is_unixsock_path(path &i8) bool {
 @[markused]
 pub fn pg_getaddrinfo_all(hostname &i8, servname &i8, hintp &C.addrinfo, result &&C.addrinfo) i32 {
 	rc := i32(0)
-	unsafe { *result = (voidptr(0)) }
+	unsafe { *result = nil }
 	if hintp.ai_family == 1 {
 		return getaddrinfo_unix(servname, hintp, result)
 	}
@@ -67,7 +67,7 @@ pub fn getaddrinfo_unix(path &i8, hintsp &C.addrinfo, result &&C.addrinfo) i32 {
 
 	aip := &C.addrinfo(0)
 	unp := &C.sockaddr_un(0)
-	unsafe { *result = (voidptr(0)) }
+	unsafe { *result = nil }
 	if C.c2v_strlen(path) >= sizeof([104]i8) {
 		return 4
 	}
@@ -95,8 +95,8 @@ pub fn getaddrinfo_unix(path &i8, hintsp &C.addrinfo, result &&C.addrinfo) i32 {
 	aip.ai_family = 1
 	aip.ai_socktype = hints.ai_socktype
 	aip.ai_protocol = hints.ai_protocol
-	aip.ai_next = (voidptr(0))
-	aip.ai_canonname = (voidptr(0))
+	aip.ai_next = unsafe { nil }
+	aip.ai_canonname = unsafe { nil }
 	unsafe { *result = aip }
 	unp.sun_family = u8(1)
 	aip.ai_addr = &C.sockaddr(voidptr(unp))

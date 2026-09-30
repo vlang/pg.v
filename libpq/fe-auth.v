@@ -1,6 +1,8 @@
 @[translated]
 module libpq
 
+pub type C2vFn_666e2028265047636f6e6e2920506f737467726573506f6c6c696e6753746174757354797065 = fn (&PGconn) PostgresPollingStatusType
+
 @[markused]
 pub fn libpq_fe_auth_is_unixsock_path(path &i8) bool {
 	return (i32(path[false]) == i8(`/`)) || i32(path[false]) == i8(`@`)
@@ -27,7 +29,7 @@ pub fn pg_sasl_init(conn &PGconn, payloadlen i32, async &bool) i32 {
 			goto error
 		}
 	}
-	selected_mechanism = (voidptr(0))
+	selected_mechanism = unsafe { nil }
 	for {
 		if pq_gets(&mechanism_buf, conn) {
 			append_pq_exp_buffer_str(&conn.errorMessage, c'fe_sendauth: invalid authentication request from server: invalid list of authentication mechanisms\n')
@@ -118,7 +120,7 @@ pub fn pg_sasl_init(conn &PGconn, payloadlen i32, async &bool) i32 {
 			}
 		}
 	} else {
-		conn.async_auth = (voidptr(0))
+		conn.async_auth = C2vFn_666e2028265047636f6e6e2920506f737467726573506f6c6c696e6753746174757354797065(voidptr(0))
 	}
 	status = conn.sasl.exchange(voidptr(conn.sasl_state), (0 != 0), (voidptr(0)), -1, &&u8(&&i8(c2v_address_of(&initialresponse))), &initialresponselen)
 	if u32(status) == u32(SASLStatus.sasl_failed) {
@@ -548,7 +550,7 @@ pub fn pq_encrypt_password_conn(conn &PGconn, passwd &i8, user &i8, algorithm &i
 			if !pg_md5_encrypt(passwd, &Uint8(voidptr(user)), C.c2v_strlen(user), crypt_pwd, &&u8(&&i8(c2v_address_of(&errstr)))) {
 				libpq_append_conn_error(conn, c'could not encrypt password: %s', voidptr(errstr))
 				C.c2v_free(voidptr(crypt_pwd))
-				crypt_pwd = (voidptr(0))
+				crypt_pwd = unsafe { nil }
 			}
 		} else {
 			libpq_append_conn_error(conn, c'out of memory')

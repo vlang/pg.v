@@ -32,7 +32,7 @@ pub fn pq_untrace(conn &PGconn) {
 	}
 	if conn.pfdebug {
 		C.c2v_fflush(conn.pfdebug)
-		conn.pfdebug = (voidptr(0))
+		conn.pfdebug = unsafe { nil }
 	}
 	conn.traceFlags = 0
 }

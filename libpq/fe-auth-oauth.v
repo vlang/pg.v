@@ -1001,8 +1001,8 @@ pub fn oauth_json_scalar(state voidptr, token &i8, type_ JsonTokenType) JsonPars
 		if isnil((unsafe { *ctx.target_field })) {
 			return JsonParseErrorType.json_out_of_memory
 		}
-		ctx.target_field = (voidptr(0))
-		ctx.target_field_name = (voidptr(0))
+		ctx.target_field = unsafe { nil }
+		ctx.target_field_name = unsafe { nil }
 	} else {
 	}
 	return JsonParseErrorType.json_success
@@ -1043,7 +1043,7 @@ pub fn issuer_from_well_known_uri(conn &PGconn, wkuri &i8) &i8 {
 	} else if C.c2v_strncmp(wk_end, c'oauth-authorization-server', C.c2v_strlen(c'oauth-authorization-server')) == 0 {
 		c2v_pointer_prefix(voidptr(&wk_end), wk_end, isize(C.c2v_strlen(c'oauth-authorization-server')))
 	} else {
-		wk_end = (voidptr(0))
+		wk_end = unsafe { nil }
 	}
 	if isnil(wk_end) || (i32((unsafe { *wk_end })) != i8(`/`) && i32((unsafe { *wk_end })) != i8(`\0`)) {
 		libpq_append_conn_error(conn, c'OAuth discovery URI "%s" uses an unsupported .well-known suffix', voidptr(wkuri))
@@ -1139,7 +1139,7 @@ pub fn handle_oauth_sasl_error(conn &PGconn, msg &i8, msglen i32) bool {
 		C.c2v_free(voidptr(discovery_issuer))
 		if isnil(conn.oauth_discovery_uri) {
 			conn.oauth_discovery_uri = ctx.discovery_uri
-			ctx.discovery_uri = (voidptr(0))
+			ctx.discovery_uri = unsafe { nil }
 		} else {
 			if C.c2v_strcmp(conn.oauth_discovery_uri, ctx.discovery_uri) != 0 {
 				libpq_append_conn_error(conn, c"server's discovery document has moved to %s (previous location was %s)", voidptr(ctx.discovery_uri), voidptr(conn.oauth_discovery_uri))
@@ -1152,7 +1152,7 @@ pub fn handle_oauth_sasl_error(conn &PGconn, msg &i8, msglen i32) bool {
 	if ctx.scope {
 		if isnil(conn.oauth_scope) {
 			conn.oauth_scope = ctx.scope
-			ctx.scope = (voidptr(0))
+			ctx.scope = unsafe { nil }
 		}
 	}
 	if isnil(ctx.status) {
@@ -1219,7 +1219,7 @@ pub fn cleanup_user_oauth_flow(conn &PGconn) {
 	}
 	conn.altsock = (-1)
 	C.c2v_free(voidptr(request))
-	state.async_ctx = (voidptr(0))
+	state.async_ctx = unsafe { nil }
 }
 
 @[export: 'use_builtin_flow']
@@ -1317,7 +1317,7 @@ pub fn oauth_exchange(opaq voidptr, final bool, input &i8, inputlen i32, output 
 	state := &Fe_oauth_state(opaq)
 	conn := state.conn
 	discover := (0 != 0)
-	unsafe { *output = (voidptr(0)) }
+	unsafe { *output = nil }
 	unsafe { *outputlen = 0 }
 	match state.step {
 		.fe_oauth_init {
@@ -1422,7 +1422,7 @@ pub fn pq_clear_oa_uth_token(conn &PGconn) {
 	}
 	explicit_bzero(voidptr(conn.oauth_token), C.c2v_strlen(conn.oauth_token))
 	C.c2v_free(voidptr(conn.oauth_token))
-	conn.oauth_token = (voidptr(0))
+	conn.oauth_token = unsafe { nil }
 }
 
 @[export: 'oauth_unsafe_debugging_enabled']
