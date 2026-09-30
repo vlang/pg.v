@@ -31,7 +31,7 @@ for f in "$tmp"/vmodules/pg/*_test.v; do
 	else
 		fail=$((fail + 1))
 		echo "FAIL $name"
-		echo "$out" | grep -v notice | grep -iE 'error|assert|fail|panic' | head -10
+		echo "$out" | grep -v notice | grep -iE 'error|assert|fail|panic' | head -10 || true
 	fi
 done
 echo "$pass passed, $fail failed"

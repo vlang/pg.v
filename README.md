@@ -67,10 +67,11 @@ have V names: `libpq.pq_connectdb()` is `PQconnectdb()`,
 
 Notes:
 
-- Build with `-old-compiler`. V's new default compiler accepts the code, but
-  generates C that does not compile for a part of it, and then falls back to
-  the established compiler with a lot of output. `-w` hides V's warnings about
-  the translated C code.
+- Build with `-old-compiler`. V's new default compiler needs the fixes of
+  [vlang/v#29167](https://github.com/vlang/v/pull/29167) (with them, `db.pg`'s
+  tests pass with `-new-compiler` too); without them it falls back to the
+  established compiler with a lot of output. `-w` hides V's warnings about the
+  translated C code.
 - C code is translated for one target: the declarations and constants of the
   system headers (struct layouts, socket options, ...) are those of the machine
   that ran c2v. These files were generated on macOS 26 (arm64, Apple Clang 21).
