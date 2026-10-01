@@ -55,7 +55,7 @@ fn main() {
 ```
 
 ```
-$ v -old-compiler -w run examples/orm.v
+$ v -w run examples/orm.v
 1 alice 31
 3 carol 45
 [Option('3'), Option('34.33')]
@@ -67,11 +67,11 @@ have V names: `libpq.pq_connectdb()` is `PQconnectdb()`,
 
 Notes:
 
-- Build with `-old-compiler`. V's new default compiler needs the fixes of
-  [vlang/v#29167](https://github.com/vlang/v/pull/29167) (with them, `db.pg`'s
-  tests pass with `-new-compiler` too); without them it falls back to the
-  established compiler with a lot of output. `-w` hides V's warnings about the
-  translated C code.
+- V's new default compiler needs the fixes of
+  [vlang/v#29167](https://github.com/vlang/v/pull/29167), which are in V master
+  since 2026-10-01. With an older V, build with `-old-compiler`.
+- `-w` hides V's warnings about the translated C code. The new compiler still
+  prints some of them, and its notices, the first time it builds the module.
 - C code is translated for one target: the declarations and constants of the
   system headers (struct layouts, socket options, ...) are those of the machine
   that ran c2v. These files were generated on macOS 26 (arm64, Apple Clang 21).
@@ -114,6 +114,9 @@ Results on macOS 26 (arm64), V 0.5.2 (b583c01), PostgreSQL 18.6 server:
 | `libpq_pipeline` (and traces) | 23 of 23 pass          | 23 of 23 pass          |
 | connection URIs               | 63 of 63 pass          | 63 of 63 pass          |
 | pgbench, 8 clients, simple / extended / prepared protocol | 0 failed transactions, 13,300 - 16,300 TPS | 0 failed transactions, 13,300 - 14,100 TPS |
+
+The `db.pg` tests also pass (8 of 8 files) with the new compiler of V master
+(2026-10-01).
 
 (\*) `test_listen_notify` fails with the C library: `db.pg` reads the channel
 name of a notification with `vstring()` (no copy) from memory that it frees

@@ -1,5 +1,5 @@
 // libpq's C API, in V.
-// usage: v -old-compiler -w run examples/libpq.v
+// usage: v -w run examples/libpq.v
 // (Connects to the server on localhost as postgres, port $PGPORT or 5432.)
 import pg.libpq
 

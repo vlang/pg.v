@@ -4,12 +4,12 @@
 #
 # usage: test/run_tests.sh [port]  (default 5432)
 #
-# Environment: V (default: v), VFLAGS (default: -old-compiler -w)
+# Environment: V (default: v), VFLAGS (default: -w)
 set -euo pipefail
 repo=$(cd "$(dirname "$0")/.." && pwd)
 port=${1:-5432}
 V=${V:-v}
-VFLAGS=${VFLAGS:--old-compiler -w}
+VFLAGS=${VFLAGS:--w}
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 mkdir -p "$tmp/vmodules/pg"

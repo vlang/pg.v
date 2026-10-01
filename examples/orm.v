@@ -1,5 +1,5 @@
 // V's ORM on PostgreSQL, without the C libpq.
-// usage: v -old-compiler -w run examples/orm.v
+// usage: v -w run examples/orm.v
 // (Connects to the server on localhost as postgres, port $PGPORT or 5432.)
 import os
 import pg
